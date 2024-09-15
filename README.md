@@ -1,6 +1,6 @@
-# DevTalk
+# DevnTalk
 
-DevTalk is a web application designed for seamless video communication. It includes features such as video calling, user authentication, and various UI components to enhance user experience.
+DevnTalk is a web application designed for seamless video communication. It includes features such as video calling, user authentication, and various UI components to enhance user experience.
 
 ## Table of Contents
 

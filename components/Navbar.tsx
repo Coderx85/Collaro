@@ -16,7 +16,7 @@ const Navbar = () => {
           className="max-sm:size-10"
         /> */}
         <p className="text-[26px] font-extrabold text-white max-sm:hidden duration-75">
-          Dev<span className='text-primary'>Talk</span>
+          Devn<span className='text-primary'>Talk</span>
         </p>
       </Link>
       <div className="flex gap-5">
