@@ -1,9 +1,7 @@
-/* eslint-disable camelcase */
 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import HouseSharpIcon from '@mui/icons-material/HouseSharp';
 
 import HomeCard from './HomeCard';
 import MeetingModal from './MeetingModal';
@@ -78,7 +76,7 @@ const MeetingTypeList = () => {
       <HomeCard
         img="/icons/add-meeting.svg"
         title="New Meeting"
-        color='primary'
+        classname='bg-primary'
         description="Start an instant meeting"
         handleClick={() => setMeetingState('isInstantMeeting')}
       />
@@ -86,14 +84,14 @@ const MeetingTypeList = () => {
         img="/icons/join-meeting.svg"
         title="Join Meeting"
         description="via invitation link"
-        color="[#FF742E]"
+        classname="bg-[#FF742E]"
         handleClick={() => setMeetingState('isJoiningMeeting')}
       />
       <HomeCard
         img="/icons/schedule.svg"
         title="Schedule Meeting"
         description="Plan your meeting"
-        color='purple'
+        classname='bg-purple'
         handleClick={() => setMeetingState('isScheduleMeeting')}
       />
 
@@ -101,7 +99,7 @@ const MeetingTypeList = () => {
         img="/icons/recordings.svg"
         title="View Recordings"
         description="Meeting Recordings"
-        color="asset-4"
+        classname="bg-yellow"
         handleClick={() => router.push('/recordings')}
       />
 
