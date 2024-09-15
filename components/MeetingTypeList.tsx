@@ -64,8 +64,6 @@ const MeetingTypeList = () => {
     }
   };
 
-  const meeting = 'border-4 border-double'
-
   if (!client || !user) return <Loader />;
 
   const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${callDetail?.id}`;
