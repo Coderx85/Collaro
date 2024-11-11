@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import { ReactNode } from 'react';
 
-import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
 
 export const metadata: Metadata = {
@@ -12,7 +11,6 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: Readonly<{children: ReactNode}>) => {
   return (
     <main className="relative">
-      <Navbar />
 
       <div className="flex">
         <Sidebar />
