@@ -53,6 +53,14 @@
   -webkit-backdrop-filter: blur(8px);
 }
 
+.text-outline{
+  -webkit-text-stroke: 1px #ffffff;
+}
+
+.text-outline-hover{
+  -webkit-text-stroke: 1px #166466;
+}
+
 /* ==== clerk class override ===== */
 
 .cl-userButtonPopoverActionButtonIcon {
