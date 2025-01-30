@@ -70,21 +70,14 @@ interface FeatureCardProps {
 function FeatureCard(
   { icon, title, description } : FeatureCardProps
 ) {
-  // const isEven = index % 2 === 0;
   return (
     <div
-      // initial={{ opacity: 0, y: 20, scale: 0.9 }}
-      // animate={{ opacity: 1, y: 0, scale: 1 }}
-      // transition={{ duration: 0.5, ease: "easeOut" }}
-      // whileHover={{ scale: 1.05, transition: { duration: 0.3 } }}
+      
       className={`px-4 h-72 w-80 mx-auto`}
     >
       <Card className={`bg-gray-800 py-6 rounded-2xl text-center text-white shadow-lg hover:shadow-xl transition-shadow`}>
         <CardContent className="flex flex-col items-center">
-          <div className="mb-4 text-primary text-4xl"
-            // initial={{ rotate: 0 }} 
-            // whileHover={{ rotate: 10 }}
-          >
+          <div className="mb-4 text-primary text-4xl">
             {icon}
           </div>
           <h3 className="text-xl font-semibold">{title}</h3>
