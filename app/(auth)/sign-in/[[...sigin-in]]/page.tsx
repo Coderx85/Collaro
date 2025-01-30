@@ -1,9 +1,5 @@
-import { SignIn } from '@clerk/nextjs';
+import AuthForm from "@/components/AuthForm";
 
-export default function SiginInPage() {
-  return (
-    <main className="flex h-screen w-full items-center justify-center">
-      <SignIn />
-    </main>
-  );
-}
+const SignInPage = () => <AuthForm type="sign-in" />;
+
+export default SignInPage;

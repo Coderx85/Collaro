@@ -1,9 +1,5 @@
-import { SignUp } from '@clerk/nextjs';
+import AuthForm from '@/components/AuthForm';
 
-export default function SignUpPage() {
-  return (
-    <main className="flex h-screen w-full items-center justify-center">
-      <SignUp />
-    </main>
-  );
-}
+const SignUpPage = () => <AuthForm type="sign-up" />;
+
+export default SignUpPage;
