@@ -1,7 +1,7 @@
 import React from 'react'
-import Image from 'next/image'
-import { Card, CardContent } from '@/components/ui/card';
 import { FaRocketchat, FaUserFriends, FaVideo } from 'react-icons/fa';
+import Image from 'next/image';
+import FeatureCard from '@/components/FeatureCard';
 
 const featureCard = [
   {
@@ -24,7 +24,7 @@ const featureCard = [
 const AuthLayout = ({children}: {children: React.ReactNode}) => {
   return (
     <div className="flex min-h-screen">
-      <section className="hidden w-1/2 my-auto items-center justify-center bg-brand p-10 lg:flex text-white lg:flex-col xl:w-3/5 ">
+      <section className="hidden w-1/2 my-auto items-center justify-center bg-brand p-10 lg:flex text-white lg:flex-col xl:w-4/6 ">
         <div className='flex space-x-16 mx-auto items-center justify-center'>
           <Image
             src="/icons/logo.svg"
@@ -60,30 +60,3 @@ const AuthLayout = ({children}: {children: React.ReactNode}) => {
 }
 
 export default AuthLayout
-
-interface FeatureCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}
-
-function FeatureCard(
-  { icon, title, description } : FeatureCardProps
-) {
-  return (
-    <div
-      
-      className={`px-4 h-72 w-80 mx-auto`}
-    >
-      <Card className={`bg-gray-800 py-6 rounded-2xl text-center text-white shadow-lg hover:shadow-xl transition-shadow`}>
-        <CardContent className="flex flex-col items-center">
-          <div className="mb-4 text-primary text-4xl">
-            {icon}
-          </div>
-          <h3 className="text-xl font-semibold">{title}</h3>
-          <p className="text-gray-400 mt-2">{description}</p>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
