@@ -1,36 +1,35 @@
 'use client';
-// import Image from 'next/image';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import HouseSharpIcon from '@mui/icons-material/HouseSharp';
 
-// import { sidebarLinks } from '@/constants';
 import { cn } from '@/lib/utils';
 
 const sidebarLinks = [
   {
     imgURL: <HouseSharpIcon/>,
-    route: '/',
+    route: '/dashboard/',
     label: 'Home',
   },
   {
     imgURL: '/icons/upcoming.svg',
-    route: '/upcoming',
+    route: '/dashboard/upcoming',
     label: 'Upcoming',
   },
   {
     imgURL: '/icons/previous.svg',
-    route: '/previous',
+    route: '/dashboard/previous',
     label: 'Previous',
   },
   {
     imgURL: '/icons/Video.svg',
-    route: '/recordings',
+    route: '/dashboard/recordings',
     label: 'Recordings',
   },
   {
     imgURL: '/icons/add-personal.svg',
-    route: '/personal-room',
+    route: '/dashboard/personal-room',
     label: 'Personal Room',
   },
 ];
