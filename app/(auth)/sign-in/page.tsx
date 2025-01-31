@@ -56,7 +56,7 @@ const SignInPage = () => {
         onSubmit={handleSubmit}
         className="flex flex-col my-auto text-white space-y-6 justify-center h-screen-min w-4/5"
       >
-        <h1 className="text-4xl font-bold text-white text-center mb-12">Sign In</h1>
+        <h1 className="text-4xl font-bold text-white text-center mb-12">Log In</h1>
           <Label htmlFor="email">Email</Label>
           <Input
             variant={'outline'}
@@ -94,7 +94,7 @@ const SignInPage = () => {
           </Alert>
         )}
         <Button type="submit" className="w-full">
-          Sign In
+          Log In
         </Button>
       </form>
       <p className="text-sm text-muted-foreground">
