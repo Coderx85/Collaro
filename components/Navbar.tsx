@@ -1,7 +1,8 @@
+'use client'
 import Link from 'next/link'
 import React from 'react'
 import Image from 'next/image'
-import { SignedIn, UserButton } from '@clerk/nextjs'
+import { SignedIn, UserButton, useSignIn } from '@clerk/nextjs'
 import MobileNav from './MobileNav'
 
 const navbarlink = [
@@ -16,10 +17,12 @@ const navbarlink = [
 
 ]
 
+
 const Navbar = () => {
+  const isActive = useSignIn();
   return (
     <nav className="flex justify-between fixed z-50 w-full bg-dark-1 px-6 py-4 lg:px-10">
-      <Link href="/" className="flex items-center gap-1">
+      <Link href={!isActive ? '/' : '/dashboard'} className="flex items-center gap-1">
         <Image
           src="/icons/logo.svg"
           width={32}
