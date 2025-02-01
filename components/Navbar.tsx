@@ -4,8 +4,6 @@ import React from 'react'
 import Image from 'next/image'
 import { SignedIn, UserButton, useSignIn } from '@clerk/nextjs'
 import MobileNav from './MobileNav'
-import { SiAboutdotme } from 'react-icons/si'
-import { Contact } from 'lucide-react'
 
 const navbarlink = [
   {

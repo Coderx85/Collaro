@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import HouseSharpIcon from '@mui/icons-material/HouseSharp';
 import Image from 'next/image';
 
 import { cn } from '@/lib/utils';
