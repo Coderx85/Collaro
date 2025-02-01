@@ -4,13 +4,17 @@ import React from 'react'
 import Image from 'next/image'
 import { SignedIn, UserButton, useSignIn } from '@clerk/nextjs'
 import MobileNav from './MobileNav'
+import { SiAboutdotme } from 'react-icons/si'
+import { Contact } from 'lucide-react'
 
 const navbarlink = [
   {
+    icon_url: '/icons/about.svg',
     title: 'About',
     link: '/about-me'
   },
   {
+    icon_url: '/icons/contact.svg',
     title: 'Contact',
     link: '/contact-us'
   }
@@ -34,12 +38,12 @@ const Navbar = () => {
           Devn<span className='text-primary group-hover:text-white'>Talk</span>
         </p>
       </Link>
-      <div className="flex items-center gap-8 font-bold text-lg px-4 py-2">
-        
+      <div className="flex items-center justify-center gap-8 font-bold text-lg px-4 py-2">
         {navbarlink.map((nav, index) => {
           return (
-            <Link key={index} href={nav.link} className='text-white rounded-md hover:bg-primary hover:text-white px-8 py-2'>
-              {nav.title}
+            <Link key={index} href={nav.link} 
+              className='text-white gap-2 rounded-md flex mx-auto hover:bg-primary hover:text-white px-8 py-2'>
+              <Image src={nav.icon_url} width={20} height={20} alt={nav.title} />{nav.title}
             </Link>
           )
         })}

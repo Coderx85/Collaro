@@ -31,7 +31,7 @@ const MobileNav = () => {
               height={32}
               alt="yoom logo"
             />
-            <p className="text-[26px] font-extrabold text-white">YOOM</p>
+            <p className="text-[26px] font-extrabold text-white">DevnTalk</p>
           </Link>
           <div className="flex h-[calc(100vh-72px)] flex-col justify-between overflow-y-auto">
             <SheetClose asChild>
@@ -54,8 +54,8 @@ const MobileNav = () => {
                         <Image
                           src={item.imgURL}
                           alt={item.label}
-                          width={20}
-                          height={20}
+                          width={32}
+                          height={32}
                         />
                         <p className="font-semibold">{item.label}</p>
                       </Link>
