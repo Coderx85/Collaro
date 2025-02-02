@@ -9,9 +9,9 @@ import {
   Text,
   Row,
   Column,
-  Heading
-} from "@react-email/components";
-import { Tailwind } from '@react-email/components';
+  Heading,
+  Tailwind 
+} from '@react-email/components';
 
 type EmailProps = {
   email: string;
