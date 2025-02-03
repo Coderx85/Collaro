@@ -19,6 +19,12 @@ const initialValues = {
   link: '',
 };
 
+interface MeetingDetailsProps {
+  startTime: Date,
+  description: string,
+  meetingLink: string
+}
+
 const MeetingTypeList = () => {
   const router = useRouter();
   const [meetingState, setMeetingState] = useState<
@@ -29,6 +35,52 @@ const MeetingTypeList = () => {
   const client = useStreamVideoClient();
   const { user } = useUser();
   const { toast } = useToast();
+  
+   async function generateICS ({startTime, description, meetingLink}: MeetingDetailsProps) {
+    // const { startTime, description, meetingLink } = meetingDetails;
+    
+    const formattedStartTime = new Date(startTime).toISOString().replace(/-|:|\.\d+/g, "");
+    const formattedEndTime = new Date(new Date(startTime).getTime() + 60 * 60 * 1000) // 1-hour default duration
+      .toISOString().replace(/-|:|\.\d+/g, "");
+    console.log(formattedStartTime, formattedEndTime);
+  
+    const icsData = `
+      BEGIN:VCALENDAR
+      VERSION:2.0
+      PRODID:-//Devtalk//EN
+      CALSCALE:GREGORIAN
+      BEGIN:VEVENT
+      SUMMARY:Devtalk Meeting
+      DESCRIPTION:${description}
+      DTSTART:${formattedStartTime}
+      DTEND:${formattedEndTime}
+      LOCATION:${meetingLink}
+      URL:${meetingLink}
+      END:VEVENT
+      END:VCALENDAR
+    `;
+    console.log(icsData);
+  
+    return new Blob([icsData], { type: "text/calendar" });
+  }
+  
+  async function downloadICS({startTime, description, meetingLink}: MeetingDetailsProps) {
+       
+    const icsBlob = await generateICS({startTime, description, meetingLink});
+    const url = URL.createObjectURL(icsBlob);
+    const a = document.createElement("a");
+    if(!a) return;
+    if(a) {
+      console.log(a);
+    }
+    a.href = url;
+    a.download = "meeting.ics";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  
 
   const createMeeting = async () => {
     if (!client || !user) return;
@@ -52,6 +104,12 @@ const MeetingTypeList = () => {
         },
       });
       setCallDetail(call);
+      downloadICS({
+        startTime: values.dateTime,
+        description: values.description,
+        meetingLink: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/meeting/${call.id}`,
+      });
+
       if (!values.description) {
         router.push(`/meeting/${call.id}`);
       }
@@ -141,8 +199,14 @@ const MeetingTypeList = () => {
           onClose={() => setMeetingState(undefined)}
           title="Meeting Created"
           handleClick={() => {
+            downloadICS({
+              startTime: values.dateTime,
+              description: values.description,
+              meetingLink,
+            });
             navigator.clipboard.writeText(meetingLink);
             toast({ title: 'Link Copied' });
+            
           }}
           image={'/icons/checked.svg'}
           buttonIcon="/icons/copy.svg"
