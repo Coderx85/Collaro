@@ -4,19 +4,22 @@ import React from 'react'
 import Image from 'next/image'
 import { SignedIn, UserButton, useSignIn } from '@clerk/nextjs'
 import MobileNav from './MobileNav'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
+import { cn } from '@/lib/utils'
 
 const navbarlink = [
   {
-    icon_url: '/icons/about.svg',
+    icon: '/icons/about.svg',
     title: 'About',
-    link: '/about-me'
+    link: '/about-me',
+    decription: ''
   },
   {
-    icon_url: '/icons/contact.svg',
+    icon: '/icons/contact.svg',
     title: 'Contact',
-    link: '/contact-us'
+    link: '/contact-us',
+    decription: ''
   }
-
 ]
 
 
@@ -37,14 +40,40 @@ const Navbar = () => {
         </p>
       </Link>
       <div className="flex items-center justify-center gap-8 font-bold text-lg px-4 py-2">
-        {navbarlink.map((nav, index) => {
-          return (
-            <Link key={index} href={nav.link} 
-              className='text-white gap-2 rounded-md flex mx-auto hover:bg-primary hover:text-white px-8 py-2'>
-              <Image src={nav.icon_url} width={20} height={20} alt={nav.title} />{nav.title}
-            </Link>
-          )
-        })}
+        <TooltipProvider>
+          {navbarlink.map((item, index) => {
+            return (
+              <Tooltip delayDuration={0} key={item.title}>
+              <TooltipTrigger key={item.title}> 
+                  <Link
+                    href={item.link}
+                    key={item.title}
+                    className={cn(
+                      'flex gap-4 items-center p-4 rounded-lg justify-start hover:bg-primary ease-in duration-100 hover:animate-out',
+                      {
+                        'bg-primary': isActive,
+                      }
+                    )}
+                  >
+                    <Image 
+                      src={item.icon}
+                      alt={item.title}
+                      width={'48'}
+                      height={'48'}
+                    />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent
+                  className="bg-black/10 backdrop-blur-xl z-10"
+                  key={item.title}
+                  side='bottom'
+                >
+                  <p className="text-sm text-white">{item.decription}</p>
+                </TooltipContent>
+              </Tooltip>
+            )
+          })}
+        </TooltipProvider>
         
         <SignedIn>
           <UserButton afterSignOutUrl="/sign-in" />
