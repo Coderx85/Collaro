@@ -89,7 +89,7 @@ const MeetingTypeList = () => {
         toast({ title: 'Please select a date and time' });
         return;
       }
-      const id = crypto.randomUUID();
+      const id = crypto.randomUUID(); // Stream's unique id generator
       const call = client.call('default', id);
       if (!call) throw new Error('Failed to create meeting');
       const startsAt =
