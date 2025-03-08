@@ -2,6 +2,8 @@ import React from 'react'
 import Image from 'next/image'
 import { FaRocketchat, FaUserFriends, FaVideo } from 'react-icons/fa'
 import FeatureCard from '@/components/FeatureCard'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 const featureCard = [
   {
@@ -38,6 +40,12 @@ const Rootpage = () => {
       </div>
       <p className="mt-4 w-3/5 max-w-2xl text-center text-lg text-gray-400">
           A modern platform for seamless developer discussions, video conferencing, and collaboration.
+      </p>
+      <Link href='/workspace'>
+        <Button className="mt-8">Get Started</Button>
+      </Link>
+      <p className="mt-4 w-3/5 max-w-2xl text-center text-lg text-gray-400">
+          Join us to connect with developers, share ideas, and collaborate on projects.
       </p>
       <div className="mt-12 flex max-w-4xl flex-initial">
         {featureCard.map((feature, index) => (

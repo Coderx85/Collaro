@@ -6,19 +6,21 @@ import { SignedIn, UserButton, useSignIn } from '@clerk/nextjs'
 import MobileNav from './MobileNav'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
 import { cn } from '@/lib/utils'
+import { SiAboutdotme } from 'react-icons/si'
+import { Contact2 } from 'lucide-react'
 
 const navbarlink = [
   {
-    icon: '/icons/about.svg',
+    icon: <SiAboutdotme className='size-6' />,
     title: 'About',
     link: '/about-me',
-    decription: ''
+    decription: 'About Me'
   },
   {
-    icon: '/icons/contact.svg',
+    icon: <Contact2 className='size-6'/>,
     title: 'Contact',
     link: '/contact-us',
-    decription: ''
+    decription: 'Contact US'
   }
 ]
 
@@ -26,7 +28,7 @@ const navbarlink = [
 const Navbar = () => {
   const isActive = useSignIn();
   return (
-    <nav className="flex justify-between fixed z-50 w-full bg-dark-1 px-6 py-4 lg:px-10">
+    <nav className="flex w-full justify-between bg-dark-1 px-6 py-4 lg:px-10">
       <Link href={!isActive ? '/' : '/dashboard'} className="flex items-center gap-1">
         <Image
           src="/icons/logo.svg"
@@ -35,11 +37,11 @@ const Navbar = () => {
           alt="yoom logo"
           className="max-sm:size-10"
         />
-        <p className="text-[26px] font-extrabold group hover:text-primary text-white max-sm:hidden duration-75">
+        <p className="group text-[26px] font-extrabold text-white duration-75 hover:text-primary max-sm:hidden">
           Devn<span className='text-primary group-hover:text-white'>Talk</span>
         </p>
       </Link>
-      <div className="flex items-center justify-center gap-8 font-bold text-lg px-4 py-2">
+      <div className="flex items-center justify-center gap-8 px-4 py-2 text-lg font-bold">
         <TooltipProvider>
           {navbarlink.map((item, index) => {
             return (
@@ -49,22 +51,14 @@ const Navbar = () => {
                     href={item.link}
                     key={item.title}
                     className={cn(
-                      'flex gap-4 items-center p-4 rounded-lg justify-start hover:bg-primary ease-in duration-100 hover:animate-out',
-                      {
-                        'bg-primary': isActive,
-                      }
+                      'flex gap-4 items-center p-2 rounded-lg justify-start hover:bg-primary ease-in duration-100 border-white border-2 hover:animate-out',
                     )}
                   >
-                    <Image 
-                      src={item.icon}
-                      alt={item.title}
-                      width={'48'}
-                      height={'48'}
-                    />
+                    {item.icon}
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent
-                  className="bg-black/10 backdrop-blur-xl z-10"
+                  className="z-10 bg-black/10 text-white backdrop-blur-xl"
                   key={item.title}
                   side='bottom'
                 >
