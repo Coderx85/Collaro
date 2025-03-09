@@ -12,6 +12,7 @@ import { Textarea } from './ui/textarea';
 import ReactDatePicker from 'react-datepicker';
 import { useToast } from './ui/use-toast';
 import { Input } from './ui/input';
+import { setMeeting } from '@/actions/meeting.action';
 
 const initialValues = {
   dateTime: new Date(),
@@ -92,8 +93,7 @@ const MeetingTypeList = () => {
       const id = crypto.randomUUID();
       const call = client.call('default', id);
       if (!call) throw new Error('Failed to create meeting');
-      const startsAt =
-        values.dateTime.toISOString() || new Date(Date.now()).toISOString();
+      const startsAt =  values.dateTime.toISOString() || new Date(Date.now()).toISOString();
       const description = values.description || 'Instant Meeting';
       await call.getOrCreate({
         data: {
@@ -103,6 +103,7 @@ const MeetingTypeList = () => {
           },
         },
       });
+      setMeeting(call, description)
       setCallDetail(call);
       downloadICS({
         startTime: values.dateTime,

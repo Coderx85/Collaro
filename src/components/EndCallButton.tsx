@@ -4,6 +4,7 @@ import { useCall, useCallStateHooks } from '@stream-io/video-react-sdk';
 
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 const EndCallButton = () => {
   const call = useCall();
@@ -23,8 +24,24 @@ const EndCallButton = () => {
     call.state.createdBy &&
     localParticipant.userId === call.state.createdBy.id;
 
-  if (!isMeetingOwner) return null;
+  useEffect(() => {
+    const endCallForEveryone = async () => {
+      await fetch('/api/call/end', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: call.id,
+        }),
+      });
+    };
 
+    if (isMeetingOwner) {
+      endCallForEveryone();
+    }
+  }, [call.id, isMeetingOwner]);
+ 
   const endCall = async () => {
     await call.endCall();
     router.push('/');

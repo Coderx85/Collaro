@@ -1,3 +1,4 @@
+/* eslint-disable tailwindcss/no-custom-classname */
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -14,12 +15,14 @@ const buttonVariants = cva(
         destructive:
           'text-bold bg-red-500 text-2xl text-slate-50 hover:bg-red-500/90 dark:bg-red-900 dark:text-slate-50 dark:hover:bg-red-900/90',
         outline:
-          'capatilize border border-primary bg-white/90 text-primary hover:bg-white/50 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50',
+          'capatilize border border-primary bg-white/90 text-white hover:bg-white/50 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50',
         secondary:
           'bg-slate-100 text-slate-900 hover:bg-slate-100/80 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-slate-800/80',
         ghost:
-          'hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50',
+          'border-2 border-white hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50',
         link: 'text-slate-900 underline-offset-4 hover:underline dark:text-slate-50',
+        inactive: 'border-2 border-slate-600 bg-white text-slate-600',
+        active: 'bg-alert text-white',
       },
       size: {
         default: 'h-10 px-4 py-2',

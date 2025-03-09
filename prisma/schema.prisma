@@ -7,13 +7,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Meeting{
+  id            Int       @id @default(autoincrement())
+  description   String
+  status        String    @default("active")
+  startTime     DateTime  @default(now())
+  endTime       DateTime
+  meeting_link  String
+  workspaceId   Int
+  workspace     Workspace @relation(fields: [workspaceId], references: [id])
+  participants  User[]
+}
+
 model Workspace {
-  id        String     @id @default(uuid())
+  id        Int     @id @default(autoincrement())
   name      String
   createdBy String 
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   members   User[]
+  Meeting Meeting[]
 }
 
 model User {
@@ -21,6 +34,7 @@ model User {
   name        String
   email       String
   clerkId     String @unique
-  workspaceId String
+  workspaceId Int
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  Meeting     Meeting[]
 }
