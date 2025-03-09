@@ -16,12 +16,15 @@ export async function getUser({ userId }: {userId: string}) {
         clerkId: clerkUser.id,
        },
     });
+    
     if (!user) {
       await db.user.create({
         data: {
           clerkId: clerkUser.id,
           email: clerkUser?.primaryEmailAddress as unknown as string,
           name: clerkUser?.fullName as string,
+          workspace: undefined,
+          workspaceId: 0,          
         },
       });
       return NextResponse.json({ "User created": clerkUser?.fullName });

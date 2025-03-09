@@ -14,8 +14,8 @@ const Home = () => {
   return (
     <section className="flex size-full flex-col gap-5 text-white">
       <div className="h-[303px] w-full rounded-[20px] bg-cover">
-        <div className="flex h-full flex-row justify-between max-md:px-5 max-md:py-8 lg:p-11 border-2 border-white rounded-[20px]">
-          <div className='flex flex-col h-full justify-between p-0'>
+        <div className="flex h-full flex-row justify-between rounded-[20px] border-2 border-white max-md:px-5 max-md:py-8 lg:p-11">
+          <div className='flex h-full flex-col justify-between p-0'>
             <h2 className="glassmorphism max-w-[273px] rounded py-2 text-center text-base font-normal">
               Upcoming Meeting at: 12:30 PM  
             </h2>
@@ -24,8 +24,8 @@ const Home = () => {
               <p className="text-lg font-medium text-sky-1 lg:text-2xl">{date}</p>
             </div>
             </div>
-            <div className=" gap-2 justify-start items-start start-0 content-start">
-              <h2 className='text-3xl py-2 font-bold text-primary'>
+            <div className=" start-0 content-start items-start justify-start gap-2">
+              <h2 className='py-2 text-3xl font-bold text-primary'>
                 Team: {params.workspaceId}
               </h2>
               <h3 className='text-xl font-medium'>
