@@ -88,7 +88,7 @@ const Sidebar = () => {
           const route = `/workspace/${workspaceId}${item.route}`
           const isActive = pathname === route;
             return (
-              <Tooltip delayDuration={0} key={item.label}>
+              <Tooltip delayDuration={1000} key={item.label}>
                 <TooltipTrigger key={item.label}> 
                   <Link
                     href={`/workspace/${workspaceId}${item.route}`}
@@ -96,7 +96,7 @@ const Sidebar = () => {
                     className={cn(
                       'flex gap-4 items-center p-4 rounded-lg justify-start hover:bg-primary ease-in duration-100 hover:animate-out',
                       {
-                        'bg-primary': isActive,
+                        'bg-primary hover:animate-none': isActive,
                       }
                     )}
                   >
@@ -119,19 +119,8 @@ const Sidebar = () => {
                   <p className="text-sm text-white">{item.details}</p>
                 </TooltipContent>
               </Tooltip>
-            );
-        })}
-        {/* <p className="text-lg flex gap-3 text-white font-semibold max-lg:hidden">
-          <Image 
-            src={item.imgURL}
-            alt={item.label}
-            width={24}
-            height={24}
-          />
-          {item.label}
-        </p> */}
-        </TooltipProvider>
-        <h2 className="text-lg font-semibold text-white">Workspace: {params?.workspaceId}</h2>
+            )})}
+          </TooltipProvider>
         </div>
     </section>
   );

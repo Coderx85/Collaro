@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --experimental-https",
+    "dev": "next dev",
     "dev:socket": "node --loader ts-node/esm src/server.mts",
     "build": "next build",
     "start": "next start",
