@@ -26,18 +26,29 @@ const WorkspacePage = () => {
         const data = await getUser()
   
         if(data){
-          const workspaceId = data.workspaceId 
+          const workspaceId = data?.workspaceId 
           console.log('Workspace:', workspaceId);
           
-          if(workspaceId) {
-            console.log('User:', workspaceId);
-            router.push('/workspace/' + workspaceId)
+          if(!workspaceId) {
+            console.log('User does not belong to any workspace');
+            // toast.error('User does not belong to any workspace');
+            return null;
           }
+
+          if(workspaceId && workspaceId=="") {
+            console.log('User does not belong to any workspace');
+            toast.error('User does not belong to any workspace');
+            return null;
+          }
+
+          console.log('User:', data);
+          console.log('User:', workspaceId);
+          router.push('/workspace/' + workspaceId+`?name=${data.workspaceName}`);
         }
       }
       fetchData();
-    } catch (error: any) {
-      console.error(error.message);
+    } catch (error: unknown) {
+      console.error(error);
     }
       finally {
         setLoading(false)
@@ -70,8 +81,8 @@ const WorkspacePage = () => {
       console.log('Joining workspace:', workspaceName, 'with username:', username);
       router.push('/workspace/' + data.workspace[0].id);
 
-    } catch (error: any) {
-      console.error(error.message);
+    } catch (error: unknown) {
+      console.error(error);
     }
 
   };
@@ -102,8 +113,8 @@ const WorkspacePage = () => {
       toast.success('Workspace created successfully');
       router.push('/workspace/' + data?.workspace[0]?.id);
 
-    } catch (error: any) {
-      console.error(error.message);
+    } catch (error: unknown) {
+      console.error(error);
     }
     // console.log('Creating workspace with ID:', workspaceId, 'and username:', username);
   };
@@ -128,7 +139,12 @@ const WorkspacePage = () => {
             <CardContent className="space-y-2">
               <form className="space-y-1">
                 <Label htmlFor="join-workspace-id">{`Workspace Name`}</Label>
-                <Input id="join-workspace-id" value={workspaceName} name='' onChange={(e) => setWorkspaceName(e.target.value)} />
+                <Input 
+                  id="join-workspace-id" 
+                  value={workspaceName} 
+                  name='' 
+                  onChange={(e) => setWorkspaceName(e.target.value)} 
+                />
               </form>
             </CardContent>
             <CardFooter>

@@ -1,13 +1,11 @@
 "use client"
 import MeetingTypeList from '@/components/MeetingTypeList';
 import { useUser } from '@clerk/nextjs';
-import { useParams } from 'next/navigation';
 
 const Home = () => {
   const now = new Date();
   const user = useUser();
   const username = user.user?.username
-  const params = useParams();
   const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   const date = (new Intl.DateTimeFormat('en-US', { dateStyle: 'full' })).format(now);
 
@@ -25,9 +23,9 @@ const Home = () => {
             </div>
             </div>
             <div className=" start-0 content-start items-start justify-start gap-2">
-              <h2 className='py-2 text-3xl font-bold text-primary'>
-                Team: {params.workspaceId}
-              </h2>
+              {/* <h2 className='py-2 text-3xl font-bold text-primary'>
+                Team: {workspaceName}
+              </h2> */}
               <h3 className='text-xl font-medium'>
                 Username: {username} <br/>
                 Name: {user.user?.firstName?.toString().toLocaleUpperCase()} <br/>

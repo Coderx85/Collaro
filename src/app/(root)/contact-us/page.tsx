@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input'; 
 import { Textarea } from '@/components/ui/textarea';
 import { FaEnvelope, FaPhone, FaLocationArrow, FaLinkedin } from 'react-icons/fa'
-import { toast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 
 const contactInfo = [
   {
@@ -57,7 +57,7 @@ const Contact = () => {
     }
 
     if (res.ok) {
-      toast({title: 'Email sent successfully'})
+      toast.success('Email sent successfully')
     }
 
     const data = await res.json()

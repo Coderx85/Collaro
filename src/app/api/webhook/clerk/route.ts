@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       throw new Error('No email addresses provided');
     }
 
-    const email = emailAddresses[0]?.email_address!;
+    const email = emailAddresses[0]?.email_address;
     console.log('✅', body?.data);
 
     const user = await db.insert(usersTable).values({

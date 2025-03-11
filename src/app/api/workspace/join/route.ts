@@ -4,11 +4,11 @@ import { currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { eq, and } from "drizzle-orm";
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
   try {
     const { name } = await req.json();
     if (!name) {
-      return res.json();
+      return NextResponse.json({ error: "Workspace name is required" }, { status: 400 });
     }
 
     // Get the current user
@@ -53,7 +53,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
     console.log('User:', clerkUser.id, 'joined workspace:', workspaceId);
 
     return NextResponse.json({ workspace });
-  } catch (error: any) {
-    throw new Error(error);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: `Failed to join workspace: ${errorMessage}` }, { status: 500 });
   }
 }

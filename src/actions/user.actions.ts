@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 
 export async function getUser() {
   try {
+
     const clerkUser = await currentUser();
     if (!clerkUser) {
       throw new Error("Unauthorized");
@@ -15,32 +16,38 @@ export async function getUser() {
     const clerkId = clerkUser.id.toString();
   
     const user = await db
-      .select({ clerkId: usersTable.clerkId, workspaceId: usersTable.workspaceId })
+      .select({ 
+        clerkId: usersTable.clerkId, 
+        workspaceId: usersTable.workspaceId, 
+        name: usersTable.name 
+      })
       .from(usersTable)
       .where(eq(usersTable.clerkId, clerkId))
       .execute()
 
-    if (!user) {
+    if (user.length==0) {
       const newUser = await db.insert(usersTable).values({
         clerkId: clerkId!,
-        email: clerkUser.primaryEmailAddress?.emailAddress!,
+        email: clerkUser.primaryEmailAddress?.emailAddress as string,
         name: clerkUser.firstName + " " + clerkUser.lastName!,
         userName: clerkUser.username!,        
       }).returning();
 
       console.log("User created: \n", newUser[0]);
-
-      return { "User created": clerkUser?.fullName };
+      const workspaceId = newUser[0]?.workspaceId;
+      const workspaceName = newUser[0]?.name;
+      return { workspaceId, workspaceName };
     }
     // const userExists = (await user).values();
     console.log("User: \n", JSON.stringify(user));
     const workspaceId = user[0]?.workspaceId;
+    const workspaceName = user[0]?.name;
     if (!workspaceId) {
       return { message: "User does not belong to any workspace" }
     }
     console.log("WorkspaceId: \n", workspaceId);
-    return { workspaceId };
-  } catch (error: any) {
-    return { error: `Failed to get user:: \n ${error.message}`} 
+    return { workspaceId, workspaceName };
+  } catch (error: unknown) {
+    return { error: `Failed to get user:: \n ${error}`} 
   }
 }

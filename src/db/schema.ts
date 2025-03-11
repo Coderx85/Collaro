@@ -8,6 +8,7 @@ export const usersTable = pgTable(
   clerkId: varchar('clerkId').notNull().unique(),
   email: text('email').notNull().unique(),
   workspaceId: uuid('workspaceId')
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .references((): any => workspacesTable.id, { onDelete: 'set null'}),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at')

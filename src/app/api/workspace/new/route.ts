@@ -4,7 +4,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
   try {
     const { name } = await req.json();
     const user = await currentUser();
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     const updateUser = await db.update(usersTable).set({
       workspaceId: workspace[0]?.id
-    })
+    }).execute();
 
     if(!updateUser) {
       console.log('Cannot update user with workspaceId:', workspace[0]?.id);
@@ -48,8 +48,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
     console.log('Workspace:::: \n', workspace);
     console.log('Workspace created successfully');
     return NextResponse.json({workspace}, {status: 201});
-  } catch (error: any) {
-    console.error(error.message); 
-    return new NextResponse(error.message, {status: 500});
+  } catch (error: unknown) {
+    console.error(error);
+    throw new Error(`Failed to create workspace:: \n ${error}`);
   }
 }

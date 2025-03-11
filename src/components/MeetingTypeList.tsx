@@ -12,7 +12,6 @@ import { Textarea } from './ui/textarea';
 import ReactDatePicker from 'react-datepicker';
 import { useToast } from './ui/use-toast';
 import { Input } from './ui/input';
-import { setMeeting } from '@/actions/meeting.action';
 
 const initialValues = {
   dateTime: new Date(),
@@ -103,7 +102,7 @@ const MeetingTypeList = () => {
           },
         },
       });
-      setMeeting(call, description)
+      // setMeeting(call, description)
       setCallDetail(call);
       downloadICS({
         startTime: values.dateTime,
@@ -190,7 +189,7 @@ const MeetingTypeList = () => {
               timeIntervals={15}
               timeCaption="time"
               dateFormat="MMMM d, yyyy h:mm aa"
-              className="w-full rounded bg-dark-3 p-2 focus:outline-none"
+              className="w-full rounded bg-dark-3 p-2 focus:outline-hidden"
             />
           </div>
         </MeetingModal>
