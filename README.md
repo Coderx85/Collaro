@@ -1,91 +1,36 @@
-# DevnTalk
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-DevnTalk is a web application designed for seamless video communication. It includes features such as video calling, user authentication, and various UI components to enhance user experience.
+## Getting Started
 
-## Table of Contents
+First, run the development server:
 
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Project Structure](#project-structure)
-
-## Features
-
-- **Video Calling**: Powered by @stream-io/video-react-sdk.
-- **User Authentication**: Managed by @clerk/nextjs.
-- **Responsive UI**: Built with modern React components and Next.js.
-- **Navigation**: Sidebar with links to Home, Upcoming, Previous, Recordings, and Personal Room.
-- **Error Handling**: Custom error handling for video call functionalities.
-
-## Installation
-
-1. **Clone the repository:**
-
-   ```bash
-   git clone https://github.com/yourusername/devtalk.git
-   cd devtalk
-   ```
-
-2. **Install dependencies:**
-
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables:**
-
-   Create a `.env.local` file in the root directory and add your environment variables.
-
-   ```env
-   NEXT_PUBLIC_CLERK_FRONTEND_API=<your-clerk-api>
-   CLERK_API_KEY=<your-clerk-api-key>
-   NEXT_PUBLIC_STREAM_API_KEY=<your-stream-api-key>
-   STREAM_SECRET_KEY=<your-stream-secret-api>
-   ```
-
-4. **Run the development server:**
-
-   ```bash
-   npm run dev
-   ```
-
-   Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Usage
-
-- **Home Page**: Displays the current date and time.
-- **Upcoming**: Shows upcoming meetings.
-- **Previous**: Lists previous meetings.
-- **Recordings**: Access to recorded meetings.
-- **Personal Room**: Personal video call room.
-
-## Project Structure
-
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
-.
-├── components
-│   ├── Alert.tsx
-│   ├── EndCallButton.tsx
-│   ├── MeetingCard.tsx
-│   ├── MeetingRoom.tsx
-│   ├── Sidebar.tsx
-│   └── ui
-│       ├── button.tsx
-│       ├── card.tsx
-│       ├── dialog.tsx
-│       └── sheet.tsx
-├── pages
-│   ├── index.tsx
-│   ├── upcoming.tsx
-│   ├── previous.tsx
-│   ├── recordings.tsx
-│   └── personal-room.tsx
-├── public
-│   ├── icons
-│   └── images
-├── .env.local
-├── .gitignore
-├── package.json
-├── README.md
-└── next.config.js
-```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
