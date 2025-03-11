@@ -1,22 +1,19 @@
-'use client'
-import { ReactNode, useEffect } from 'react';
+import { ReactNode } from 'react';
 import StreamVideoProvider from '@/providers/StreamClientProvider';
 import Navbar from '@/components/Navbar';
-import { sidebarLinks } from '@/constants/index';
-import { usePathname } from 'next/navigation';
+// import { getUser } from '@/actions/user.actions';
+import { currentUser } from '@clerk/nextjs/server';
+// import { revalidatePath } from 'next/cache';
 
-const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
-  const currentPath = usePathname();
-  useEffect(() => {
-    const currentPage = sidebarLinks.find(link => link.route === currentPath);
+const RootLayout = async ({ children }: Readonly<{ children: ReactNode }>) => {
+  const user = await currentUser();
 
-    if (currentPage) {
-      document.title = `${currentPage.label}: ${currentPage.details}`;
-      document
-        .querySelector('meta[name="description"]')
-        ?.setAttribute('content', `This is the ${currentPage.label} page.`);
-    }
-  }, [currentPath]);
+  // const dbUser = await getUser({ userId: user?.id as string });
+  
+  // if(dbUser.status === 500) {
+  //   const data = await dbUser.json();
+  //   revalidatePath(`/workspce/${data.workspace[0].id}`);
+  // }
 
   return (
     <main>

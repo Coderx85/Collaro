@@ -1,47 +1,75 @@
 "use client"
-// import { getWorkspaces } from '@/actions/workspace.action'
+import { getUser } from '@/actions/user.actions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useUser } from '@clerk/nextjs'
+import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 const WorkspacePage = () => {
   const router = useRouter();
   const user = useUser();
   const username = user.user?.username;
-  const [workspaceId, setWorkspaceId] = useState('');
   const [workspaceName, setWorkspaceName] = useState('');
+  const [loading, setLoading] = useState(false);
+  
+  useEffect(
+  () => {
+    try {
+      const fetchData = async () => {
+        setLoading(true)
+        const data = await getUser()
+  
+        if(data){
+          const workspaceId = data.workspaceId 
+          console.log('Workspace:', workspaceId);
+          
+          if(workspaceId) {
+            console.log('User:', workspaceId);
+            router.push('/workspace/' + workspaceId)
+          }
+        }
+      }
+      fetchData();
+    } catch (error: any) {
+      console.error(error.message);
+    }
+      finally {
+        setLoading(false)
+      }
+  }, [router])
 
   const handleJoin = async () => {
     // Handle join logic here
     try {
       
-      const res = await fetch(`/api/workspace/${workspaceName}`, {
+      const res = await fetch(`/api/workspace/join`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: workspaceName as string,
-          username: username as string,
+          name: workspaceName!,
         }),
       });
 
-      if (res.ok) {
-        toast.success('Workspace joined successfully');
-        const data = await res.json();
-        console.log('Joining workspace:', workspaceName, 'with username:', username);
-        router.push('/workspace/' + data.id);
+      const data = await res.json();
+      console.log('Response:', data);
+
+      if (data.workspace.length === 0) {
+        console.log('Cannot find workspace with Name:', workspaceName);
+        toast.error(`Cannot find workspace with Name: ${workspaceName}`); 
       }
       
-      console.log('Cannot find workspace with Name:', workspaceName);
-      toast.error(`Cannot find workspace with Name: ${workspaceName}`); 
-      
+      toast.success('Workspace joined successfully');
+      console.log('Joining workspace:', workspaceName, 'with username:', username);
+      router.push('/workspace/' + data.workspace[0].id);
+
     } catch (error: any) {
       console.error(error.message);
     }
@@ -51,21 +79,28 @@ const WorkspacePage = () => {
   const handleCreate = async () => {
     // Handle create logic here
     try {
-      const res = await fetch('/api/workspace', {
+
+      const res = await fetch('/api/workspace/new', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: workspaceName,
-          members: username as string,
+          name: workspaceName
         }),
       });
 
-      if (res.ok) {
-        toast.success('Workspace created successfully');
-        router.push('/workspace/' + workspaceId);
+      const data = await res.json();
+      
+      console.log('Response:', data);
+
+      if (!data.workspace) {
+        console.log('Cannot create workspace with Name:', workspaceName, 'and createdBy:', username);
+        toast.error(`Cannot create workspace with Name: ${workspaceName} and createdBy: ${username}`);
       }
+      
+      toast.success('Workspace created successfully');
+      router.push('/workspace/' + data?.workspace[0]?.id);
 
     } catch (error: any) {
       console.error(error.message);
@@ -80,24 +115,35 @@ const WorkspacePage = () => {
           <TabsTrigger value="join">Join</TabsTrigger>
           <TabsTrigger value="create">Create</TabsTrigger>
         </TabsList>
+
+        {/* Join Workspace Form */}
         <TabsContent value="join">
           <Card className='rounded-none border-none bg-black'>
             <CardHeader>
               <CardTitle>Join Workspace</CardTitle>
               <CardDescription>
-                Enter the workspace ID and your username to join.
+                Enter the workspace Name.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
-              <div className="space-y-1">
-                <Label htmlFor="join-workspace-id">Workspace Name</Label>
+              <form className="space-y-1">
+                <Label htmlFor="join-workspace-id">{`Workspace Name`}</Label>
                 <Input id="join-workspace-id" value={workspaceName} name='' onChange={(e) => setWorkspaceName(e.target.value)} />
-              </div>
+              </form>
             </CardContent>
             <CardFooter>
               <Button
                 variant={'outline'}
-                onClick={handleJoin}>Join Workspace</Button>
+                onClick={handleJoin}
+                disabled={loading}  
+              >
+                {loading
+                ? 
+                  <span className='flex justify-center gap-3'>
+                    <Loader2 className='size-4 animate-spin' />{"Joining Workspace"}
+                  </span>
+                : 'Join Workspace' }
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -106,18 +152,18 @@ const WorkspacePage = () => {
             <CardHeader>
               <CardTitle>Create Workspace</CardTitle>
               <CardDescription>
-                Enter a new workspace ID and your username to create a workspace.
+                Enter a new workspace Name.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="space-y-1">
                 <Label htmlFor="create-workspace-name">Workspace Name</Label>
-                <Input id="create-workspace-id" value={workspaceId} onChange={(e) => setWorkspaceId(e.target.value)} />
+                <Input id="create-workspace-id" value={workspaceName} onChange={(e) => setWorkspaceName(e.target.value)} />
               </div>
-              <div className="space-y-1">
+              {/* <div className="space-y-1">
                 <Label htmlFor="create-username">Username</Label>
                 <Input id="create-username" value={workspaceName} onChange={(e) => setWorkspaceName(e.target.value)} />
-              </div>
+              </div> */}
             </CardContent>
             <CardFooter>
               <Button
@@ -130,6 +176,5 @@ const WorkspacePage = () => {
     </div>
   )
 }
-    
 
 export default WorkspacePage

@@ -8,6 +8,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { Metadata } from "next/types";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import { dark } from "@clerk/themes"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,16 +26,12 @@ export default function RootLayout({
   return (
       <ClerkProvider
         appearance={{
+          baseTheme: dark,
           layout: {
+            animations: true,
+            logoPlacement: "inside",
             socialButtonsVariant: "iconButton",
             logoImageUrl: "/icons/logo.svg",
-          },
-          variables: {
-            colorText: "#fff",
-            colorPrimary: "#0E78F9",
-            colorBackground: "#1C1F2E",
-            colorInputBackground: "#252A41",
-            colorInputText: "#fff",
           },
         }}
       >
