@@ -45,11 +45,11 @@ const Navbar = () => {
         <TooltipProvider>
           {navbarlink.map((item, index) => {
             return (
-              <Tooltip delayDuration={0} key={item.title}>
+              <Tooltip delayDuration={0} key={index}>
               <TooltipTrigger key={item.title}> 
                   <Link
                     href={item.link}
-                    key={item.title}
+                    key={index}
                     className={cn(
                       'flex gap-4 items-center p-2 rounded-lg justify-start hover:bg-primary ease-in duration-100 border-white border-2 hover:animate-out',
                     )}
@@ -59,7 +59,7 @@ const Navbar = () => {
                 </TooltipTrigger>
                 <TooltipContent
                   className="z-10 bg-black/10 text-white backdrop-blur-xl"
-                  key={item.title}
+                  key={index}
                   side='bottom'
                 >
                   <p className="text-sm text-white">{item.decription}</p>

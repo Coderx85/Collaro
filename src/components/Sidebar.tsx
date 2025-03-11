@@ -84,12 +84,12 @@ const Sidebar = () => {
         </Button>
         <TooltipProvider>
 
-        {sidebarLinks.map((item) => {
+        {sidebarLinks.map((item, index) => {
           const route = `/workspace/${workspaceId}${item.route}`
           const isActive = pathname === route;
             return (
-              <Tooltip delayDuration={1000} key={item.label}>
-                <TooltipTrigger key={item.label}> 
+              <Tooltip delayDuration={1000} key={item.route}>
+                <TooltipTrigger key={index}> 
                   <Link
                     href={`/workspace/${workspaceId}${item.route}`}
                     key={item.label}
@@ -113,7 +113,7 @@ const Sidebar = () => {
                 </TooltipTrigger>
                 <TooltipContent
                   className="z-10 bg-black/10 backdrop-blur-xl"
-                  key={item.label}
+                  key={`${item.label}-content-${index}`}
                   side='right'
                 >
                   <p className="text-sm text-white">{item.details}</p>
