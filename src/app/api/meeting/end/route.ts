@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db } from "@/db";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(req: NextRequest,) {
