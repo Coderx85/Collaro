@@ -1,45 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { db } from '@/lib/db';
+// Complete the Join Workspace route
+// The route should be a POST request to /api/workspace/join
+// The route should accept a JSON body with the following fields:
+// - workspaceName: string
+// The route should authenticate the user
+// The route should add the user to the workspace
+// The route should return the workspace object
+// The route should return a 404 error if the workspace does not exist
 
-export async function POST(req: NextRequest, res: NextResponse) {
-  const { workspaceName, username } = await req.json();
-
-  try {
-    const user = auth()
-    if(!user){
-      throw new Error('User not found')
-    }
-
-    const userdb = await db.user.findFirst({
-      where: {
-        name: username,
-      },
-    });
-    if (!userdb) {
-      throw new Error('User not found');
-    }
-
-    const workspace = await db.workspace.create({
-      data: {
-        name: workspaceName,
-        createdBy: userdb.name,
-        members: {
-          connect: {
-            id: userdb?.id,
-          },
-        }
-      },
-    });
-
-    if (!workspace) {
-      throw new Error('Workspace not found');
-    }
-
-    return NextResponse.json(workspace);
-  } catch (error: any) {
-    console.error(error.message);
-    return NextResponse.error();
-  }
-  
-}
+// The route should return a 400 error if the workspace is already joined.
