@@ -1,121 +1,230 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@custom-variant dark (&:is(.dark *));
 
-/* ======== stream css overrides ======== */
-.str-video__call-stats {
-  max-width: 500px;
-  position: relative;
-}
+@theme {
+  --color-primary: #1a11f5;
+  --color-secondary: #ff742e;
+  --color-purple: #5126b4;
+  --color-blue: #0e78f9;
+  --color-yellow: #f9a90e;
 
-.str-video__speaker-layout__wrapper {
-  max-height: 700px;
-}
+  --color-dark-1: #1c1f2e;
+  --color-dark-2: #161925;
+  --color-dark-3: #252a41;
+  --color-dark-4: #1e2757;
 
-.str-video__participant-details {
-  color: white;
-}
+  --color-sky-1: #c9ddff;
+  --color-sky-2: #ecf0ff;
+  --color-sky-3: #f5fcff;
 
-.str-video__menu-container {
-  color: white;
-}
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
 
-.str-video__notification {
-  color: white;
-}
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
 
-.str-video__participant-list {
-  background-color: #1c1f2e;
-  padding: 10px;
-  border-radius: 10px;
-  color: white;
-  height: 100%;
-}
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
 
-.str-video__call-controls__button {
-  height: 40px;
-}
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
 
-.glassmorphism {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-.glassmorphism2 {
-  background: rgba(18, 17, 17, 0.25);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
 
-.text-outline{
-  -webkit-text-stroke: 1px #ffffff;
-}
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
 
-.text-outline-hover{
-  -webkit-text-stroke: 1px #166466;
-}
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
 
-/* ==== clerk class override ===== */
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
 
-.cl-userButtonPopoverActionButtonIcon {
-  color: white;
-}
+  --color-sidebar: hsl(var(--sidebar-background));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
 
-.cl-logoBox {
-  height: 40px;
-}
-.cl-dividerLine {
-  background: #252a41;
-  height: 2px;
-}
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
 
-.cl-socialButtonsIconButton {
-  border: 3px solid #565761;
-}
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
 
-.cl-internal-wkkub3 {
-  color: white;
-}
-.cl-userButtonPopoverActionButton {
-  color: white;
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
 }
 
-/* =============================== */
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
+  @media (width >= --theme(--breakpoint-sm)) {
+    max-width: none;
+  }
+  @media (width >= 1400px) {
+    max-width: 1400px;
+  }
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+@utility flex-center {
+  @apply flex justify-center items-center;
+}
+
+@utility flex-between {
+  @apply flex justify-between items-center;
+}
 
 @layer utilities {
-  .flex-center {
-    @apply flex justify-center items-center;
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
 
-  .flex-between {
-    @apply flex justify-between items-center;
+  /* ======== stream css overrides ======== */
+  .str-video__call-stats {
+    max-width: 500px;
+    position: relative;
   }
+
+  .str-video__speaker-layout__wrapper {
+    max-height: 700px;
+  }
+
+  .str-video__participant-details {
+    color: white;
+  }
+
+  .str-video__menu-container {
+    color: white;
+  }
+
+  .str-video__notification {
+    color: white;
+  }
+
+  .str-video__participant-list {
+    background-color: #1c1f2e;
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    height: 100%;
+  }
+
+  .str-video__call-controls__button {
+    height: 40px;
+  }
+
+  .glassmorphism {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .glassmorphism2 {
+    background: rgba(18, 17, 17, 0.25);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .text-outline {
+    -webkit-text-stroke: 1px #ffffff;
+  }
+
+  .text-outline-hover {
+    -webkit-text-stroke: 1px #166466;
+  }
+
+  /* ==== clerk class override ===== */
+
+  .cl-userButtonPopoverActionButtonIcon {
+    color: white;
+  }
+
+  .cl-logoBox {
+    height: 40px;
+  }
+  .cl-dividerLine {
+    background: #252a41;
+    height: 2px;
+  }
+
+  .cl-socialButtonsIconButton {
+    border: 3px solid #565761;
+  }
+
+  .cl-internal-wkkub3 {
+    color: white;
+  }
+  .cl-userButtonPopoverActionButton {
+    color: white;
+  }
+
+  /* =============================== */
 }
 
-/* animation */
+@layer utilities {
+  /* animation */
 
-.show-block {
-  width: 100%;
-  max-width: 350px;
-  display: block;
-  animation: show 0.7s forwards linear;
-}
-
-@keyframes show {
-  0% {
-    animation-timing-function: ease-in;
-    width: 0%;
-  }
-
-  100% {
-    animation-timing-function: ease-in;
+  .show-block {
     width: 100%;
+    max-width: 350px;
+    display: block;
+    animation: show 0.7s forwards linear;
+  }
+
+  @keyframes show {
+    0% {
+      animation-timing-function: ease-in;
+      width: 0%;
+    }
+
+    100% {
+      animation-timing-function: ease-in;
+      width: 100%;
+    }
   }
 }
 
