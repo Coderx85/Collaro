@@ -1,7 +1,7 @@
 import type { Config } from 'tailwindcss'
 
 const config = {
-  darkMode: ['class'],
+  darkMode: ['class', '[data-theme="dark"]'],
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -19,8 +19,8 @@ const config = {
   	},
   	extend: {
   		colors: {
-			primary: '#1A11F5',
-			secondary: '#FF742E',
+  			primary: '#1A11F5',
+  			secondary: '#FF742E',
   			purple: '#5126B4',
   			blue: '#0E78F9',
   			yellow: '#F9A90E',
@@ -66,6 +66,16 @@ const config = {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
+  			},
+  			sidebar: {
+  				DEFAULT: 'hsl(var(--sidebar-background))',
+  				foreground: 'hsl(var(--sidebar-foreground))',
+  				primary: 'hsl(var(--sidebar-primary))',
+  				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+  				accent: 'hsl(var(--sidebar-accent))',
+  				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+  				border: 'hsl(var(--sidebar-border))',
+  				ring: 'hsl(var(--sidebar-ring))'
   			}
   		},
   		borderRadius: {
@@ -152,6 +162,7 @@ const config = {
   		}
   	}
   },
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   plugins: [require('tailwindcss-animate')],
 } satisfies Config
 
