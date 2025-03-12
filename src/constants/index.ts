@@ -1,33 +1,39 @@
+import Home from "@/components/icons/Home";
+import Personal from "@/components/icons/Personal";
+import Previous from "@/components/icons/Previous";
+import Reccording from "@/components/icons/Reccording";
+import Upcoming from "@/components/icons/Upcoming";
+
 export const sidebarLinks = [
   {
-    imgURL: '/icons/home.svg',
     route: '',
     label: 'Home',
     details: 'This is the home page',
+    component: Home
   },
   {
-    imgURL: '/icons/upcoming.svg',
     route: '/upcoming',
     label: 'Upcoming',
     details: 'List of upcoming meetings',
+    component: Upcoming
   },
   {
-    imgURL: '/icons/previous.svg',
     route: '/previous',
     label: 'Previous',
     details: 'List of previous meetings',
+    component: Previous
   },
   {
-    imgURL: '/icons/Video.svg',
     route: '/recordings',
     label: 'Recordings',
     details: 'List of recordings',
+    component: Reccording
   },
   {
-    imgURL: '/icons/add-personal.svg',
     route: '/personal-room',
     label: 'Personal Room',
-    details: 'User Personal detail ' 
+    details: 'User Personal detail',
+    component: Personal 
   },
 ];
 
