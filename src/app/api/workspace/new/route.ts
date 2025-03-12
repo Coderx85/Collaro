@@ -14,11 +14,13 @@ export async function POST(req: NextRequest) {
     const username = user.username;
     const userId = user.id;
     // console.log('Creating workspace with Name:', name, 'and createdBy:', username );
-
+      
+    // Check if user exists
     const dbUser = await db
-      .select({ clerkId: usersTable.clerkId, id: usersTable.id })
+      .select()
       .from(usersTable)
       .where(eq(usersTable.clerkId,userId))
+      .execute();
     
     // console.log('User:::: \n', dbUser);
     if(!dbUser || dbUser.length === 0 || !dbUser[0]?.id) {
@@ -26,19 +28,27 @@ export async function POST(req: NextRequest) {
       return new NextResponse(`User not found with username: ${username}`, {status: 404});
     }
       
-    const workspace = await db.insert(workspacesTable).values({
-      name,
-      createdBy: dbUser[0]?.id as string
-    }).returning();
+    // Create workspace
+    const workspace = await db
+      .insert(workspacesTable)
+      .values({
+        name,
+        createdBy: dbUser[0]?.id as string,
+        updatedAt: new Date(),
+      })
+      .returning();
     
     if(!workspace) {
       console.log('Cannot create workspace with Name:', name, 'and createdBy:', username);
       return new NextResponse(`Cannot create workspace with Name: ${name} and createdBy: ${username}`, {status: 400});
     }
 
+    // Update user with workspaceId
     const updateUser = await db.update(usersTable).set({
-      workspaceId: workspace[0]?.id
-    }).execute();
+      workspaceId: workspace[0]?.id,
+      role: 'admin'
+    })
+    .execute();
 
     if(!updateUser) {
       console.log('Cannot update user with workspaceId:', workspace[0]?.id);

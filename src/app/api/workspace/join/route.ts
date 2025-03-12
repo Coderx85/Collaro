@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       .where(eq(workspacesTable.name, name))
       .execute();
 
-    if (!workspace.length) {
+    if (workspace.length === 0) {
       return NextResponse.json({ error: "Workspace not found" }, { status: 404 });
     }
 
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     // Update the user's workspace
     await db
       .update(usersTable)
-      .set({ workspaceId })
+      .set({ workspaceId, role: 'member' })
       .where(eq(usersTable.clerkId, clerkUser.id))
       .execute();
     
@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ workspace });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error(`Failed to join workspace: \n ${errorMessage}`);
     return NextResponse.json({ error: `Failed to join workspace: ${errorMessage}` }, { status: 500 });
   }
 }

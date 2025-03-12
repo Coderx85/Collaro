@@ -40,7 +40,7 @@ const WorkspacePage = () => {
             toast.error('User does not belong to any workspace');
             return null;
           }
-
+          
           console.log('User:', data);
           console.log('User:', workspaceId);
           router.push('/workspace/' + workspaceId+`?name=${data.workspaceName}`);
@@ -50,23 +50,21 @@ const WorkspacePage = () => {
     } catch (error: unknown) {
       console.error(error);
     }
-      finally {
-        setLoading(false)
-      }
+    finally {
+      setLoading(false)
+    }
   }, [router])
-
+  
   const handleJoin = async () => {
     // Handle join logic here
     try {
-      
+      setLoading(true);
       const res = await fetch(`/api/workspace/join`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name: workspaceName!,
-        }),
+        body: JSON.stringify({ name: workspaceName! }),
       });
 
       const data = await res.json();
@@ -83,14 +81,15 @@ const WorkspacePage = () => {
 
     } catch (error: unknown) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
-
   };
 
   const handleCreate = async () => {
     // Handle create logic here
     try {
-
+      setLoading(true);
       const res = await fetch('/api/workspace/new', {
         method: 'POST',
         headers: {
@@ -116,7 +115,9 @@ const WorkspacePage = () => {
     } catch (error: unknown) {
       console.error(error);
     }
-    // console.log('Creating workspace with ID:', workspaceId, 'and username:', username);
+    finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -142,6 +143,7 @@ const WorkspacePage = () => {
                 <Input 
                   id="join-workspace-id" 
                   value={workspaceName} 
+                  disabled={loading}
                   name='' 
                   onChange={(e) => setWorkspaceName(e.target.value)} 
                 />
@@ -174,17 +176,25 @@ const WorkspacePage = () => {
             <CardContent className="space-y-2">
               <div className="space-y-1">
                 <Label htmlFor="create-workspace-name">Workspace Name</Label>
-                <Input id="create-workspace-id" value={workspaceName} onChange={(e) => setWorkspaceName(e.target.value)} />
+                <Input 
+                  id="create-workspace-id" 
+                  value={workspaceName} 
+                  disabled={loading}
+                  onChange={(e) => setWorkspaceName(e.target.value)} />
               </div>
-              {/* <div className="space-y-1">
-                <Label htmlFor="create-username">Username</Label>
-                <Input id="create-username" value={workspaceName} onChange={(e) => setWorkspaceName(e.target.value)} />
-              </div> */}
             </CardContent>
             <CardFooter>
               <Button
                 variant={'outline'}
-                onClick={handleCreate}>Create Workspace</Button>
+                onClick={handleCreate}
+                disabled={loading}
+              >{loading 
+                ? <span className='flex justify-center gap-3'>
+                    <Loader2 className='size-4 animate-spin' />{"Creating Workspace"}
+                  </span>
+                : "Create Workspace"
+              }
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
