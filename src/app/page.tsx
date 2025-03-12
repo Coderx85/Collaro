@@ -4,6 +4,7 @@ import { FaRocketchat, FaUserFriends, FaVideo } from 'react-icons/fa'
 import FeatureCard from '@/components/FeatureCard'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { auth } from '@clerk/nextjs/server'
 
 const featureCard = [
   {
@@ -23,36 +24,54 @@ const featureCard = [
   }
 ]
 
-const Rootpage = () => {
-  return (
-    <section className="my-auto flex min-h-screen flex-col items-center justify-center text-white ">
-      <div className='mx-auto flex items-center justify-center space-x-16'>
-        <Image
-          src="/icons/logo.svg"
-          alt="logo"
-          width={96}
-          height={96}
-          className="h-auto"
-        />
-        <h1 className="text-center text-5xl font-bold" >
-          Welcome to <br /><span className='text-primary'>DevnTalk</span>
-        </h1>
-      </div>
-      <p className="mt-4 w-3/5 max-w-2xl text-center text-lg text-gray-400">
-          A modern platform for seamless developer discussions, video conferencing, and collaboration.
-      </p>
-      <Link href='/workspace'>
-        <Button className="mt-8">Get Started</Button>
-      </Link>
-      <p className="mt-4 w-3/5 max-w-2xl text-center text-lg text-gray-400">
-          Join us to connect with developers, share ideas, and collaborate on projects.
-      </p>
-      <div className="mt-12 flex max-w-4xl flex-initial">
-        {featureCard.map((feature, index) => (
-          <FeatureCard key={index} {...feature} />
-        ))}
-    </div>
-  </section>
+const Rootpage = async () => {
+
+  const { userId } = await auth()
+    return (
+      <>
+        <div className='flex items-center justify-between w-full px-8 py-4 bg-gradient-to-l from-cyan-700 via-cyan-950 to-slate-950'>
+          <Link href='/' className='flex items-end justify-end cursor-'>
+            <Image
+              src="/icons/logo.svg"
+              alt="logo"
+              width={35}
+              height={35}
+              className="h-auto"
+            />
+            <span>
+              <span className="text-2xl font-bold primary-text shadow-2xl">DevnTalk</span>
+            </span>
+          </Link>
+          {userId ? (
+              <Link href='/workspace'>
+                <Button className="text-white">Dashboard</Button>
+              </Link>
+            ):(
+              <Link href={"/sign-in"}>
+                <Button className="text-white" variant={"outline"}>Sign In</Button>
+              </Link>
+            )}
+        </div>
+        <section className="mt-20 flex flex-col items-center justify-center text-white ">
+          <h1 className='text-6xl primary-text'>
+            Welcome to DevnTalk
+          </h1>
+          <p className="mt-4 w-3/5 max-w-2xl text-center text-lg text-gray-400">
+            A modern platform for seamless developer discussions, video conferencing, and collaboration.
+          </p>
+          <Link href='/workspace'>
+            <Button className="mt-8">Get Started</Button>
+          </Link>
+          <p className="mt-4 w-3/5 max-w-2xl text-center text-lg text-gray-400">
+              Join us to connect with developers, share ideas, and collaborate on projects.
+          </p>
+          <div className="mt-12 flex max-w-4xl flex-initial">
+            {featureCard.map((feature, index) => (
+              <FeatureCard key={index} {...feature} />
+            ))}
+        </div>
+      </section>
+    </>
   )
 }
 

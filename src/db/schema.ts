@@ -1,4 +1,6 @@
-import { uuid, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { uuid, pgTable, text, timestamp, varchar, pgEnum } from 'drizzle-orm/pg-core';
+
+export const role = pgEnum("role", ["owner", "admin", "member"]);
 
 export const usersTable = pgTable(
   'users', {
@@ -7,11 +9,12 @@ export const usersTable = pgTable(
   userName: text('user_name').notNull().unique(),
   clerkId: varchar('clerkId').notNull().unique(),
   email: text('email').notNull().unique(),
+  role: role(),
   workspaceId: uuid('workspaceId')
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .references((): any => workspacesTable.id, { onDelete: 'set null'}),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at')
+  updatedAt: timestamp('updated_at').defaultNow()
 });
 
 export const workspacesTable = pgTable(
@@ -26,11 +29,11 @@ export const workspacesTable = pgTable(
   updatedAt: timestamp('updated_at')
 });
 
-// export const workspaceUsersTable = pgTable(
-//   'workspace_users', {
-//     workspaceId: uuid('workspace_id').references(() => workspacesTable.id, { onDelete: 'cascade' }).notNull(),
-//     userId: uuid('user_id').references(() => usersTable.id, { onDelete: 'cascade' }).notNull(),
-//     createdAt: timestamp('created_at').notNull().defaultNow(),
-//     updatedAt: timestamp('updated_at')
-//   }
-// );
+export const workspaceUsersTable = pgTable(
+  'workspace_users', {
+    workspaceId: uuid('workspace_id').references(() => workspacesTable.id, { onDelete: 'cascade' }).notNull(),
+    userId: uuid('user_id').references(() => usersTable.id, { onDelete: 'cascade' }).notNull(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at')
+  }
+);

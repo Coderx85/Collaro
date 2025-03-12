@@ -4,13 +4,14 @@ import { db } from "@/db";
 import { usersTable } from "@/db/schema";
 import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
+import { redirect } from "next/navigation";
 
 export async function getUser() {
   try {
-
     const clerkUser = await currentUser();
     if (!clerkUser) {
-      throw new Error("Unauthorized");
+      console.log("User not found");
+      return redirect("/sign-in");
     }
 
     const clerkId = clerkUser.id.toString();
@@ -19,22 +20,26 @@ export async function getUser() {
       .select({ 
         clerkId: usersTable.clerkId, 
         workspaceId: usersTable.workspaceId, 
-        name: usersTable.name 
+        name: usersTable.name
       })
       .from(usersTable)
       .where(eq(usersTable.clerkId, clerkId))
       .execute()
 
-    if (user.length==0) {
+    if (user.length === 0) {
       const newUser = await db.insert(usersTable).values({
         clerkId: clerkId!,
         email: clerkUser.primaryEmailAddress?.emailAddress as string,
-        name: clerkUser.firstName + " " + clerkUser.lastName!,
-        userName: clerkUser.username!,        
+        name: clerkUser.fullName!,
+        userName: clerkUser.username!,
+        role: 'member'        
       }).returning();
 
       console.log("User created: \n", newUser[0]);
       const workspaceId = newUser[0]?.workspaceId;
+      if (!workspaceId || workspaceId.length < 1) {
+        return { message: "User does not belong to any workspace" }
+      }
       const workspaceName = newUser[0]?.name;
       return { workspaceId, workspaceName };
     }
