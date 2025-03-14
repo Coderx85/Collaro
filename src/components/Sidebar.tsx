@@ -14,7 +14,7 @@ const Sidebar = () => {
   const workspaceId = params?.workspaceId as string;
 
   return (
-    <section className="sticky left-0 top-0 flex h-screen w-fit flex-col justify-between bg-dark-1 p-6 text-white max-sm:hidden lg:w-[264px]">
+    <section className="sticky left-0 top-0 flex w-fit flex-col justify-between bg-dark-1 p-6 text-white max-sm:hidden lg:w-[264px]">
       <div className="flex flex-col gap-6">
         <Button variant={`inactive`}>
           No Active Meeting
@@ -37,10 +37,10 @@ const Sidebar = () => {
                       }
                     )}
                   >
-                  <p className="flex gap-3 text-lg font-semibold text-current max-lg:hidden">
+                  <div className="flex gap-3 text-lg font-semibold text-current max-lg:hidden">
                     <item.component selected={isActive}/>
                     {item.label}
-                  </p>
+                  </div>
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent
