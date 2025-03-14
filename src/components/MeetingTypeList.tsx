@@ -1,17 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-
+import { usePathname, useRouter } from 'next/navigation';
+import { useToast } from './ui/use-toast';
+import { useUser } from '@clerk/nextjs';
+import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
 import HomeCard from './HomeCard';
 import MeetingModal from './MeetingModal';
-import { Call, useStreamVideoClient } from '@stream-io/video-react-sdk';
-import { useUser } from '@clerk/nextjs';
 import Loader from './Loader';
-import { Textarea } from './ui/textarea';
 import ReactDatePicker from 'react-datepicker';
-import { useToast } from './ui/use-toast';
-import { Input } from './ui/input';
+import { Call, useStreamVideoClient } from '@stream-io/video-react-sdk';
 
 const initialValues = {
   dateTime: new Date(),
@@ -20,30 +19,78 @@ const initialValues = {
 };
 
 interface MeetingDetailsProps {
-  startTime: Date,
-  description: string,
-  meetingLink: string
+  startTime: Date;
+  description: string;
+  meetingLink: string;
 }
 
 const MeetingTypeList = () => {
   const router = useRouter();
-  const [meetingState, setMeetingState] = useState<
-  'isScheduleMeeting' | 'isJoiningMeeting' | 'isInstantMeeting' | undefined
-  >(undefined);
-  const [values, setValues] = useState(initialValues);
-  const [callDetail, setCallDetail] = useState<Call>();
   const client = useStreamVideoClient();
   const { user } = useUser();
   const { toast } = useToast();
-  
-   async function generateICS ({startTime, description, meetingLink}: MeetingDetailsProps) {
+
+  const [meetingState, setMeetingState] = useState<
+    'isScheduleMeeting' | 'isJoiningMeeting' | 'isInstantMeeting' | undefined
+  >(undefined);
+  const [values, setValues] = useState(initialValues);
+  const [callDetail, setCallDetail] = useState<Call>();
+
+  // Grab workspaceId
+  const pathname = usePathname();
+  const workspaceId = pathname.split('/')[2];
+
+  async function createMeetingDB(
+    workspaceId: string,
+    meetingDetails: {
+      name: string;
+      description: string;
+      startAt: string;
+      meetingId: string;
+    },
+  ) {
+    const { name, description, startAt, meetingId } = meetingDetails;
+    const res = await fetch(`/api/meeting/${workspaceId}/new`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        data: {
+          name,
+          description,
+          startAt,
+          meetingId,
+        },
+      }),
+    });
+
+    if (!res.ok) {
+      return toast({ title: 'Failed to create meeting' });
+    }
+
+    return toast({ title: 'Meeting Created' });
+    // return meeting;
+  }
+
+  // Generate ICS file function
+  async function generateICS({
+    startTime,
+    description,
+    meetingLink,
+  }: MeetingDetailsProps) {
     // const { startTime, description, meetingLink } = meetingDetails;
-    
-    const formattedStartTime = new Date(startTime).toISOString().replace(/-|:|\.\d+/g, "");
-    const formattedEndTime = new Date(new Date(startTime).getTime() + 60 * 60 * 1000) // 1-hour default duration
-      .toISOString().replace(/-|:|\.\d+/g, "");
+
+    const formattedStartTime = new Date(startTime)
+      .toISOString()
+      .replace(/-|:|\.\d+/g, '');
+    const formattedEndTime = new Date(
+      new Date(startTime).getTime() + 60 * 60 * 1000,
+    ) // 1-hour default duration
+      .toISOString()
+      .replace(/-|:|\.\d+/g, '');
     console.log(formattedStartTime, formattedEndTime);
-  
+
     const icsData = `
       BEGIN:VCALENDAR
       VERSION:2.0
@@ -60,30 +107,37 @@ const MeetingTypeList = () => {
       END:VCALENDAR
     `;
     console.log(icsData);
-  
-    return new Blob([icsData], { type: "text/calendar" });
+
+    return new Blob([icsData], { type: 'text/calendar' });
   }
-  
-  async function downloadICS({startTime, description, meetingLink}: MeetingDetailsProps) {
-       
-    const icsBlob = await generateICS({startTime, description, meetingLink});
+
+  // Download ICS file function
+  async function downloadICS({
+    startTime,
+    description,
+    meetingLink,
+  }: MeetingDetailsProps) {
+    const icsBlob = await generateICS({ startTime, description, meetingLink });
     const url = URL.createObjectURL(icsBlob);
-    const a = document.createElement("a");
-    if(!a) return;
-    if(a) {
+    const a = document.createElement('a');
+    if (!a) return;
+    if (a) {
       console.log(a);
     }
     a.href = url;
-    a.download = "meeting.ics";
+    a.download = 'meeting.ics';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
-  
 
+  if (!client || !user) return <Loader />;
+
+  // Create Meeting function
   const createMeeting = async () => {
     if (!client || !user) return;
+
     try {
       if (!values.dateTime) {
         toast({ title: 'Please select a date and time' });
@@ -92,7 +146,8 @@ const MeetingTypeList = () => {
       const id = crypto.randomUUID();
       const call = client.call('default', id);
       if (!call) throw new Error('Failed to create meeting');
-      const startsAt =  values.dateTime.toISOString() || new Date(Date.now()).toISOString();
+      const startsAt =
+        values.dateTime.toISOString() || new Date(Date.now()).toISOString();
       const description = values.description || 'Instant Meeting';
       await call.getOrCreate({
         data: {
@@ -102,37 +157,37 @@ const MeetingTypeList = () => {
           },
         },
       });
-      // setMeeting(call, description)
       setCallDetail(call);
-      downloadICS({
-        startTime: values.dateTime,
-        description: values.description,
-        meetingLink: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/meeting/${call.id}`,
+
+      // Save meeting to DB
+      await createMeetingDB(workspaceId, {
+        name: `${meetingState}`,
+        description: `${description}`,
+        startAt: `${startsAt}`,
+        meetingId: `${call.id}`,
+      });
+
+      toast({
+        title: 'Meeting Created',
       });
 
       if (!values.description) {
         router.push(`/meeting/${call.id}`);
       }
-      toast({
-        title: 'Meeting Created',
-      });
     } catch (error) {
       console.error(error);
       toast({ title: 'Failed to create Meeting' });
     }
   };
 
-  if (!client || !user) return <Loader />;
-
   const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/meeting/${callDetail?.id}`;
 
   return (
     <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
-
       <HomeCard
         img="/icons/add-meeting.svg"
         title="New Meeting"
-        classname='bg-primary'
+        classname="bg-primary"
         description="Start an instant meeting"
         handleClick={() => setMeetingState('isInstantMeeting')}
       />
@@ -147,16 +202,15 @@ const MeetingTypeList = () => {
         img="/icons/schedule.svg"
         title="Schedule Meeting"
         description="Plan your meeting"
-        classname='bg-purple'
+        classname="bg-purple"
         handleClick={() => setMeetingState('isScheduleMeeting')}
       />
-
       <HomeCard
         img="/icons/recordings.svg"
         title="View Recordings"
         description="Meeting Recordings"
         classname="bg-yellow"
-        handleClick={() => router.push('/dashboard/recordings')}
+        handleClick={() => router.push(`/workspace/${workspaceId}/recordings`)}
       />
 
       {!callDetail ? (
@@ -206,7 +260,6 @@ const MeetingTypeList = () => {
             });
             navigator.clipboard.writeText(meetingLink);
             toast({ title: 'Link Copied' });
-            
           }}
           image={'/icons/checked.svg'}
           buttonIcon="/icons/copy.svg"
