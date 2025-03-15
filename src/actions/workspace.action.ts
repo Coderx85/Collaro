@@ -1,8 +1,8 @@
 "use server"
 import { db } from "@/db";
-import { usersTable, workspaceUsersTable } from "@/db/schema";
+import { usersTable, workspacesTable } from "@/db/schema";
 import { currentUser } from "@clerk/nextjs/server";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 export async function getWorkspaceUsers(workspaceId: string)  {
   const clerkUser = await currentUser();
@@ -15,22 +15,71 @@ export async function getWorkspaceUsers(workspaceId: string)  {
   const user = await db
     .select()
     .from(usersTable)
-    .where(eq(workspaceUsersTable.workspaceId, workspaceId))
+    .where(eq(usersTable.workspaceId, workspaceId))
     .execute();
 
-  if(user.length === 0) {
-    return { message: "User not found" }
-  }
+  console.log('user \n', user)
+  // if(user.length === 0) {
+  //   return { message: "User not found" }
+  // }
 
   // Check if workspace exists and user belongs to it
   const workspaceUsers = await db
-    .select()
-    .from(workspaceUsersTable)
-    .where(and(eq(workspaceUsersTable.workspaceId, workspaceId), eq(workspaceUsersTable.userId, user[0]?.id)))
-    .execute();
+      .select({
+        id: usersTable.id,
+        name: usersTable.name,
+        email: usersTable.email,
+        userId: usersTable.clerkId,
+        userName: usersTable.userName,
+        role: usersTable.role,
+        workspaceName: workspacesTable.name,
+        joinedAt: usersTable.createdAt
+      })
+      .from(usersTable)
+      .innerJoin(
+        workspacesTable,
+        eq(usersTable.workspaceId, workspacesTable.id)
+      )
+      .where(eq(workspacesTable.id, workspaceId))
+      .execute();
+  
+  console.log('workspaceUsers \n', workspaceUsers)
   
   if(workspaceUsers.length < 1) 
     return { message: "No users found for this workspace" }
 
   return workspaceUsers;
+}
+
+export async function getWorkspace(userId: string) {
+  try {
+    const user = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.clerkId, userId))
+      .execute();
+
+    if(!user || user.length < 1) return { message: "User not found" }
+
+    if(!user[0]?.workspaceId) return { message: "User does not belong to any workspace" }
+
+    const workspace = await db
+      .select()
+      .from(workspacesTable)
+      .where(eq(workspacesTable.id, user[0]?.workspaceId))
+      .execute();
+
+    return {data: workspace[0]};
+  } catch (error: unknown) {
+    return { error: `Failed to get workspace:: \n ${error}`} 
+  }
+}
+
+export async function getAllWorkspaces() {
+  try {
+    const data = await db.select().from(workspacesTable).execute();
+    return {data};
+  } catch (error: unknown) {
+    return { error: `Failed to get workspaces:: \n ${error}`} 
+  }
 }
