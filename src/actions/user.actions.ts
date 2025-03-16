@@ -1,7 +1,8 @@
 "use server"
 
 import { db } from "@/db";
-import { usersTable } from "@/db/schema";
+import { usersTable, 
+ } from "@/db/schema";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
@@ -41,10 +42,28 @@ export async function getUserWorkspaceId() {
         } }
       )
 
+      // const workspaceUser = await db
+      //   .select()
+      //   .from(workspaceUsersTable)
+      //   .where(eq(usersTable.clerkId, clerkId))
+      //   .execute()
+      // if (workspaceUser.length === 0) {
+      //   if (newUser[0]?.id && newUser[0]?.workspaceId) {
+      //     await db.insert(workspaceUsersTable).values({
+      //       name: clerkUser.fullName!,
+      //       userId: newUser[0].id,
+      //       workspaceId: newUser[0].workspaceId,
+      //       createdAt: new Date(),
+      //       updatedAt: new Date(),
+      //       role: 'member'
+      //     }).execute();
+      //   }
+      // }
+
       console.log("User created: \n", newUser[0]);
       const workspaceId = newUser[0]?.workspaceId;
-      if (!workspaceId || workspaceId.length < 1) {
-        return { message: "User does not belong to any workspace" }
+      if (workspaceId == null) {
+        return { error: "User does not belong to any workspace" }
       }
       // const workspaceName = newUser[0]?.name;
       return { workspaceId };
@@ -56,13 +75,34 @@ export async function getUserWorkspaceId() {
         role: `${user[0]?.role}`
       } }
     )
+
+    // Check if the workspaceUser exists in the database
+    // const workspaceUser = await db
+    //   .select()
+    //   .from(workspaceUsersTable)
+    //   .where(eq(usersTable.clerkId, clerkId))
+    //   .execute()
+      
+    // if (workspaceUser.length === 0) {
+    //   if (user[0]?.id && user[0]?.workspaceId) {
+    //     await db.insert(workspaceUsersTable).values({
+    //       name: clerkUser.fullName!,
+    //       userId: user[0].id,
+    //       workspaceId: user[0].workspaceId,
+    //       createdAt: new Date(),
+    //       updatedAt: new Date(),
+    //       role: 'member'
+    //     }).execute();
+    //   }
+    // }
+    
     // const userExists = (await user).values();
     console.log("User: \n", JSON.stringify(user));
     const workspaceId = user[0]?.workspaceId;
     const workspaceName = user[0]?.name;
 
     if (!workspaceId) {
-      return { message: "User does not belong to any workspace" }
+      return { error: "User does not belong to any workspace" }
     }
     console.log("WorkspaceId: \n", workspaceId);
     return { workspaceId, workspaceName };
@@ -90,7 +130,7 @@ export async function getUser() {
       .execute()
     
     // If the user does not exist,
-    if(!user.length) return { message: "User does not exist" }
+    if(!user.length) return { error: "User does not exist" }
 
     return { data: user[0] };
   }

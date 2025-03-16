@@ -2,7 +2,7 @@
 import { db } from "@/db";
 import { usersTable, workspacesTable } from "@/db/schema";
 import { currentUser } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 export async function getWorkspaceUsers(workspaceId: string)  {
   const clerkUser = await currentUser();
@@ -35,12 +35,12 @@ export async function getWorkspaceUsers(workspaceId: string)  {
         workspaceName: workspacesTable.name,
         joinedAt: usersTable.createdAt
       })
-      .from(usersTable)
+      .from(workspacesTable)
       .innerJoin(
-        workspacesTable,
+        usersTable,
         eq(usersTable.workspaceId, workspacesTable.id)
       )
-      .where(eq(workspacesTable.id, workspaceId))
+      .where(and(eq(workspacesTable.id, workspaceId), eq(usersTable.workspaceId, workspaceId)))
       .execute();
   
   console.log('workspaceUsers \n', workspaceUsers)
