@@ -3,6 +3,7 @@ import Personal from "@/components/icons/Personal";
 import Previous from "@/components/icons/Previous";
 import Reccording from "@/components/icons/Reccording";
 import Upcoming from "@/components/icons/Upcoming";
+import { FaFolder } from "react-icons/fa";
 
 export const sidebarLinks = [
   {
@@ -35,6 +36,12 @@ export const sidebarLinks = [
     details: 'User Personal detail',
     component: Personal 
   },
+  {
+    route: '/workspace-room',
+    label: 'Workspace Room',
+    details: 'Workspace Room detail',
+    component: FaFolder
+  }
 ];
 
 export const avatarImages = [

@@ -1,22 +1,24 @@
 'use client';
 
-import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { TooltipProvider } from '@radix-ui/react-tooltip';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { sidebarLinks } from '@/constants';
 import { Button } from './ui/button';
+import LeaveTeamButton from '@/app/(root)/workspace/_components/LeaveButton';
+import { useRouter } from 'next/navigation';
 
 const Sidebar = () => {
   const pathname = usePathname();
   const params = useParams();
+  const router = useRouter();
   const workspaceId = params?.workspaceId as string;
 
   return (
-    <section className="sticky left-0 top-0 flex w-fit flex-col justify-between bg-dark-1 p-6 text-white max-sm:hidden lg:w-[264px]">
+    <section className="left-0 top-0 flex w-fit flex-col justify-between bg-gradient-to-t from-gray-800 to-black p-6 text-white max-sm:hidden lg:w-[264px]">
       <div className="flex flex-col gap-6">
-        <Button variant={`inactive`}>
+        <Button variant={`inactive`} className='font-bold'>
           No Active Meeting
         </Button>
         <TooltipProvider>
@@ -25,35 +27,36 @@ const Sidebar = () => {
           const route = `/workspace/${workspaceId}${item.route}`
           const isActive = pathname === route;
             return (
-              <Tooltip delayDuration={1000} key={item.route}>
-                <TooltipTrigger key={index} className='group'> 
-                  <Link
-                    href={`/workspace/${workspaceId}${item.route}`}
-                    key={item.label}
-                    className={cn(
-                      'flex group gap-4 items-end p-4 rounded-lg justify-start hover:bg-white/20 hover:text-dark-2 ease-in duration-100 hover:animate-out',
-                      {
-                        'bg-white/20 text-dark-2 hover:animate-none': isActive,
-                      }
-                    )}
-                  >
-                  <div className="flex gap-3 text-lg font-semibold text-current max-lg:hidden">
-                    <item.component selected={isActive}/>
+              <Tooltip delayDuration={1000} key={item.route} >
+                <TooltipTrigger 
+                  key={index} 
+                  className={cn(
+                    'flex group items-end p-2 rounded-lg cursor-pointer justify-start hover:bg-gradient-to-br from-white/50 via-white to-white/80 hover:text-dark-2 ease-in duration-100 hover:animate-out',
+                    {
+                      'bg-gradient-to-br from-white/50 via-white to-white/80 text-dark-2 hover:animate-none': isActive,
+                    }
+                  )}
+                  onClick={
+                    () => router.push(`/workspace/${workspaceId}${item.route}`)
+                }> 
+                  <div className="flex gap-3 text-lg justify-center font-semibold text-current max-lg:hidden">
+                    <item.component selected={isActive} className='size-6'/>
                     {item.label}
                   </div>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent
-                  className="z-10 bg-black/10 backdrop-blur-xl"
-                  key={`${item.label}-content-${index}`}
-                  side='top'
-                >
-                  <p className="text-sm text-white">{item.details}</p>
-                </TooltipContent>
-              </Tooltip>
-            )})}
+              </TooltipTrigger>
+              <TooltipContent
+                className="z-10 bg-black/10 backdrop-blur-xl"
+                key={`${item.label}-content-${index}`}
+                side='top'
+              >
+                <p className="text-sm text-white">{item.details}</p>
+              </TooltipContent>
+            </Tooltip>
+          )})}
           </TooltipProvider>
         </div>
+
+        <LeaveTeamButton />
     </section>
   );
 };
