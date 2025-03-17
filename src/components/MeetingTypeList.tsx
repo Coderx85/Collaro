@@ -183,11 +183,11 @@ const MeetingTypeList = () => {
   const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/meeting/${callDetail?.id}`;
 
   return (
-    <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+    <section className="grid mt-20   grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
       <HomeCard
         img="/icons/add-meeting.svg"
         title="New Meeting"
-        classname="bg-primary"
+        variant="primary"
         description="Start an instant meeting"
         handleClick={() => setMeetingState('isInstantMeeting')}
       />
@@ -195,21 +195,21 @@ const MeetingTypeList = () => {
         img="/icons/join-meeting.svg"
         title="Join Meeting"
         description="via invitation link"
-        classname="bg-[#FF742E]"
+        variant="orange"
         handleClick={() => setMeetingState('isJoiningMeeting')}
       />
       <HomeCard
         img="/icons/schedule.svg"
         title="Schedule Meeting"
         description="Plan your meeting"
-        classname="bg-purple"
+        variant="purple"
         handleClick={() => setMeetingState('isScheduleMeeting')}
       />
       <HomeCard
         img="/icons/recordings.svg"
         title="View Recordings"
         description="Meeting Recordings"
-        classname="bg-yellow"
+        variant="yellow"
         handleClick={() => router.push(`/workspace/${workspaceId}/recordings`)}
       />
 
