@@ -8,7 +8,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/t
 import { cn } from '@/lib/utils'
 import { SiAboutdotme } from 'react-icons/si'
 import { Contact2 } from 'lucide-react'
-import LeaveTeamButton from '@/app/(root)/workspace/_components/LeaveButton'
+import { SignOutButton } from './SignOutButton'
 
 const navbarlink = [
   {
@@ -28,8 +28,8 @@ const navbarlink = [
 const Navbar = () => {
   const isActive = useSignIn();
   return (
-    <nav className="flex w-full justify-between bg-gradient-to-l from-dark-1 via-dark-3 to-dark-4 px-6 py-4 lg:px-10">
-      <Link href={!isActive ? '/' : '/dashboard'} className="flex items-center gap-1">
+    <nav className="flex w-full justify-between bg-gradient-to-l from-dark-1 via-cyan-500 to-cyan-800 px-6 py-4 lg:px-10">
+      <Link href={!isActive ? '/' : '/workspace'} className="flex items-center gap-1">
         <Image
           src="/icons/logo.svg"
           width={32}
@@ -70,11 +70,10 @@ const Navbar = () => {
         </TooltipProvider>
         
         <SignedIn>
-          <UserButton fallback="/sign-in" />
+          <UserButton />
+          <SignOutButton />
         </SignedIn>
         
-        <LeaveTeamButton />
-
         <MobileNav />
       </div>
     </nav>

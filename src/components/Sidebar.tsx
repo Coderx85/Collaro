@@ -6,7 +6,7 @@ import { TooltipProvider } from '@radix-ui/react-tooltip';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { sidebarLinks } from '@/constants';
 import { Button } from './ui/button';
-import LeaveTeamButton from '@/app/(root)/workspace/_components/LeaveButton';
+import LeaveTeamButton from '@/app/(root)/workspace/[workspaceId]/_components/LeaveButton';
 import { useRouter } from 'next/navigation';
 
 const Sidebar = () => {
@@ -45,7 +45,7 @@ const Sidebar = () => {
                   </div>
               </TooltipTrigger>
               <TooltipContent
-                className="z-10 bg-black/10 backdrop-blur-xl"
+                className="z-10 bg-transparent backdrop-blur-xl"
                 key={`${item.label}-content-${index}`}
                 side='top'
               >
