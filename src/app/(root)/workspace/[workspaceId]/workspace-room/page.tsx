@@ -1,7 +1,7 @@
 import { getUser } from '@/actions/user.actions'
 import { getWorkspace, getWorkspaceUsers } from '@/actions/workspace.action'
 import Box from './_components/box'
-import { Table, TableBody, TableCell, TableHead, TableHeader } from '@/components/ui/table'
+import { Table, TableBody, TableCaption, TableCell, TableHeader, TableRow } from '@/components/ui/table'
 import { Separator } from '@/components/ui/separator'
 
 const WorskpaceRoom = async ({
@@ -37,28 +37,37 @@ const WorskpaceRoom = async ({
         </div>
       )}
 
-      {user.data?.role === 'admin' && Array.isArray(workspaceUser) && (
-        workspaceUser.map((user) => (
-          <Table key={user.userId}>
-            <TableHead>
-              <TableHeader>Name</TableHeader>
-              <TableHeader>Role</TableHeader>
-              <TableHeader>Joined At</TableHeader>
-            </TableHead>
-            <TableBody>
-              <TableCell>
-                {user.name}
-              </TableCell>
-              <TableCell>
-                {user.role}
-              </TableCell>
-              <TableCell>
-                {String(user.joinedAt)}
-              </TableCell>
+      <Table className='border-2 border-gray-800 mt-8'>
+        <TableCaption>Workspace Users</TableCaption>
+        <TableHeader className='bg-gray-800'>
+          <TableRow>
+            <TableCell>Name</TableCell>
+            <TableCell>Username</TableCell>
+            <TableCell>Role</TableCell>
+            <TableCell>Joined At</TableCell>
+          </TableRow>
+        </TableHeader>
+          {Array.isArray(workspaceUser) && (
+          workspaceUser.map((user) => (
+            <TableBody key={user.userId}>
+              <TableRow>
+                <TableCell>
+                  {user.name}
+                </TableCell>
+                <TableCell>
+                  {user.userName}
+                </TableCell>
+                <TableCell>
+                  {user.role}
+                </TableCell>
+                <TableCell>
+                  {String(user.joinedAt).split('T')[0]}
+                </TableCell>
+              </TableRow>
             </TableBody>
-          </Table>
         ))
       )}
+      </Table>
     </div>
   )
 }
