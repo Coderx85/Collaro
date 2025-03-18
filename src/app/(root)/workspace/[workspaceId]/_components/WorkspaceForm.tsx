@@ -31,10 +31,10 @@ const WorkspaceForm = () => {
       const data = await res.json();
       console.log('Response:', data);
 
-      if (data.error) {
+      if (!data.success) {
         setError(data.error);
-        console.error('Cannot join workspace with Name:', workspaceName);
-        return toast.error(`Cannot join workspace with Name: ${workspaceName}`);
+        console.error(data.error);
+        return toast.error(data.error);
       }
       
       toast.success('Workspace joined successfully');

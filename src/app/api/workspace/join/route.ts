@@ -1,22 +1,43 @@
 import { db } from "@/db";
-import { usersTable, workspacesTable } from "@/db/schema";
+import { 
+  usersTable, 
+  workspacesTable, 
+  // workspaceUsersTable
+ } from "@/db/schema";
 import { currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { eq, and } from "drizzle-orm";
+import { APIResponse, WorkspaceResponse } from "@/types";
+import { cookies } from "next/headers";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<WorkspaceResponse>>> {
   try {
+    const cookieStore = await cookies();
     const { name } = await req.json();
     if (!name) {
-      return NextResponse.json({ error: "Workspace name is required" }, { status: 400 });
+      console.error("Workspace name is required");
+      return NextResponse.json({ error: "Workspace name is required", success: false }, { status: 400 });
     }
 
     // Get the current user
     const clerkUser = await currentUser();
     if (!clerkUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized", success: false }, { status: 401 });
     }
+    // console.log("✅ Clerk User exist", clerkUser);
+
+    // Check if the user exists
+    const dbUser = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.clerkId, clerkUser.id))
+      .execute();
+    console.log("✅ DB User exist");
     
+    if (!dbUser.length) {
+      return NextResponse.json({ error: `User not found with username: ${clerkUser.username}`, success: false }, { status: 404 });
+    }
+
     // Check if the workspace exists
     const workspace = await db
       .select()
@@ -24,8 +45,9 @@ export async function POST(req: NextRequest) {
       .where(eq(workspacesTable.name, name))
       .execute();
 
-    if (workspace.length === 0) {
-      return NextResponse.json({ error: "Workspace not found" }, { status: 404 });
+      console.log("✅ Workspace exist");
+    if (!workspace.length) {
+      return NextResponse.json({ error: "Workspace not found", success: false }, { status: 404 });
     }
 
     console.log('Workspace:', workspace);
@@ -36,26 +58,44 @@ export async function POST(req: NextRequest) {
     const user = await db
       .select()
       .from(usersTable)
-      .where(and(eq(usersTable.clerkId, clerkUser.id), eq(usersTable.workspaceId, workspaceId)))
+      .where(and(
+        eq(usersTable.clerkId, clerkUser.id), 
+        eq(usersTable.workspaceId, workspaceId)
+      ))
       .execute();
 
     if (user.length) {
-      return NextResponse.json({ message: "User already in the workspace", workspace }, { status: 200 });
+      console.log('User:', clerkUser.id, 'already in workspace:', workspaceId);
+      return NextResponse.json({ error: `User Already exist in the Workspace`, success: false }, { status: 400 });
     }
 
     // Update the user's workspace
     await db
       .update(usersTable)
-      .set({ workspaceId, role: 'member' })
+      .set({ workspaceId, role: 'member', updatedAt: new Date() })
       .where(eq(usersTable.clerkId, clerkUser.id))
       .execute();
-    
-    console.log('User:', clerkUser.id, 'joined workspace:', workspaceId);
+    console.log("✅ User updated");
 
-    return NextResponse.json({ workspace });
+
+    // await db
+    //   .insert(workspaceUsersTable)
+    //   .values({
+    //     userId: dbUser[0].id,
+    //     workspaceId,
+    //     role: 'member',
+    //     name: user[0].name,
+    //   })
+    //   .execute();      
+    // console.log("✅ Workspace User created");
+
+    console.log('User:', clerkUser.id, 'joined workspace:', workspaceId);
+    cookieStore.set('workspaceId', workspaceId);
+    console.log("✅ Set Workspace ID in cookie");
+    return NextResponse.json({ data: workspace[0], success: true }, { status: 200 });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error(`Failed to join workspace: \n ${errorMessage}`);
-    return NextResponse.json({ error: `Failed to join workspace: ${errorMessage}` }, { status: 500 });
+    return NextResponse.json({ error: `Failed to join workspace: ${errorMessage}`, success: false }, { status: 500 });
   }
 }
