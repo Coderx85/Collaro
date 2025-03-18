@@ -1,11 +1,10 @@
-import { db } from "@/db";
-import { usersTable, workspacesTable, workspaceUsersTable } from "@/db/schema";
-import { APIResponse, Workspace } from "@/types";
-import { currentUser } from "@clerk/nextjs/server";
+import { db, usersTable, workspacesTable, workspaceUsersTable } from "@/db";
+import { APIResponse, CreateWorkspaceResponse } from "@/types";
+import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<Workspace>>> {
+export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<CreateWorkspaceResponse>>> {
   try {
     const { name } = await req.json();
     const user = await currentUser();
@@ -27,6 +26,17 @@ export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<W
     if(!dbUser || dbUser.length === 0 || !dbUser[0]?.id) {
       console.log('User not found with username:', username);
       return NextResponse.json({success: false,error: `User not found with username: ${username}`});
+    }
+
+    const checkWorkspace = await db
+      .select()
+      .from(workspacesTable)
+      .where(eq(workspacesTable.name, name))
+      .execute();
+    
+    if(checkWorkspace && checkWorkspace.length > 0) {
+      console.log('Workspace already exists with Name:', name);
+      return NextResponse.json({success: false, error: `Workspace already exists with Name: ${name}`}, {status: 400});
     }
       
     // Create workspace
@@ -57,12 +67,19 @@ export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<W
       console.log('Cannot update user with workspaceId:', workspace[0]?.id);
       return NextResponse.json({success: false, error:`Cannot update user with workspaceId: ${workspace[0]?.id}`});
     }
-
+    
+    // Update user metadata
+    (await clerkClient()).users.updateUserMetadata(dbUser[0]?.clerkId,
+      { publicMetadata: {
+        role: "member"
+      } }
+    )
+    
     // Update the worksapceUSersTable
     const workspaceUsers = await db
       .insert(workspaceUsersTable)
       .values({
-        name: workspace[0]?.name,
+        name: dbUser[0]?.name,
         workspaceId: workspace[0]?.id,
         userId: dbUser[0]?.id,
         role: 'admin',
@@ -77,9 +94,15 @@ export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<W
     
     console.log('Workspace:::: \n', workspace);
     console.log('Workspace created successfully');
-    return NextResponse.json({success: true, data: workspace[0]});
+    return NextResponse.json({
+      success: true, 
+      data: {
+        ...workspace[0],
+        members: [workspaceUsers[0].userId]
+      }
+    });
   } catch (error: unknown) {
     console.error(error);
-    throw new Error(`Failed to create workspace:: \n ${error}`);
+    return NextResponse.json({success: false, error: `Failed to create workspace:: \n ${error}`});
   }
 }

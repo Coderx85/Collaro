@@ -1,16 +1,12 @@
-import { db } from "@/db";
-import { 
-  usersTable, 
-  workspacesTable, 
-  // workspaceUsersTable
- } from "@/db/schema";
+import { db, usersTable, workspacesTable, workspaceUsersTable  } from "@/db";
 import { currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { eq, and } from "drizzle-orm";
-import { APIResponse, WorkspaceResponse } from "@/types";
+import { APIResponse, CreateWorkspaceResponse  } from "@/types";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<WorkspaceResponse>>> {
+export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<CreateWorkspaceResponse>>> {
   try {
     const cookieStore = await cookies();
     const { name } = await req.json();
@@ -22,7 +18,9 @@ export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<W
     // Get the current user
     const clerkUser = await currentUser();
     if (!clerkUser) {
-      return NextResponse.json({ error: "Unauthorized", success: false }, { status: 401 });
+      console.error("Clerk User not found");
+      redirect("/sign-in");
+      return NextResponse.json({ error: "Clerk User not foxund", success: false }, { status: 404 });
     }
     // console.log("✅ Clerk User exist", clerkUser);
 
@@ -63,7 +61,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<W
         eq(usersTable.workspaceId, workspaceId)
       ))
       .execute();
-
+      console.log("✅ User exist in workspace");
     if (user.length) {
       console.log('User:', clerkUser.id, 'already in workspace:', workspaceId);
       return NextResponse.json({ error: `User Already exist in the Workspace`, success: false }, { status: 400 });
@@ -77,22 +75,26 @@ export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<W
       .execute();
     console.log("✅ User updated");
 
-
-    // await db
-    //   .insert(workspaceUsersTable)
-    //   .values({
-    //     userId: dbUser[0].id,
-    //     workspaceId,
-    //     role: 'member',
-    //     name: user[0].name,
-    //   })
-    //   .execute();      
-    // console.log("✅ Workspace User created");
+    await db
+      .insert(workspaceUsersTable)
+      .values({
+        userId: dbUser[0].id,
+        workspaceId,
+        role: 'member',
+        name: user[0].name,
+      })
+      .execute();      
+    console.log("✅ Workspace User created");
 
     console.log('User:', clerkUser.id, 'joined workspace:', workspaceId);
     cookieStore.set('workspaceId', workspaceId);
     console.log("✅ Set Workspace ID in cookie");
-    return NextResponse.json({ data: workspace[0], success: true }, { status: 200 });
+    const data = {
+      ...workspace[0],
+      members: [dbUser[0].id],
+    }
+    console.log("✅ Data:", data);
+    return NextResponse.json({ data, success: true }, { status: 200 });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error(`Failed to join workspace: \n ${errorMessage}`);

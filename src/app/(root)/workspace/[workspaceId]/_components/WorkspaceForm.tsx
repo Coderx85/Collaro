@@ -9,12 +9,15 @@ import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useWorkspaceStore } from '@/store/workspace';
+import { CreateWorkspaceResponse } from '@/types';
 
 const WorkspaceForm = () => {
   const router = useRouter();
   const [workspaceName, setWorkspaceName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { setWorkspace } = useWorkspaceStore()
 
   const handleJoin = async () => {
     // Handle join logic here
@@ -37,14 +40,17 @@ const WorkspaceForm = () => {
         return toast.error(data.error);
       }
       
+      const workspaceData: CreateWorkspaceResponse = data.success;
       toast.success('Workspace joined successfully');
-      console.log('Joining workspace:', workspaceName);
-      router.push('/workspace/' + data.workspace[0].id);
+      console.log('Joining workspace:', workspaceData);
+      setWorkspace(workspaceData.id, workspaceData.name, workspaceData.members);
+      router.push('/workspace/' + workspaceData.id);
 
     } catch (error: unknown) {
       console.error(error);
     } finally {
       setLoading(false);
+      setWorkspaceName('');
     }
   };
 
@@ -72,14 +78,16 @@ const WorkspaceForm = () => {
         return toast.error(`Cannot create workspace with Name: ${workspaceName}`);
       }
       
+      const workspaceData: CreateWorkspaceResponse = data.success;
       toast.success('Workspace created successfully');
-      router.push('/workspace/' + data?.workspace[0]?.id);
+      console.log('Joining workspace:', workspaceData);
+      setWorkspace(workspaceData.id, workspaceData.name, workspaceData.members);
 
     } catch (error: unknown) {
       console.error(error);
-    }
-    finally {
+    } finally {
       setLoading(false);
+      setWorkspaceName('');
     }
   }
   return (
@@ -107,7 +115,7 @@ const WorkspaceForm = () => {
                   value={workspaceName} 
                   disabled={loading}
                   name='' 
-                  onChange={(e) => setWorkspaceName(e.target.value)} 
+                  onChange={(e) => {setWorkspaceName(e.target.value); setError('')}} 
                 />
               </CardContent>
               <CardFooter>
@@ -127,6 +135,8 @@ const WorkspaceForm = () => {
             </form>
           </Card>
         </TabsContent>
+
+        {/* Create Workspace Form */}
         <TabsContent value="create">
           <Card className='rounded-none border-none bg-black'>
             <CardHeader>

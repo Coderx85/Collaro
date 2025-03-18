@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import WorkspaceForm from './[workspaceId]/_components/WorkspaceForm';
-import { getUserWorkspaceId } from "@/actions/user.actions";
+import { getUserWorkspaceId } from "@/action";
 const WorkspacePage = async () => {
   const data = await getUserWorkspaceId();
   if(data.data?.workspaceId) {
