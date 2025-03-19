@@ -1,7 +1,6 @@
 "use server"
 
-import { db } from "@/db";
-import { usersTable, workspaceUsersTable } from "@/db/schema";
+import { db, usersTable, workspaceUsersTable } from "@/db";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { cookies } from "next/headers";

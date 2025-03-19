@@ -1,6 +1,5 @@
 "use server"
-import { db } from "@/db";
-import { workspacesTable, workspaceMeetingTable } from "@/db/schema";
+import { db, workspacesTable, workspaceMeetingTable } from "@/db";
 import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
