@@ -1,8 +1,7 @@
-import { db } from "@/db";
-import { usersTable, workspacesTable } from "@/db/schema";
 import { currentUser } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { eq } from "drizzle-orm";
+import { db, usersTable, workspacesTable } from "@/db";
 
 export async function POST() {
   try {
@@ -41,7 +40,7 @@ export async function POST() {
     // const workspaceId = user[0].workspaceId
     const updateUser = await db
       .update(usersTable)
-      .set({workspaceId: null})
+      .set({workspaceId: null, updatedAt: new Date()})
       .where(eq(usersTable.clerkId , clerkUser.id))
       .execute()
     if (!updateUser) {
