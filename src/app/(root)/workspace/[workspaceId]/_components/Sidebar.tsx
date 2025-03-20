@@ -3,10 +3,10 @@
 import { useParams, usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { TooltipProvider } from '@radix-ui/react-tooltip';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../../../../../components/ui/tooltip';
 import { sidebarLinks } from '@/constants';
-import { Button } from './ui/button';
-import LeaveTeamButton from '@/app/(root)/workspace/[workspaceId]/_components/LeaveButton';
+import { Button } from '../../../../../components/ui/button';
+import LeaveTeamButton from './LeaveButton';
 import { useRouter } from 'next/navigation';
 
 const Sidebar = () => {
@@ -16,7 +16,7 @@ const Sidebar = () => {
   const workspaceId = params?.workspaceId as string;
 
   return (
-    <section className="left-0 top-0 flex w-fit flex-col justify-between bg-gradient-to-t from-gray-800 to-black p-6 text-white max-sm:hidden lg:w-[264px]">
+    <section className="left-0 top-0 flex w-fit h-[100vh] flex-col justify-between bg-gradient-to-t from-gray-800 to-black p-6 text-white max-sm:hidden lg:w-[264px]">
       <div className="flex flex-col gap-6">
         <Button variant={`inactive`} className='font-bold'>
           No Active Meeting

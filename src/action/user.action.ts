@@ -1,15 +1,24 @@
 "use server"
 
 import { db, usersTable, workspaceUsersTable } from "@/db";
+import { APIResponse, UserResponse } from "@/types";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
-import { cookies } from "next/headers";
+// import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+
+// interface WorkspaceIdresponse {
+//     workspaceId: string;
+//     workspaceName: string;
+//     userName: string;
+//     role: string;
+//     id: string;
+// }
 
 export async function getUserWorkspaceId() {
   try {
-    const cookieStore = await cookies();
-    const cachedWorkspaceId = cookieStore.get("workspaceId");
+    // const cookieStore = await cookies();
+    // const cachedWorkspaceId = cookieStore.get("workspaceId");
 
     // Get the current user first
     const clerkUser = await currentUser();
@@ -25,17 +34,18 @@ export async function getUserWorkspaceId() {
       .execute();
 
       // If cached workspaceId matches user's workspaceId, use it
-      if (cachedWorkspaceId?.value && user[0]?.workspaceId === cachedWorkspaceId.value) {
-        return { 
-          data: {
-            workspaceId: cachedWorkspaceId.value,
-            workspaceName: user[0].name,
-            userName: user[0].userName,
-            role: user[0].role,
-            userId: user[0].id
-          } 
-        };
-      }
+      // if (cachedWorkspaceId?.value && user[0]?.workspaceId === cachedWorkspaceId.value) {
+      //   return { 
+      //     data: {
+      //       workspaceId: cachedWorkspaceId.value,
+      //       workspaceName: user[0].name,
+      //       userName: user[0].userName,
+      //       role: user[0].role,
+      //       id: user[0].id
+      //     },
+      //     success: true
+      //   };
+      // }
 
     // Create new user if doesn't exist
     if (user.length === 0) {
@@ -54,7 +64,8 @@ export async function getUserWorkspaceId() {
         publicMetadata: { role: newUser[0]?.role }
       });
       
-      return { error: "User does not belong to any workspace" };
+      // return { error: "User does not belong to any workspace", success: false };
+      redirect('/unauthorised');
     }
     
     // Update existing user's Clerk metadata
@@ -64,7 +75,7 @@ export async function getUserWorkspaceId() {
     
     const workspaceId = user[0]?.workspaceId;
     if (!workspaceId) {
-      return { error: "User does not belong to any workspace" };
+      redirect('/unauthorised');
     }
 
     // Check if the user is a member of the workspace
@@ -85,9 +96,10 @@ export async function getUserWorkspaceId() {
         })
         .returning();
         if (updateWorjspaceMember.length === 0) {
-          return { error: "User does not belong to any workspace" };
+          redirect('/not-found');
         }
       // return { error: "User does not belong to any workspace" };  
+      redirect(`/workspace/${workspaceId}`);
     }
     
     return { 
@@ -97,7 +109,8 @@ export async function getUserWorkspaceId() {
         userName: user[0].userName,
         role: user[0].role,
         id: user[0].id
-      }
+      },
+      success: true
     };
 
   } catch (error) {
@@ -105,12 +118,18 @@ export async function getUserWorkspaceId() {
     return { 
       error: error instanceof Error 
         ? error.message 
-        : "Failed to get user workspace"
+        : "Failed to get user workspace",
+      success: false
     };
   }
 }
 
-export async function getUser() {
+interface getUserResponse {
+  data?: UserResponse;
+  error?: string;
+}
+
+export async function getUser(): Promise<getUserResponse> {
   try {
     // Get the current user
     const clerkUser = await currentUser();
@@ -138,14 +157,14 @@ export async function getUser() {
   }
 }
 
-export async function getAllUsers(){
+export async function getAllUsers(): Promise<APIResponse<UserResponse[]>> {
   try {
     const data = await db
       .select()
       .from(usersTable)
       .execute();
-    return {data};
+    return {data, success: true};
   } catch (error: unknown) {
-    return { error: `Failed to get all users:: \n ${error}`} 
+    return { error: `Failed to get all users:: \n ${error}`, success: false } 
   }
 }
