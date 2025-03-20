@@ -1,4 +1,4 @@
-import { getUser } from '@/actions/user.actions'
+import { getUser } from '@/action'
 import AdminTab from './_components/AdminTab'
 // import AnalyticsDashboard from './_components/Analytic'
 import { forbidden } from 'next/navigation'

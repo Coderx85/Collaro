@@ -103,12 +103,23 @@
 //   );
 // };
 
+// import { Button } from '@/components/ui/button'
 import { SignIn } from '@clerk/nextjs'
+// import { cookies } from 'next/headers'
 import React from 'react'
 
-const page = () => {
-  return (
-    <SignIn />
+const page = async () => {
+  // 'use server'
+  // const store = async () => {
+  //   const cookieStore = await cookies()
+  //   console.log(cookieStore)
+  // }
+    return (
+    // <Button onClick={() => store()}>
+      <SignIn 
+        fallbackRedirectUrl={"/workspace"}
+      />
+    // </Button>
   )
 }
 

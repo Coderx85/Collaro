@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useToast } from './ui/use-toast';
 import { useUser } from '@clerk/nextjs';
 import { Input } from './ui/input';
@@ -11,6 +11,8 @@ import MeetingModal from './MeetingModal';
 import Loader from './Loader';
 import ReactDatePicker from 'react-datepicker';
 import { Call, useStreamVideoClient } from '@stream-io/video-react-sdk';
+import { useWorkspaceStore } from '@/store/workspace';
+import { MeetingDetailsProps } from '@/types';
 
 const initialValues = {
   dateTime: new Date(),
@@ -18,17 +20,28 @@ const initialValues = {
   link: '',
 };
 
-interface MeetingDetailsProps {
-  startTime: Date;
-  description: string;
-  meetingLink: string;
-}
-
 const MeetingTypeList = () => {
   const router = useRouter();
   const client = useStreamVideoClient();
   const { user } = useUser();
   const { toast } = useToast();
+  const { members, workspaceName, workspaceId } = useWorkspaceStore()
+  // const [joined, setJoined] = useState(false);
+
+  useEffect(() => {
+    // socket.on("message", (msg) => {
+    //   setMessages((prev) => [...prev, msg])
+    // })
+
+    // socket.on("user_joined", (msg) => {
+    //   // console.log(msg)
+    //   setMessages((prev) => [...prev, { sender: "system", message: msg }])
+    // })
+    // return () => {
+    //   socket.off("user_joined")
+    //   socket.off("message")
+    // }
+  }, [])
 
   const [meetingState, setMeetingState] = useState<
     'isScheduleMeeting' | 'isJoiningMeeting' | 'isInstantMeeting' | undefined
@@ -37,8 +50,8 @@ const MeetingTypeList = () => {
   const [callDetail, setCallDetail] = useState<Call>();
 
   // Grab workspaceId
-  const pathname = usePathname();
-  const workspaceId = pathname.split('/')[2];
+  // const pathname = usePathname();
+  // const workspaceId = pathname.split('/')[2];
 
   async function createMeetingDB(
     workspaceId: string,
@@ -155,12 +168,18 @@ const MeetingTypeList = () => {
           custom: {
             description,
           },
+          team: workspaceName as string,
+          members: members.map(member => ({ user_id: member })),
+          // members: getWorkspaceUsers(workspaceId),
         },
+        members_limit: 2,
+        ring: true,
+        notify: true,
       });
       setCallDetail(call);
 
       // Save meeting to DB
-      await createMeetingDB(workspaceId, {
+      await createMeetingDB(workspaceId!, {
         name: `${meetingState}`,
         description: `${description}`,
         startAt: `${startsAt}`,

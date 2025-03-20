@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
-import WorkspaceForm from './[workspaceId]/_components/WorkspaceForm';
+import WorkspaceForm from './components/WorkspaceForm';
 import { getUserWorkspaceId } from "@/action";
 const WorkspacePage = async () => {
   const data = await getUserWorkspaceId();
-  if(data.data?.workspaceId) {
-    redirect(`/workspace/${data.data.workspaceId}`)
+  if(data.data && data.data?.workspaceId) {
+    const workspaceId = data.data.workspaceId
+    redirect(`/workspace/${workspaceId}`)
   };
 
   return (

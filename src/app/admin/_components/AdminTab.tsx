@@ -1,9 +1,7 @@
-import { getMeetingsData } from '@/actions/meeting.action'
-import { getAllUsers } from '@/actions/user.actions'
-import { getAllWorkspaces } from '@/actions/workspace.action'
 import React from 'react'
 import { Tabs } from './Tabs'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { getMeetingsData, getAllUsers, getAllWorkspaces } from '@/action'
 
 // type Props = {}
 

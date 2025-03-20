@@ -5,6 +5,7 @@ import FeatureCard from '@/components/FeatureCard'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { auth } from '@clerk/nextjs/server'
+import { UserButton } from '@clerk/nextjs'
 
 const featureCard = [
   {
@@ -45,6 +46,7 @@ const Rootpage = async () => {
           {userId ? (
               <Link href='/workspace'>
                 <Button className="text-white">Dashboard</Button>
+                <UserButton />
               </Link>
             ):(
               <Link href={"/sign-in"}>

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { ReactNode } from 'react';
 
-import Sidebar from '@/components/Sidebar';
+import Sidebar from './_components/Sidebar';
 
 export const metadata: Metadata = {
   title: 'DevnTalk',

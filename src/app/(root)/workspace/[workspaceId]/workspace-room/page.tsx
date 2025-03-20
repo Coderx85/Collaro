@@ -1,7 +1,6 @@
-import { getUser } from '@/actions/user.actions'
-import { getWorkspace, getWorkspaceUsers } from '@/actions/workspace.action'
 import Box from './_components/box'
 import { Table, TableBody, TableCaption, TableCell, TableHeader, TableRow } from '@/components/ui/table'
+import { getUser, getWorkspace, getWorkspaceUsers } from '@/action'
 import { Separator } from '@/components/ui/separator'
 
 const WorskpaceRoom = async ({

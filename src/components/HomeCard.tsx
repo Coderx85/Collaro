@@ -4,9 +4,7 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 
-const cardVariants = cva(
-  // base styles
-  'px-4 py-6 flex flex-col group justify-between w-full xl:max-w-[270px] min-h-[260px] rounded-[14px] cursor-pointer border-2 transition-colors duration-200 ease-in-out',
+const cardVariants = cva('px-4 py-6 flex flex-col group justify-between w-full xl:max-w-[270px] min-h-[260px] rounded-[14px] cursor-pointer border-2 transition-colors duration-200 ease-in-out',
   {
     variants: {
       variant: {

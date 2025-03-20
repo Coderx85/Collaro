@@ -1,4 +1,4 @@
-export * from './user.actions';
+export * from './user.action';
 
 export * from './workspace.action';
 
