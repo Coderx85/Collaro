@@ -14,3 +14,10 @@ export interface MeetingDetailsProps {
   description: string;
   meetingLink: string;
 }
+
+export type SidebarLink = {
+  route: string;
+  label: string;
+  details: string;
+  component: React.ComponentType<{ selected: boolean; className: string }>;
+};

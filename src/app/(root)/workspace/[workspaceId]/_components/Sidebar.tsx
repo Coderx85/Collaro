@@ -8,12 +8,26 @@ import { sidebarLinks } from '@/constants';
 import { Button } from '../../../../../components/ui/button';
 import LeaveTeamButton from './LeaveButton';
 import { useRouter } from 'next/navigation';
+import { useEffect, useCallback } from 'react';
+import { SidebarLink } from '@/types';
 
 const Sidebar = () => {
   const pathname = usePathname();
   const params = useParams();
   const router = useRouter();
   const workspaceId = params?.workspaceId as string;
+
+  useEffect(() => {
+    sidebarLinks.forEach((item: SidebarLink) => {
+      const route = `/workspace/${workspaceId}${item.route}`;
+      router.prefetch(route);
+    });
+  }, [workspaceId, router]);
+
+  const handleNavigation = useCallback((route: string) => {
+    // Still use push for actual navigation
+    router.push(route);
+  }, [router]);
 
   return (
     <section className="left-0 top-0 flex w-fit h-[100vh] flex-col justify-between bg-gradient-to-t from-gray-800 to-black p-6 text-white max-sm:hidden lg:w-[264px]">
@@ -22,8 +36,7 @@ const Sidebar = () => {
           No Active Meeting
         </Button>
         <TooltipProvider>
-
-        {sidebarLinks.map((item, index) => {
+        {sidebarLinks.map((item: SidebarLink, index) => {
           const route = `/workspace/${workspaceId}${item.route}`
           const isActive = pathname === route;
             return (
@@ -36,9 +49,7 @@ const Sidebar = () => {
                       'bg-gradient-to-br from-white/50 via-white to-white/80 text-dark-2 hover:animate-none': isActive,
                     }
                   )}
-                  onClick={
-                    () => router.push(`/workspace/${workspaceId}${item.route}`)
-                }> 
+                  onClick={() => handleNavigation(`/workspace/${workspaceId}${item.route}`)}> 
                   <div className="flex gap-3 text-lg justify-center font-semibold text-current max-lg:hidden">
                     <item.component selected={isActive} className='size-6'/>
                     {item.label}

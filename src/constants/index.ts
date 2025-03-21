@@ -4,8 +4,9 @@ import Previous from "@/components/icons/Previous";
 import Reccording from "@/components/icons/Reccording";
 import Upcoming from "@/components/icons/Upcoming";
 import { FaFolder } from "react-icons/fa";
+import SidebarLink from '@/types'
 
-export const sidebarLinks = [
+export const sidebarLinks: SidebarLink[] = [
   {
     route: '',
     label: 'Home',
