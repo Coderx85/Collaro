@@ -1,30 +1,35 @@
-import { db, workspaceMeetingTable } from "@/db";
-import { APIResponse, MeetingResponse } from "@/types";
 import { currentUser } from "@clerk/nextjs/server";
+import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server"
+import { APIResponse, MeetingResponse } from "@/types";
+import { db, usersTable, workspaceMeetingTable } from "@/db";
 
-export async function POST(req: NextRequest, props: {params: Promise<{workspaceId: string}>}): Promise<NextResponse<APIResponse<MeetingResponse>>> {
-  const params = await props.params;
+export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<MeetingResponse>>> {
   try {
     const { data } = await req.json();
-    const workspaceId = params.workspaceId;
+    console.log('Data: \n', data);
     const user = await currentUser();
     if(!user) {
       return NextResponse.json({ success: false, error: 'User not found' });
     }
-
     const username = user.username;
+
+    const dbUser = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.clerkId, user.id))
+      .execute();
 
     const createMeeting = await db
       .insert(workspaceMeetingTable)
       .values({
-        workspaceId,
-        name: data?.name,
-        hostedBy: username || "",
+        workspaceId: data.workspaceId,
+        name: data.name,
+        hostedBy: dbUser[0]?.id,
         description: data?.description || "Instant Meeting",
-        meetingId: data?.meetingId || "",
-        startAt: new Date(data.startAt),
-        endAt: new Date(data.endAt),
+        meetingId: data.meetingId || "",
+        startAt: new Date(),
+        // endAt: data.endAt,
       })
       .returning();
 
@@ -36,7 +41,9 @@ export async function POST(req: NextRequest, props: {params: Promise<{workspaceI
     if(!meeting) {
       return NextResponse.json({ success: false, error: 'Failed to create meeting' });
     }
-
+      
+    console.log(`New meeting created with name: ${data.name} and hosted by: ${username}`);
+    console.log(NextResponse.json({ success : true, data: meeting }));
     return NextResponse.json({ success: true, data: meeting });
   } catch (error: unknown) {
     console.error('Error in workspace/new POST:', error);
