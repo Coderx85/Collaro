@@ -1,25 +1,13 @@
 "use server"
 
-import { db, usersTable, workspaceUsersTable } from "@/db";
+import { db, usersTable, workspaceUsersTable, workspacesTable } from "@/db";
 import { APIResponse, UserResponse } from "@/types";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
-// import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-
-// interface WorkspaceIdresponse {
-//     workspaceId: string;
-//     workspaceName: string;
-//     userName: string;
-//     role: string;
-//     id: string;
-// }
 
 export async function getUserWorkspaceId() {
   try {
-    // const cookieStore = await cookies();
-    // const cachedWorkspaceId = cookieStore.get("workspaceId");
-
     // Get the current user first
     const clerkUser = await currentUser();
     if (!clerkUser) {
@@ -32,20 +20,6 @@ export async function getUserWorkspaceId() {
       .from(usersTable)
       .where(eq(usersTable.clerkId, clerkUser.id))
       .execute();
-
-      // If cached workspaceId matches user's workspaceId, use it
-      // if (cachedWorkspaceId?.value && user[0]?.workspaceId === cachedWorkspaceId.value) {
-      //   return { 
-      //     data: {
-      //       workspaceId: cachedWorkspaceId.value,
-      //       workspaceName: user[0].name,
-      //       userName: user[0].userName,
-      //       role: user[0].role,
-      //       id: user[0].id
-      //     },
-      //     success: true
-      //   };
-      // }
 
     // Create new user if doesn't exist
     if (user.length === 0) {
@@ -64,48 +38,81 @@ export async function getUserWorkspaceId() {
         publicMetadata: { role: newUser[0]?.role }
       });
       
-      // return { error: "User does not belong to any workspace", success: false };
-      redirect('/unauthorised');
+      return {
+        data: {
+          workspaceId: '',
+          workspaceName: '',
+          userName: newUser[0].userName,
+          role: newUser[0].role,
+          id: newUser[0].id
+        }, 
+        success: true
+      }
+      // redirect('/unauthorised');
+    } else {
+      // Update existing user's Clerk metadata
+      await (await clerkClient()).users.updateUserMetadata(clerkUser.id, {
+        publicMetadata: { role: user[0].role }
+      });
     }
     
-    // Update existing user's Clerk metadata
-    await (await clerkClient()).users.updateUserMetadata(clerkUser.id, {
-      publicMetadata: { role: user[0].role }
-    });
-    
-    const workspaceId = user[0]?.workspaceId;
-    if (!workspaceId) {
-      redirect('/unauthorised');
-    }
+    const workspaceId = user[0]?.workspaceId || '';
+    // if (!workspaceId) {
+    //   redirect('/unauthorised');
+    // }
 
-    // Check if the user is a member of the workspace
-    const workspaceMember = await db
-      .select()
-      .from(workspaceUsersTable)
-      .where(and(eq(workspaceUsersTable.userId, user[0]?.id), eq(workspaceUsersTable.workspaceId, workspaceId)))
-      .execute();
+    if(workspaceId) {
+      // Check if the workspace exists
+      const workspace = await db
+        .select()
+        .from(workspacesTable)
+        .where(eq(workspacesTable.id, workspaceId))
+        .execute();
 
-    if (workspaceMember.length === 0) {
-      const updateWorjspaceMember = await db
-        .insert(workspaceUsersTable)
-        .values({
-          userId: user[0]?.id,
-          workspaceId: workspaceId,
-          role: user[0]?.role,
-          name: user[0]?.name
-        })
-        .returning();
-        if (updateWorjspaceMember.length === 0) {
+      if (workspace.length === 0) {
+        redirect('/not-found');
+      }
+
+      // Check if the user is a member of the workspace
+      const workspaceMember = await db
+        .select()
+        .from(workspaceUsersTable)
+        .where(and(eq(workspaceUsersTable.userId, user[0]?.id), eq(workspaceUsersTable.workspaceId, workspaceId)))
+        .execute();
+      
+      if (workspaceMember.length === 0) {
+        const updateWorkspaceMember = await db
+          .insert(workspaceUsersTable)
+          .values({
+            userId: user[0]?.id,
+            workspaceId,
+            workspaceName: workspace[0]?.name,
+            role: user[0]?.role,
+            name: user[0]?.name
+          })
+          .returning();
+          
+        if (updateWorkspaceMember.length === 0) {
           redirect('/not-found');
         }
-      // return { error: "User does not belong to any workspace" };  
-      redirect(`/workspace/${workspaceId}`);
+      }
+      
+      return { 
+        data: {
+          workspaceId,
+          workspaceName: workspace[0]?.name,
+          userName: user[0].userName,
+          role: user[0].role,
+          id: user[0].id
+        },
+        success: true
+      };
     }
-    
+
     return { 
       data: {
-        workspaceId,
-        workspaceName: user[0].name,
+        workspaceId: '',
+        workspaceName: '',
         userName: user[0].userName,
         role: user[0].role,
         id: user[0].id
@@ -129,14 +136,24 @@ interface getUserResponse {
   error?: string;
 }
 
+export async function getWorkspaceMembers(workspaceId: string) {
+  try {
+    const members = await db
+      .select()
+      .from(workspaceUsersTable)
+      .where(eq(workspaceUsersTable.workspaceId, workspaceId))
+      .execute();
+    return { data: members };
+  } catch (error: unknown) {
+    return { error: `Failed to get workspace members:: \n ${error}`}  
+  }
+}
+
 export async function getUser(): Promise<getUserResponse> {
   try {
     // Get the current user
     const clerkUser = await currentUser();
-    if (!clerkUser) {
-      console.log("User not found");
-      return redirect("/sign-in");
-    }
+    if (!clerkUser) return redirect("/sign-in");
 
     const clerkId = clerkUser.id.toString();
   
