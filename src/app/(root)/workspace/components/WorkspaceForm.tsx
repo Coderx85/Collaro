@@ -78,7 +78,7 @@ const WorkspaceForm = () => {
         return toast.error(`Cannot create workspace with Name: ${workspaceName}`);
       }
       
-      const workspaceData: CreateWorkspaceResponse = data.success;
+      const workspaceData = data.success;
       toast.success('Workspace created successfully');
       console.log('Joining workspace:', workspaceData);
       setWorkspace(workspaceData.id, workspaceData.name, workspaceData.members);
@@ -127,9 +127,9 @@ const WorkspaceForm = () => {
                   {loading
                   ? 
                   <span className='flex justify-center gap-3'>
-                      <Loader2 className='size-4 animate-spin' />{"Joining Workspace"}
-                    </span>
-                  : 'Join Workspace' }
+                    <Loader2 className='size-4 animate-spin' />{"Joining Workspace"}
+                  </span>
+                    : 'Join Workspace' }
                 </Button>
               </CardFooter>
             </form>
