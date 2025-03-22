@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from './ui/use-toast';
 import { useUser } from '@clerk/nextjs';
@@ -25,33 +25,13 @@ const MeetingTypeList = () => {
   const client = useStreamVideoClient();
   const { user } = useUser();
   const { toast } = useToast();
-  const { members, workspaceName, workspaceId } = useWorkspaceStore()
-  // const [joined, setJoined] = useState(false);
-
-  useEffect(() => {
-    // socket.on("message", (msg) => {
-    //   setMessages((prev) => [...prev, msg])
-    // })
-
-    // socket.on("user_joined", (msg) => {
-    //   // console.log(msg)
-    //   setMessages((prev) => [...prev, { sender: "system", message: msg }])
-    // })
-    // return () => {
-    //   socket.off("user_joined")
-    //   socket.off("message")
-    // }
-  }, [])
+  const { workspaceName, members , workspaceId } = useWorkspaceStore()
 
   const [meetingState, setMeetingState] = useState<
     'isScheduleMeeting' | 'isJoiningMeeting' | 'isInstantMeeting' | undefined
   >(undefined);
   const [values, setValues] = useState(initialValues);
   const [callDetail, setCallDetail] = useState<Call>();
-
-  // Grab workspaceId
-  // const pathname = usePathname();
-  // const workspaceId = pathname.split('/')[2];
 
   async function createMeetingDB(
     workspaceId: string,
@@ -63,13 +43,14 @@ const MeetingTypeList = () => {
     },
   ) {
     const { name, description, startAt, meetingId } = meetingDetails;
-    const res = await fetch(`/api/meeting/${workspaceId}/new`, {
+    const res = await fetch(`/api/meeting/new`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         data: {
+          workspaceId,
           name,
           description,
           startAt,
@@ -168,15 +149,25 @@ const MeetingTypeList = () => {
           custom: {
             description,
           },
-          team: workspaceName as string,
-          members: members.map(member => ({ user_id: member })),
-          // members: getWorkspaceUsers(workspaceId),
+          // settings_override: {
+          //   transcription: {
+          //     enabled: true
+          //   },
+          // },
+          team: workspaceName!,
+          // members: members?.map(memberId => ({
+          //   user_id: memberId,
+          //   role: 'member'
+          // })),
         },
         members_limit: 2,
         ring: true,
-        notify: true,
+        notify: true
       });
+      
       setCallDetail(call);
+
+      // await call.startTranscription();
 
       // Save meeting to DB
       await createMeetingDB(workspaceId!, {
@@ -191,6 +182,7 @@ const MeetingTypeList = () => {
       });
 
       if (!values.description) {
+        // window.open(`/meeting/${call.id}`, '_blank', 'noopener,noreferrer');
         router.push(`/meeting/${call.id}`);
       }
     } catch (error) {
@@ -202,12 +194,12 @@ const MeetingTypeList = () => {
   const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/meeting/${callDetail?.id}`;
 
   return (
-    <section className="grid mt-20   grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+    <section className="grid mt-20 gap-5 mgrid-cols-2 xl:grid-cols-4">
       <HomeCard
         img="/icons/add-meeting.svg"
         title="New Meeting"
         variant="primary"
-        description="Start an instant meeting"
+        description="Start an instant meeting"  
         handleClick={() => setMeetingState('isInstantMeeting')}
       />
       <HomeCard
@@ -293,7 +285,7 @@ const MeetingTypeList = () => {
         title="Type the link here"
         className="text-center"
         buttonText="Join Meeting"
-        handleClick={() => router.push(values.link)}
+        handleClick={() => router.push(`/meeting/${values.link}`)}
       >
         <Input
           placeholder="Meeting link"

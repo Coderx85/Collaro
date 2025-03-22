@@ -1,29 +1,20 @@
 import { create } from "zustand";
 
-// Define a type for workspace members with roles
-type WorkspaceMember = {
-  user_id: string;
-  role?: string;
-};
-
 type WorkspaceState = {
   workspaceId: string | null;
   workspaceName: string | null;
   members?: string[];
-  membersWithRoles?: WorkspaceMember[];
   isInitialized: boolean;
 
-  setWorkspace: (id: string, name: string, members?: string[], membersWithRoles?: WorkspaceMember[]) => void;
+  setWorkspace: (id: string, name: string, members?: string[]) => void;
   clearWorkspace: () => void;
   setInitialized: (value: boolean) => void;
-  updateMemberRole: (userId: string, role: string) => void;
 };
 
 export const useWorkspaceStore = create<WorkspaceState>((set) => ({
   workspaceId: null,
   workspaceName: null,
   members: [],
-  membersWithRoles: [],
   isInitialized: false,
   
   setWorkspace: (id, name, members) => set(
@@ -34,8 +25,8 @@ export const useWorkspaceStore = create<WorkspaceState>((set) => ({
     }
   ),
   clearWorkspace: () => set(
-    { workspaceId: null, workspaceName: null, members: [], membersWithRoles: [] }
+    { workspaceId: null, workspaceName: null, members: [] }
   ),
-  
+
   setInitialized: (value) => set({ isInitialized: value }),
 }));

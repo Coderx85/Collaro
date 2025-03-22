@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { ReactNode } from 'react';
-import { getUser, getWorkspace, getWorkspaceMembers } from '@/action';
+import { getUser, getWorkspace, } from '@/action';
 import { WorkspaceInitializer } from '@/components/WorkspaceInitializer';
 import Sidebar from './_components/Sidebar';
 
@@ -16,11 +16,11 @@ const RootLayout = async ({ children, params }: {
 
   const user = await getUser();
   const workspaceData = await getWorkspace(user?.data?.clerkId || '');
+  console.log(workspaceData)
   const workspace = workspaceData.data;
   const param = await params
   const workspaceId = param.workspaceId;
-  const membersResponse = await getWorkspaceMembers(workspaceId);
-  const members = membersResponse.data || [];
+  const members = workspaceData.data?.members || [];
 
   return (
     <main>
