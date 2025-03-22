@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { ReactNode } from 'react';
-
+import { getUser, getWorkspace, getWorkspaceMembers } from '@/action';
+import { WorkspaceInitializer } from '@/components/WorkspaceInitializer';
 import Sidebar from './_components/Sidebar';
 
 export const metadata: Metadata = {
@@ -8,14 +9,33 @@ export const metadata: Metadata = {
   description: 'A workspace for your team, powered by Stream Chat and Clerk.',
 };
 
-const RootLayout = async ({ children }: Readonly<{children: ReactNode}>) => {
-  
+const RootLayout = async ({ children, params }: { 
+    children: ReactNode; 
+    params: { workspaceId: string } 
+  }) => {
+
+  const user = await getUser();
+  const workspaceData = await getWorkspace(user?.data?.clerkId || '');
+  const workspace = workspaceData.data;
+  const param = await params
+  const workspaceId = param.workspaceId;
+  const membersResponse = await getWorkspaceMembers(workspaceId);
+  const members = membersResponse.data || [];
+
   return (
     <main>
+      <div className="flex h-screen">
 
-      <div className="flex h-[88vh]">
-        <Sidebar />
+        {/* Initialize workspace state */}
+        {workspace && (
+          <WorkspaceInitializer 
+            workspaceId={workspaceId}
+            workspaceName={workspace.name}
+            members={members}
+          />
+        )}
         
+        <Sidebar />
         <section className="flex min-h-full flex-1 flex-col px-0 py-6 max-md:pb-14 sm:px-14">
           <div className="w-full">{children}</div>
         </section>
