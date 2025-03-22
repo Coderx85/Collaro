@@ -44,9 +44,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<C
       .insert(workspacesTable)
       .values({
         name,
-        createdBy: dbUser[0]?.id,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdBy: dbUser[0]?.id
       })
       .returning();
     
@@ -79,9 +77,10 @@ export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<C
     const workspaceUsers = await db
       .insert(workspaceUsersTable)
       .values({
-        name: dbUser[0]?.name,
-        workspaceId: workspace[0]?.id,
+        name: dbUser[0]?.userName,
         userId: dbUser[0]?.id,
+        workspaceId: workspace[0]?.id,
+        workspaceName: workspace[0]?.name,
         role: 'admin',
         updatedAt: new Date(),
       })

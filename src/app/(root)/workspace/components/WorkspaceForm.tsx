@@ -82,7 +82,7 @@ const WorkspaceForm = () => {
       toast.success('Workspace created successfully');
       console.log('Joining workspace:', workspaceData);
       setWorkspace(workspaceData.id, workspaceData.name, workspaceData.members);
-
+      router.push(`/workspace/${workspaceData.id}`);
     } catch (error: unknown) {
       console.error(error);
     } finally {
