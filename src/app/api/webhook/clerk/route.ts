@@ -1,17 +1,11 @@
-import { db } from '@/db';
-import { usersTable } from '@/db/schema';
+import { db, usersTable } from '@/db';
+import { clerkClient } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
-// import { eq } from 'drizzle-orm';
-
-// Email Address: work.priyanshu085@gmail.com
-
-// First Name: Priyanshu
-
-// Clerk ID: user_2u8ZvmbIa6ZQgvxqJ5cGgOmXqW2
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    const clerk = await clerkClient();
     console.log(
       `
       Clerk webhook received:: \n
@@ -27,6 +21,15 @@ export async function POST(req: NextRequest) {
       full_name: fullName,
       user_name: userName
     } = body?.data;
+    
+    await clerk.users.updateUserMetadata(
+      id,
+      {
+        publicMetadata: {
+          role: 'admin',
+        }
+      }
+    )
 
     if (!emailAddresses || emailAddresses.length === 0) {
       throw new Error('No email addresses provided');
@@ -39,7 +42,8 @@ export async function POST(req: NextRequest) {
       clerkId: id,
       email,
       name: fullName!,
-      userName: userName!
+      userName: userName!,
+      updatedAt: new Date(),
     }).returning();
 
     if (!user) throw new Error('Error inserting user into database');

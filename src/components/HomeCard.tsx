@@ -1,33 +1,92 @@
 'use client';
 
 import Image from 'next/image';
-
 import { cn } from '@/lib/utils';
+import { cva, type VariantProps } from 'class-variance-authority';
 
-interface HomeCardProps {
-  classname?: string;
+const cardVariants = cva('px-4 py-6 flex flex-col group justify-between w-full xl:max-w-[270px] min-h-[260px] rounded-[14px] cursor-pointer border-2 transition-colors duration-200 ease-in-out',
+  {
+    variants: {
+      variant: {
+        primary: 'hover:border-primary bg-primary/5',
+        orange: 'hover:border-[#FF742E] bg-[#FF742E]/10',
+        purple: 'hover:border-purple bg-purple/10',
+        yellow: 'hover:border-yellow bg-yellow/10'
+      }
+    },
+    defaultVariants: {
+      variant: 'primary'
+    }
+  }
+);
+
+const textVariants = cva('text-2xl font-bold group-hover:text-white', {
+  variants: {
+    variant: {
+      primary: 'text-primary',
+      orange: 'text-[#FF742E]',
+      purple: 'text-purple',
+      yellow: 'text-yellow'
+    }
+  },
+  defaultVariants: {
+    variant: 'primary'
+  }
+});
+
+const descVariants = cva('text-lg font-normal group-hover:text-white', {
+  variants: {
+    variant: {
+      primary: 'text-primary/80',
+      orange: 'text-[#FF742E]/50',
+      purple: 'text-purple/80',
+      yellow: 'text-yellow/50'
+    }
+  },
+  defaultVariants: {
+    variant: 'primary'
+  }
+});
+
+
+interface HomeCardProps extends VariantProps<typeof cardVariants> {
   img: string;
   title: string;
   description: string;
   handleClick?: () => void;
 }
 
-const HomeCard = ({ classname, img, title, description, handleClick }: HomeCardProps) => {
+const HomeCard = ({ 
+  variant = 'primary', 
+  img, 
+  title, 
+  description, 
+  handleClick 
+}: HomeCardProps) => {
   return (
     <section
-      className={cn(
-        'bg-orange-1 px-4 py-6 flex flex-col justify-between w-full xl:max-w-[270px] min-h-[260px] rounded-[14px] cursor-pointer',
-        classname
-      )}
+      className={cardVariants({ variant })}
       onClick={handleClick}
     >
-      <div className="flex-center glassmorphism size-12 rounded-[10px]">
-        <Image src={img} alt="meeting" width={27} height={27} />
+      <div className={cn(
+        "flex items-center justify-center",
+        "size-12 rounded-[10px]",
+        "bg-black/10 backdrop-blur-lg"
+      )}>
+        <Image 
+          src={img} 
+          alt={title} 
+          width={40}
+          height={40}
+          className={"object-obtain"}
+        />
       </div>
       
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold">{title}</h1>
-        <p className="text-lg font-normal">{description}</p>
+        <h2 className={textVariants({ variant })}>{title}</h2>
+        <p className={descVariants({ variant })}>
+          {description}
+        </p>
       </div>
     </section>
   );
