@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { auth } from '@clerk/nextjs/server'
 import { UserButton } from '@clerk/nextjs'
 import { ThemeToggle } from '@/components/ThemeToggle'
-import { FeaturesSectionDemo } from '@/components/Feature'
+// import { Feature } from '@/components/Feature'
 import FAQ from '@/components/FAQs'
 
 const Rootpage = async () => {
@@ -84,20 +84,10 @@ const Rootpage = async () => {
         </div>
 
         {/* Features Section */}
-        <div className="w-full px-4 py-16 min-h-screen flex flex-col items-center justify-center" style={{ scrollSnapAlign: 'start' }}>
-          <h2 className='text-4xl font-bold text-center mb-10 text-slate-900 dark:text-white'>
-            Features
-          </h2>
-          <FeaturesSectionDemo />
-        </div>
+        {/* <Feature /> */}
 
         {/* FAQ Section */}
-        <div className='w-full py-16 px-4 min-h-screen flex flex-col items-center justify-center' style={{ scrollSnapAlign: 'start' }}>
-          <h2 className='text-4xl font-bold text-center mb-10 text-slate-900 dark:text-white'>
-            Frequently Asked Questions
-          </h2>
-          <FAQ />
-        </div>
+        <FAQ />
       </section>
     </>
   )
