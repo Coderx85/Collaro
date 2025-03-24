@@ -21,3 +21,9 @@ export type SidebarLink = {
   details: string;
   component: React.ComponentType<{ selected: boolean; className: string }>;
 };
+
+export interface FeatureCard {
+  icon: React.ComponentType<{ size: number }>;
+  title: string;
+  description: string;
+}
