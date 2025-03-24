@@ -80,7 +80,6 @@ export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<W
         role: 'member',
       })
       .execute();      
-    
 
     console.log('User:', clerkUser.id, 'joined workspace:', workspace[0].id);
     const data = workspace[0]
