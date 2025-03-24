@@ -1,6 +1,16 @@
 import { cn } from "@/lib/utils";
+import { featureCard } from "@/constants";
+import { Icon } from "@/types";
+import React from "react";
 
-export function FeatureSection() {
+interface FeatureProps {
+  icon: Icon;
+  title: string;
+  description: string;
+  index: number;
+}
+
+export function Feature() {
   return (
     <div className="w-full px-4 py-16 min-h-screen flex flex-col items-center justify-center">
       <h2 className='text-4xl font-bold text-center mb-10 text-slate-900 dark:text-white'>
@@ -8,8 +18,7 @@ export function FeatureSection() {
       </h2>
       {featureCard.map((feature, index) => (
         <FeatureBox key={feature.title} {...feature} index={index} />
-      ))
-    }
+      ))}
     </div>
   );
 }
@@ -19,7 +28,7 @@ const FeatureBox = ({
   description,
   icon,
   index
-}) => {
+}: FeatureProps) => {
   return (
     <div
       className={cn(
@@ -32,7 +41,7 @@ const FeatureBox = ({
         <div className="opacity-0 group-hover/feature:opacity-100 border-black transition duration-300 absolute inset-0 h-full w-full bg-gradient-to-b from-primary/20 dark:from-primary/30 to-transparent pointer-events-none" />
       )}
       <div className="mb-4 relative z-10 px-10 text-black dark:text-primary/90 group-hover/feature:text-primary group-hover/feature:dark:text-white">
-        <icon.conponent size={40} />
+        {React.createElement(icon.component, { size: 40 })}
       </div>
       <div className="text-lg font-bold mb-2 relative z-10 px-10">
         <div className="absolute left-0 inset-y-0 h-6 group-hover/feature:h-8 w-1 rounded-tr-full rounded-br-full bg-neutral-400 dark:bg-primary/50 group-hover/feature:bg-primary transition-all duration-200 origin-center" />
