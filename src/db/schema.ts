@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, varchar, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, varchar, pgEnum, serial, boolean } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm/sql';
 
 // Define role enum first
@@ -83,4 +83,18 @@ export const workspaceMeetingTable = pgTable('workspace_meetings', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
   startAt: timestamp('start_at').notNull(),
   endAt: timestamp('end_at')
+});
+
+// Notifications table
+export const notificationsTable = pgTable('notifications', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  title: text('title').notNull(),
+  message: text('message').notNull(),
+  meetingId: text('meeting_id'),
+  workspaceId: text('workspace_id'),
+  scheduledFor: timestamp('scheduled_for'),
+  isRead: boolean('is_read').default(false),
+  type: text('type').notNull().default('meeting'), // 'meeting', 'direct_call', etc.
+  createdAt: timestamp('created_at').defaultNow(),
 });

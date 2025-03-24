@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils'
 import { SiAboutdotme } from 'react-icons/si'
 import { Contact2 } from 'lucide-react'
 import { SignOutButton } from './SignOutButton'
+import { ThemeToggle } from './ThemeToggle'
+import NotificationBell from './NotificationBell'
 
 const navbarlink = [
   {
@@ -28,7 +30,7 @@ const navbarlink = [
 const Navbar = () => {
   const isActive = useSignIn();
   return (
-    <nav className="flex w-full justify-between bg-gradient-to-l from-dark-1 via-cyan-500 to-cyan-800 px-6 py-4 lg:px-10">
+    <nav className="flex w-full justify-between bg-gray-800 via-cyan-500 to-black px-6 py-4 lg:px-10">
       <Link href={!isActive ? '/' : '/workspace'} className="flex items-center gap-1">
         <Image
           src="/icons/logo.svg"
@@ -46,7 +48,7 @@ const Navbar = () => {
           {navbarlink.map((item, index) => {
             return (
               <Tooltip delayDuration={0} key={index}>
-              <TooltipTrigger key={item.title}> 
+                <TooltipTrigger key={item.title}> 
                   <Link
                     href={item.link}
                     key={index}
@@ -68,7 +70,8 @@ const Navbar = () => {
             )
           })}
         </TooltipProvider>
-        
+        <NotificationBell />
+        <ThemeToggle />
         <SignedIn>
           <UserButton />
           <SignOutButton />

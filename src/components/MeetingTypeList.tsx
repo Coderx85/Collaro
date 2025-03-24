@@ -143,31 +143,29 @@ const MeetingTypeList = () => {
       const startsAt =
         values.dateTime.toISOString() || new Date(Date.now()).toISOString();
       const description = values.description || 'Instant Meeting';
+      
+      // Mark this as a scheduled meeting if appropriate
+      const isScheduled = meetingState === 'isScheduleMeeting';
+      
+      // Fixed structure for call creation with scheduled flag
       await call.getOrCreate({
         data: {
           starts_at: startsAt,
           custom: {
             description,
+            scheduled: isScheduled, // Add flag for scheduled meetings
           },
-          // settings_override: {
-          //   transcription: {
-          //     enabled: true
-          //   },
-          // },
           team: workspaceName!,
-          // members: members?.map(memberId => ({
-          //   user_id: memberId,
-          //   role: 'member'
-          // })),
+          members: [
+            { user_id: user.id, role: 'host' }, 
+            ...(members?.map(memberId => ({ user_id: memberId, role: 'member' })) || [])
+          ],
         },
-        members_limit: 2,
-        ring: true,
-        notify: true
+        members_limit: members?.length || 2,
+        notify: true,
       });
       
       setCallDetail(call);
-
-      // await call.startTranscription();
 
       // Save meeting to DB
       await createMeetingDB(workspaceId!, {
@@ -177,12 +175,34 @@ const MeetingTypeList = () => {
         meetingId: `${call.id}`,
       });
 
+      // Create notifications for all workspace members
+      if (isScheduled && members && members.length > 0) {
+        try {
+          await fetch('/api/notifications/create', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              title: 'Upcoming Meeting',
+              message: description || 'A meeting has been scheduled',
+              meetingId: call.id,
+              workspaceId: workspaceId,
+              scheduledFor: startsAt,
+              userIds: members,
+            }),
+          });
+          console.log('Notifications created for scheduled meeting');
+        } catch (error) {
+          console.error('Failed to create notifications:', error);
+        }
+      }
+
       toast({
         title: 'Meeting Created',
       });
 
       if (!values.description) {
-        // window.open(`/meeting/${call.id}`, '_blank', 'noopener,noreferrer');
         router.push(`/meeting/${call.id}`);
       }
     } catch (error) {

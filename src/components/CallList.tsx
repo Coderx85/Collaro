@@ -13,20 +13,20 @@ const CallList = ({ type }: { type: 'ended' | 'upcoming' | 'recordings' }) => {
     useGetCalls();
   const [recordings, setRecordings] = useState<CallRecording[]>([]);
 
-  const getCalls = () => {
+  const getCalls = (): (Call | CallRecording)[] => {
     switch (type) {
       case 'ended':
-        return endedCalls;
+        return endedCalls!;
       case 'recordings':
         return recordings;
       case 'upcoming':
-        return upcomingCalls;
+        return upcomingCalls!;
       default:
         return [];
     }
   };
 
-  const getNoCallsMessage = () => {
+  const getNoCallsMessage = (): string => {
     switch (type) {
       case 'ended':
         return 'No Previous Calls';
@@ -40,7 +40,7 @@ const CallList = ({ type }: { type: 'ended' | 'upcoming' | 'recordings' }) => {
   };
 
   useEffect(() => {
-    const fetchRecordings = async () => {
+    const fetchRecordings = async (): Promise<void> => {
       const callData = await Promise.all(
         callRecordings?.map((meeting) => meeting.queryRecordings()) ?? [],
       );

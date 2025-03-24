@@ -1,18 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, workspaceMeetingTable } from '@/db';
 import { eq } from 'drizzle-orm';
-// import { APIResponse, MeetingIdOnly } from '@/types';
 
 export async function PATCH(req: NextRequest, { params }: { params: { meetingId: string } }) {
-  // const meetingId = await req.query;
   const { meetingId } = await params;
   console.log('MeetingId: \n', meetingId);
-  // console.log(req.query);
   try {
-    // Get the meetingId from the URL parameters
-    // const meetingId = await params.meetingId;
-    // console.log('MeetingId: \n', meetingId);
-
     // Update the meeting in the database with end time
     const updatedMeeting = await db
       .update(workspaceMeetingTable)

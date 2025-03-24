@@ -24,7 +24,7 @@ const RootLayout = async ({ children, params }: {
 
   return (
     <main>
-      <div className="flex h-screen">
+      <div className="flex">
 
         {/* Initialize workspace state */}
         {workspace && (
@@ -36,7 +36,7 @@ const RootLayout = async ({ children, params }: {
         )}
         
         <Sidebar />
-        <section className="flex min-h-full flex-1 flex-col px-0 py-6 max-md:pb-14 sm:px-14">
+        <section className="flex bg-primary/5 min-h-full flex-1 flex-col px-0 py-6 max-md:pb-14 sm:px-14">
           <div className="w-full">{children}</div>
         </section>
       </div>

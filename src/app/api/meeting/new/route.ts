@@ -2,7 +2,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server"
 import { APIResponse, MeetingResponse } from "@/types";
-import { db, usersTable, workspaceMeetingTable } from "@/db";
+import { db, usersTable, workspaceMeetingTable, workspacesTable } from "@/db";
 
 export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<MeetingResponse>>> {
   try {
@@ -20,11 +20,22 @@ export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<M
       .where(eq(usersTable.clerkId, user.id))
       .execute();
 
+    const workspace = await db
+      .select()
+      .from(workspacesTable)
+      .where(eq(workspacesTable.id, data.workspaceId))
+      .execute();
+
+    if(!workspace) {
+      return NextResponse.json({ success: false, error: 'Workspace not found' });
+    }
+
     const createMeeting = await db
       .insert(workspaceMeetingTable)
       .values({
         workspaceId: data.workspaceId,
-        name: data.name,
+        workspacName: workspace[0]?.name,
+        title: data.name,
         hostedBy: dbUser[0]?.id,
         description: data?.description || "Instant Meeting",
         meetingId: data.meetingId || "",
@@ -42,9 +53,22 @@ export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<M
       return NextResponse.json({ success: false, error: 'Failed to create meeting' });
     }
       
+    // Transform to match MeetingResponse type
+    const meetingResponse: MeetingResponse = {
+      ttile: meeting.title, // Note: 'ttile' appears to be a typo in the MeetingResponse interface
+      workspaceName: meeting.workspacName, // Fix property name to match expected interface
+      description: meeting.description,
+      meetingId: meeting.meetingId,
+      hostedBy: meeting.hostedBy,
+      workspaceId: meeting.workspaceId,
+      startAt: meeting.startAt,
+      endAt: meeting.endAt,
+      createdAt: meeting.createdAt
+    };
+    
     console.log(`New meeting created with name: ${data.name} and hosted by: ${username}`);
-    console.log(NextResponse.json({ success : true, data: meeting }));
-    return NextResponse.json({ success: true, data: meeting });
+    console.log(NextResponse.json({ success : true, data: meetingResponse }));
+    return NextResponse.json({ success: true, data: meetingResponse });
   } catch (error: unknown) {
     console.error('Error in workspace/new POST:', error);
     return new NextResponse('Internal Server Error', {status: 500});

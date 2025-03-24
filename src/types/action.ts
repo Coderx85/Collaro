@@ -3,5 +3,9 @@ export type clientCall = {
   name: string;
   team: string;
   role: string;
+  custom?: {
+    callType: string;
+    description: string;
+    scheduled?: boolean;
+  }
 }
-

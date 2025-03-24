@@ -52,7 +52,7 @@ export interface Meeting {
   hostedBy: string;
   description: string | null;
   startAt: Date;
-  endAt: Date;
+  endAt: Date | null;
   meetingId: string;
 }
 

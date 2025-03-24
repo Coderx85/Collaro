@@ -38,8 +38,8 @@ export async function getWorkspaceUsers(workspaceId: string)  {
 
   const members = await db
     .select()
-    .from(workspaceUsersTable)
-    .where(eq(workspaceUsersTable.workspaceId, workspaceId))
+    .from(usersTable)
+    .where(eq(usersTable.workspaceId, workspaceId))
     .execute();
 
   return {data: members};
@@ -144,13 +144,11 @@ export async function getWorkspace(userId: string) {
 
     const workspaceMember = await getWorkspaceUsers(user[0]?.workspaceId);
     if(!workspaceMember.data) return { message: "No members found for this workspace" }
-    // console.log(`WorkspaceMember::`,workspaceMember.data)
+    
     const memberData = workspaceMember.data
-    // console.log(`Member`, member)
-    const members = memberData.map(m => m.userId);
+    const members = memberData.map(m => m.clerkId);
     const data = { ...workspace[0], members }
     return { data } 
-    // return {data: [...workspace[0], member]};
   } catch (error: unknown) {
     return { error: `Failed to get workspace:: \n ${error}`} 
   }
