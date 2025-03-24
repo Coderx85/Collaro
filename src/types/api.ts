@@ -1,16 +1,10 @@
+import { UserRoleType } from './database';
+
 export type APIResponse<T> = {
   success: boolean;
   data?: T;
   error?: string;
 }
-
-export const UserRole = {
-  OWNER: 'owner',
-  ADMIN: 'admin',
-  MEMBER: 'member'
-} as const;
-
-export type UserRoleType = typeof UserRole[keyof typeof UserRole];
 
 export type UserResponse = {
   id: string;
@@ -41,9 +35,13 @@ export type CreateWorkspaceResponse = {
   updatedAt: Date | null;
 }
 
+export type MeetingIdOnly = Pick<MeetingResponse, 'meetingId'>;
+
 export type MeetingResponse = {
-  name: string;
+  ttile: string;
   hostedBy: string;
+  workspaceId: string;
+  workspaceName: string;
   description: string;
   meetingId: string;
   startAt: Date;

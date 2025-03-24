@@ -20,10 +20,23 @@ export type SidebarLink = {
   label: string;
   details: string;
   component: React.ComponentType<{ selected: boolean; className: string }>;
+  allowed: boolean;
 };
 
 export interface FeatureCard {
   icon: React.ComponentType<{ size: number }>;
   title: string;
   description: string;
+}
+
+export interface NotificationProps {
+  id: number;
+  title: string;
+  message: string;
+  meetingId?: string;
+  workspaceId?: string;
+  scheduledFor?: string;
+  isRead: boolean;
+  type: string;
+  createdAt: string;
 }
