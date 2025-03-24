@@ -8,6 +8,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/t
 import { cn } from '@/lib/utils'
 import { SiAboutdotme } from 'react-icons/si'
 import { Contact2 } from 'lucide-react'
+import { SignOutButton } from './SignOutButton'
 
 const navbarlink = [
   {
@@ -24,12 +25,11 @@ const navbarlink = [
   }
 ]
 
-
 const Navbar = () => {
   const isActive = useSignIn();
   return (
-    <nav className="flex w-full justify-between bg-dark-1 px-6 py-4 lg:px-10">
-      <Link href={!isActive ? '/' : '/dashboard'} className="flex items-center gap-1">
+    <nav className="flex w-full justify-between bg-gradient-to-l from-dark-1 via-cyan-500 to-cyan-800 px-6 py-4 lg:px-10">
+      <Link href={!isActive ? '/' : '/workspace'} className="flex items-center gap-1">
         <Image
           src="/icons/logo.svg"
           width={32}
@@ -37,8 +37,8 @@ const Navbar = () => {
           alt="yoom logo"
           className="max-sm:size-10"
         />
-        <p className="group text-[26px] font-extrabold text-white duration-75 hover:text-primary max-sm:hidden">
-          Devn<span className='text-primary group-hover:text-white'>Talk</span>
+        <p className="group text-[26px] font-extrabold text-white duration-75 hover:text-white max-sm:hidden">
+          Devn<span className='text-primary'>Talk</span>
         </p>
       </Link>
       <div className="flex items-center justify-center gap-8 px-4 py-2 text-lg font-bold">
@@ -70,8 +70,10 @@ const Navbar = () => {
         </TooltipProvider>
         
         <SignedIn>
-          <UserButton afterSignOutUrl="/sign-in" />
+          <UserButton />
+          <SignOutButton />
         </SignedIn>
+        
         <MobileNav />
       </div>
     </nav>
