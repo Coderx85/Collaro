@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useToast } from './ui/use-toast';
-import { useUser } from '@clerk/nextjs';
-import { Button } from './ui/button';
-import { PhoneCall } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
-import { useStreamVideoClient } from '@stream-io/video-react-sdk';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useToast } from "./ui/use-toast";
+import { useUser } from "@clerk/nextjs";
+import { Button } from "./ui/button";
+import { PhoneCall } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 // import { useWorkspaceStore } from '@/store/workspace';
-import Loader from './Loader';
+import Loader from "./Loader";
 
 interface DirectCallButtonProps {
   memberId: string;
@@ -27,17 +27,17 @@ const DirectCallButton = ({ memberId, memberName }: DirectCallButtonProps) => {
 
   const startDirectCall = async () => {
     if (!client || !user) return;
-    
+
     try {
       setIsCallStarting(true);
       console.log("Creating call with member ID:", memberId);
-      
+
       // Create a unique meeting ID
       const id = crypto.randomUUID();
-      const call = client.call('default', id);
-      
-      if (!call) throw new Error('Failed to create call');
-      
+      const call = client.call("default", id);
+
+      if (!call) throw new Error("Failed to create call");
+
       // Completely restructured call creation to follow the exact API format
       await call.getOrCreate({
         notify: true,
@@ -45,48 +45,45 @@ const DirectCallButton = ({ memberId, memberName }: DirectCallButtonProps) => {
           starts_at: new Date().toISOString(),
           custom: {
             description: `Direct call with ${memberName}`,
-            callType: 'direct'
+            callType: "direct",
           },
-          members: [
-            { user_id: memberId, role: 'call_member' }
-          ],
+          members: [{ user_id: memberId, role: "call_member" }],
         },
         // ring: true,
       });
 
       // Create notification for the call recipient
       try {
-        await fetch('/api/notifications/create', {
-          method: 'POST',
+        await fetch("/api/notifications/create", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             title: `Call from ${user.fullName || user.username}`,
             message: `${user.fullName || user.username} is calling you`,
             meetingId: call.id,
             userIds: [memberId],
-            type: 'direct_call',
+            type: "direct_call",
           }),
         });
       } catch (error) {
-        console.error('Failed to create call notification:', error);
+        console.error("Failed to create call notification:", error);
       }
 
       // Navigate to the call page
       router.push(`/meeting/${call.id}`);
-      
+
       toast({
-        title: 'Calling member...',
-        description: `Connecting to ${memberName}`
+        title: "Calling member...",
+        description: `Connecting to ${memberName}`,
       });
-      
     } catch (error) {
-      console.error('Error starting direct call:', error);
-      console.error('Error details:', JSON.stringify(error, null, 2));
-      toast({ 
-        title: 'Failed to start call',
-        variant: 'destructive'
+      console.error("Error starting direct call:", error);
+      console.error("Error details:", JSON.stringify(error, null, 2));
+      toast({
+        title: "Failed to start call",
+        variant: "destructive",
       });
     } finally {
       setIsCallStarting(false);
@@ -99,37 +96,31 @@ const DirectCallButton = ({ memberId, memberName }: DirectCallButtonProps) => {
   return (
     <>
       <Button
-        variant="outline"
-        size={'sm'}
-        className="rounded-full"
+        variant='outline'
+        size={"sm"}
+        className='rounded-full'
         onClick={() => setIsDialogOpen(true)}
         title={`Call ${memberName}`}
       >
-        <PhoneCall className="h-4 w-4" />
+        <PhoneCall className='h-4 w-4' />
       </Button>
-      
+
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Call {memberName}</DialogTitle>
           </DialogHeader>
-          
-          <div className="flex flex-col items-center justify-center gap-6 py-4">
+
+          <div className='flex flex-col items-center justify-center gap-6 py-4'>
             <p>Start a direct video call with {memberName}?</p>
-            
-            <div className="flex gap-4">
-              <Button
-                variant="outline"
-                onClick={() => setIsDialogOpen(false)}
-              >
+
+            <div className='flex gap-4'>
+              <Button variant='outline' onClick={() => setIsDialogOpen(false)}>
                 Cancel
               </Button>
-              
-              <Button
-                onClick={startDirectCall}
-                disabled={isCallStarting}
-              >
-                {isCallStarting ? <Loader /> : 'Start Call'}
+
+              <Button onClick={startDirectCall} disabled={isCallStarting}>
+                {isCallStarting ? <Loader /> : "Start Call"}
               </Button>
             </div>
           </div>

@@ -1,102 +1,103 @@
-"use client"
-import React, { FormEvent } from 'react'
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input'; 
-import { Textarea } from '@/components/ui/textarea';
-import { FaEnvelope, FaPhone, FaLocationArrow, FaLinkedin } from 'react-icons/fa'
-import { toast } from 'sonner';
+"use client";
+import React, { FormEvent } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  FaEnvelope,
+  FaPhone,
+  FaLocationArrow,
+  FaLinkedin,
+} from "react-icons/fa";
+import { toast } from "sonner";
 
 const contactInfo = [
   {
-    title: 'Email',
-    description: 'work.priyanshu085@gmail.com',
-    icon: <FaEnvelope />
+    title: "Email",
+    description: "work.priyanshu085@gmail.com",
+    icon: <FaEnvelope />,
   },
   {
-    title: 'Phone',
-    description: '(+91) 707 191 5785',
-    icon: <FaPhone />
+    title: "Phone",
+    description: "(+91) 707 191 5785",
+    icon: <FaPhone />,
   },
   {
-    title: 'Location',
-    description: 'New Delhi, India',
-    icon: <FaLocationArrow />
+    title: "Location",
+    description: "New Delhi, India",
+    icon: <FaLocationArrow />,
   },
   {
-    title: 'LinkedIn',
-    description: 'coderx85',
-    icon: <FaLinkedin />
-  }
-]
+    title: "LinkedIn",
+    description: "coderx85",
+    icon: <FaLinkedin />,
+  },
+];
 
 const Contact = () => {
-
   const [formData, setFormData] = React.useState({
-    name: '',
-    email: '',
-    company: '',
-    phone: '',
-    message: ''
-  })
+    name: "",
+    email: "",
+    company: "",
+    phone: "",
+    message: "",
+  });
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    console.log(formData)
+    e.preventDefault();
+    console.log(formData);
 
     // Send email to the user
-    const res = await fetch('/api/contact', {
-      method: 'POST',
+    const res = await fetch("/api/contact", {
+      method: "POST",
       body: JSON.stringify(formData),
       headers: {
-        'Content-Type': 'application/json'
-      }
-    })
+        "Content-Type": "application/json",
+      },
+    });
 
     if (!res.ok) {
-      console.error('Failed to send email')
+      console.error("Failed to send email");
     }
 
     if (res.ok) {
-      toast.success('Email sent successfully')
+      toast.success("Email sent successfully");
     }
 
-    const data = await res.json()
-    console.log(data)
-  }
-
+    const data = await res.json();
+    console.log(data);
+  };
 
   return (
     <div className='container mx-auto pt-32'>
-      <div className="flex flex-col xl:flex-row gap-[30px] bg-black rounded-2xl">
+      <div className='flex flex-col xl:flex-row gap-[30px] bg-black rounded-2xl'>
         <div className='xl:h-[54%] order-3 xl:order-none' id='contact'>
-          <form 
+          <form
             onSubmit={handleSubmit}
-            className="flex flex-col gap-6 p-10 rounded-xl"
+            className='flex flex-col gap-6 p-10 rounded-xl'
           >
-            <h2 className="text-4xl text-primary">
-              Let&apos;s Work Together
-            </h2>
-            <p className="text-white/60">
+            <h2 className='text-4xl text-primary'>Let&apos;s Work Together</h2>
+            <p className='text-white/60'>
               {" "}
-              I&apos;m currently looking for new opportunities, my inbox is always
-              open. Whether you have a question or just want to say hi, I&apos;ll
-              try my best to get back to you!
+              I&apos;m currently looking for new opportunities, my inbox is
+              always open. Whether you have a question or just want to say hi,
+              I&apos;ll try my best to get back to you!
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
               <Input
-                variant={'outline'}
-                type="email"
-                id="email"
+                variant={"outline"}
+                type='email'
+                id='email'
                 required
-                placeholder="Email address"
+                placeholder='Email address'
                 onChange={(e) => {
                   setFormData({ ...formData, email: e.target.value });
                 }}
               />
               <Input
-                variant={'outline'}
-                type="text"
-                id="name"
+                variant={"outline"}
+                type='text'
+                id='name'
                 placeholder='Name'
                 required
                 onChange={(e) => {
@@ -104,9 +105,9 @@ const Contact = () => {
                 }}
               />
               <Input
-                variant={'outline'}
-                type="text"
-                id="company"
+                variant={"outline"}
+                type='text'
+                id='company'
                 placeholder='Company'
                 required
                 onChange={(e) => {
@@ -114,32 +115,27 @@ const Contact = () => {
                 }}
               />
               <Input
-                variant={'outline'}
-                type="text"
-                id="phone"
+                variant={"outline"}
+                type='text'
+                id='phone'
                 placeholder='Phone'
                 required
                 onChange={(e) => {
                   setFormData({ ...formData, phone: e.target.value });
                 }}
               />
-
             </div>
-              <Textarea
-                name="message"
-                id="message"
-                className="h-[200px]"
-                placeholder="Let's talk about..."
-                required
-                onChange={(e) => {
-                  setFormData({ ...formData, message: e.target.value });
-                }}
-              />  
-            <Button
-              variant={'outline'}
-              type="submit"
-              className=" font-medium"
-            >
+            <Textarea
+              name='message'
+              id='message'
+              className='h-[200px]'
+              placeholder="Let's talk about..."
+              required
+              onChange={(e) => {
+                setFormData({ ...formData, message: e.target.value });
+              }}
+            />
+            <Button variant={"outline"} type='submit' className=' font-medium'>
               Send Message
             </Button>
           </form>
@@ -157,13 +153,13 @@ const Contact = () => {
                     <h3 className='text-lg'>{info.description}</h3>
                   </div>
                 </li>
-              )
+              );
             })}
           </ul>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Contact
+export default Contact;

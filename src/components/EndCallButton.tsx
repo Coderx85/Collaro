@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { useCall, useCallStateHooks } from '@stream-io/video-react-sdk';
-import { Button } from './ui/button';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { Phone } from 'lucide-react';
-import { toast } from 'sonner';
-import { useWorkspaceStore } from '@/store/workspace';
+import { useCall, useCallStateHooks } from "@stream-io/video-react-sdk";
+import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Phone } from "lucide-react";
+import { toast } from "sonner";
+import { useWorkspaceStore } from "@/store/workspace";
 
 const EndCallButton = () => {
   const call = useCall();
   const router = useRouter();
   const [isEnding, setIsEnding] = useState(false);
   const { workspaceId } = useWorkspaceStore();
-  
+
   if (!call)
     throw new Error(
-      'useStreamCall must be used within a StreamCall component.',
+      "useStreamCall must be used within a StreamCall component.",
     );
 
   // https://getstream.io/video/docs/react/guides/call-and-participant-state/#participant-state-3
@@ -27,7 +27,7 @@ const EndCallButton = () => {
     localParticipant &&
     call.state.createdBy &&
     localParticipant.userId === call.state.createdBy.id;
-  
+
   if (!isMeetingOwner) return null;
 
   const endCall = async () => {
@@ -38,42 +38,41 @@ const EndCallButton = () => {
 
       // Update the meeting end time in the database
       const res = await fetch(`/api/meeting/${call.id}/end`, {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
-        }
+          "Content-Type": "application/json",
+        },
       });
-      
+
       if (!res.ok) {
-        throw new Error('Failed to update meeting end time');
+        throw new Error("Failed to update meeting end time");
       }
 
       // await call.stopTranscription();
       // End the call for everyone
       await call.endCall();
-      toast.success('Call ended');
+      toast.success("Call ended");
       router.push(`/workspace/${workspaceId}`);
     } catch (error: unknown) {
-      toast.error('Failed to end call');
+      toast.error("Failed to end call");
       console.error("Error ending call:", error);
     } finally {
       setIsEnding(false);
     }
-
   };
 
   return (
-    <Button 
-      onClick={endCall} 
+    <Button
+      onClick={endCall}
       disabled={isEnding}
       className={`
         gap-2 px-4 py-2
-        ${isEnding ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-600'}
+        ${isEnding ? "opacity-50 cursor-not-allowed" : "hover:bg-red-600"}
       `}
-      variant={'destructive'}
+      variant={"destructive"}
     >
-      <Phone className="h-4 w-4" />
-      {isEnding ? 'Ending call...' : 'End call for everyone'}
+      <Phone className='h-4 w-4' />
+      {isEnding ? "Ending call..." : "End call for everyone"}
     </Button>
   );
 };

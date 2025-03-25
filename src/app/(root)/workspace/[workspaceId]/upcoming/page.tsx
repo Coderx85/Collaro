@@ -1,9 +1,9 @@
-import CallList from '@/components/CallList';
+import CallList from "@/components/CallList";
 
 const UpcomingPage = () => {
   return (
     <>
-      <CallList type="upcoming" />  
+      <CallList type='upcoming' />
     </>
   );
 };

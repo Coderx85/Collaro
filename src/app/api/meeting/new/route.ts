@@ -1,16 +1,18 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server";
 import { APIResponse, MeetingResponse } from "@/types";
 import { db, usersTable, workspaceMeetingTable, workspacesTable } from "@/db";
 
-export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<MeetingResponse>>> {
+export async function POST(
+  req: NextRequest,
+): Promise<NextResponse<APIResponse<MeetingResponse>>> {
   try {
     const { data } = await req.json();
-    console.log('Data: \n', data);
+    console.log("Data: \n", data);
     const user = await currentUser();
-    if(!user) {
-      return NextResponse.json({ success: false, error: 'User not found' });
+    if (!user) {
+      return NextResponse.json({ success: false, error: "User not found" });
     }
     const username = user.username;
 
@@ -26,8 +28,11 @@ export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<M
       .where(eq(workspacesTable.id, data.workspaceId))
       .execute();
 
-    if(!workspace) {
-      return NextResponse.json({ success: false, error: 'Workspace not found' });
+    if (!workspace) {
+      return NextResponse.json({
+        success: false,
+        error: "Workspace not found",
+      });
     }
 
     const createMeeting = await db
@@ -46,13 +51,16 @@ export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<M
 
     const meeting = {
       ...createMeeting[0],
-      description: createMeeting[0].description || "Instant Meeting"
+      description: createMeeting[0].description || "Instant Meeting",
     };
 
-    if(!meeting) {
-      return NextResponse.json({ success: false, error: 'Failed to create meeting' });
+    if (!meeting) {
+      return NextResponse.json({
+        success: false,
+        error: "Failed to create meeting",
+      });
     }
-      
+
     // Transform to match MeetingResponse type
     const meetingResponse: MeetingResponse = {
       ttile: meeting.title, // Note: 'ttile' appears to be a typo in the MeetingResponse interface
@@ -63,14 +71,16 @@ export async function POST(req: NextRequest): Promise<NextResponse<APIResponse<M
       workspaceId: meeting.workspaceId,
       startAt: meeting.startAt,
       endAt: meeting.endAt,
-      createdAt: meeting.createdAt
+      createdAt: meeting.createdAt,
     };
-    
-    console.log(`New meeting created with name: ${data.name} and hosted by: ${username}`);
-    console.log(NextResponse.json({ success : true, data: meetingResponse }));
+
+    console.log(
+      `New meeting created with name: ${data.name} and hosted by: ${username}`,
+    );
+    console.log(NextResponse.json({ success: true, data: meetingResponse }));
     return NextResponse.json({ success: true, data: meetingResponse });
   } catch (error: unknown) {
-    console.error('Error in workspace/new POST:', error);
-    return new NextResponse('Internal Server Error', {status: 500});
+    console.error("Error in workspace/new POST:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

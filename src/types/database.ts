@@ -1,10 +1,10 @@
 export const UserRole = {
-  OWNER: 'owner',
-  ADMIN: 'admin',
-  MEMBER: 'member'
+  OWNER: "owner",
+  ADMIN: "admin",
+  MEMBER: "member",
 } as const;
 
-export type UserRoleType = typeof UserRole[keyof typeof UserRole];
+export type UserRoleType = (typeof UserRole)[keyof typeof UserRole];
 
 export interface User {
   id: string;
@@ -24,10 +24,12 @@ export const isValidUserRole = (role: string): role is UserRoleType => {
 };
 
 // Utility type for creating new users
-export type CreateUserInput = Omit<User, 'id' | 'createdAt' | 'updatedAt'>;
+export type CreateUserInput = Omit<User, "id" | "createdAt" | "updatedAt">;
 
 // Utility type for updating users
-export type UpdateUserInput = Partial<Omit<User, 'id' | 'clerkId' | 'createdAt'>>;
+export type UpdateUserInput = Partial<
+  Omit<User, "id" | "clerkId" | "createdAt">
+>;
 
 export interface Workspace {
   id: string;
@@ -56,7 +58,7 @@ export interface Meeting {
   meetingId: string;
 }
 
-export type CreateMeetingInput = Omit<Meeting, 'endAt'>;
+export type CreateMeetingInput = Omit<Meeting, "endAt">;
 
 export interface AnalyticsData {
   totalUsers: number;

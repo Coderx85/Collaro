@@ -1,21 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { Bell, Loader } from 'lucide-react';
-import { Button } from './ui/button';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from './ui/popover';
-import { format } from 'date-fns';
-import { useRouter } from 'next/navigation';
-import { ScrollArea } from './ui/scroll-area';
-import { Badge } from './ui/badge';
-import { useStreamVideoClient } from '@stream-io/video-react-sdk';
-import { NotificationProps } from '@/types';
+import { useState, useEffect, useCallback } from "react";
+import { useUser } from "@clerk/nextjs";
+import { Bell, Loader } from "lucide-react";
+import { Button } from "./ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { format } from "date-fns";
+import { useRouter } from "next/navigation";
+import { ScrollArea } from "./ui/scroll-area";
+import { Badge } from "./ui/badge";
+import { useStreamVideoClient } from "@stream-io/video-react-sdk";
+import { NotificationProps } from "@/types";
 
 const NotificationBell = () => {
   const [notifications, setNotifications] = useState<NotificationProps[]>([]);
@@ -28,13 +24,13 @@ const NotificationBell = () => {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/notifications?limit=20');
+      const response = await fetch("/api/notifications?limit=20");
       if (response.ok) {
         const data = await response.json();
         setNotifications(data.notifications || []);
       }
     } catch (error) {
-      console.error('Failed to fetch notifications:', error);
+      console.error("Failed to fetch notifications:", error);
     } finally {
       setLoading(false);
     }
@@ -42,23 +38,23 @@ const NotificationBell = () => {
 
   // Handle incoming call notifications from Stream
   const handleCallEvent = useCallback((event: any) => {
-    console.log('Call event received:', event);
-    
+    console.log("Call event received:", event);
+
     // This means someone is calling the current user
-    if (event.call?.custom?.callType === 'direct' && event.created_at) {
+    if (event.call?.custom?.callType === "direct" && event.created_at) {
       // Add a temporary notification for the call
       const newNotification = {
         id: Date.now(), // Temporary ID
         title: `Incoming Call`,
-        message: event.call.custom.description || 'Someone is calling you',
+        message: event.call.custom.description || "Someone is calling you",
         meetingId: event.call.id,
         isRead: false,
-        type: 'direct_call',
+        type: "direct_call",
         createdAt: new Date().toISOString(),
       };
-      
-      setNotifications(prev => [newNotification, ...prev]);
-      
+
+      setNotifications((prev) => [newNotification, ...prev]);
+
       // Refresh notifications to get the persisted version
       setTimeout(fetchNotifications, 2000);
     }
@@ -66,24 +62,25 @@ const NotificationBell = () => {
 
   // Handle scheduled meeting notifications from Stream
   const handleMeetingEvent = useCallback((event: any) => {
-    console.log('Meeting event received:', event);
-    
+    console.log("Meeting event received:", event);
+
     // Only handle scheduled meetings, not instant ones
     if (event.call?.custom?.scheduled === true && event.created_at) {
       // Add a temporary notification for the scheduled meeting
       const newNotification = {
         id: Date.now(), // Temporary ID
-        title: 'Meeting Scheduled',
-        message: event.call.custom.description || 'A new meeting has been scheduled',
+        title: "Meeting Scheduled",
+        message:
+          event.call.custom.description || "A new meeting has been scheduled",
         meetingId: event.call.id,
         scheduledFor: event.call.starts_at,
         isRead: false,
-        type: 'meeting',
+        type: "meeting",
         createdAt: new Date().toISOString(),
       };
-      
-      setNotifications(prev => [newNotification, ...prev]);
-      
+
+      setNotifications((prev) => [newNotification, ...prev]);
+
       // Refresh notifications to get the persisted version
       setTimeout(fetchNotifications, 2000);
     }
@@ -98,12 +95,15 @@ const NotificationBell = () => {
   // Set up Stream event listeners
   useEffect(() => {
     if (!client || !user) return;
-    
+
     // Register event handlers for call and meeting notifications
-    const callCreatedUnsubscribe = client.on('call.created', handleCallEvent);
-    const callUpdatedUnsubscribe = client.on('call.updated', handleMeetingEvent);
-    const callRingUnsubscribe = client.on('call.ring', handleCallEvent);
-    
+    const callCreatedUnsubscribe = client.on("call.created", handleCallEvent);
+    const callUpdatedUnsubscribe = client.on(
+      "call.updated",
+      handleMeetingEvent,
+    );
+    const callRingUnsubscribe = client.on("call.ring", handleCallEvent);
+
     // Cleanup function to unregister event handlers
     return () => {
       callCreatedUnsubscribe();
@@ -114,99 +114,111 @@ const NotificationBell = () => {
 
   const markAsRead = async (id: number) => {
     try {
-      await fetch('/api/notifications', {
-        method: 'PATCH',
+      await fetch("/api/notifications", {
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ id, isRead: true }),
       });
-      
-      setNotifications(prev => 
-        prev.map(notification => 
-          notification.id === id 
+
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification.id === id
             ? { ...notification, isRead: true }
-            : notification
-        )
+            : notification,
+        ),
       );
     } catch (error) {
-      console.error('Failed to mark notification as read:', error);
+      console.error("Failed to mark notification as read:", error);
     }
   };
 
   const handleNotificationClick = (notification: NotificationProps) => {
     markAsRead(notification.id);
-    
+
     if (notification.meetingId) {
       router.push(`/meeting/${notification.meetingId}`);
       setOpen(false);
     }
   };
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   if (!user) return null;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant={'outline'} size={'lg'} className="relative">
-          <Bell className="h-5 w-5" />
+        <Button variant={"outline"} size={"lg"} className='relative'>
+          <Bell className='h-5 w-5' />
           {unreadCount > 0 && (
-            <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full p-0">
+            <Badge
+              variant='destructive'
+              className='absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full p-0'
+            >
               {unreadCount}
             </Badge>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80" align="end">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="font-medium">Notifications</h3>
+      <PopoverContent className='w-80' align='end'>
+        <div className='flex items-center justify-between mb-2'>
+          <h3 className='font-medium'>Notifications</h3>
           {unreadCount > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-xs"
+            <Button
+              variant='ghost'
+              size='sm'
+              className='text-xs'
               onClick={() => fetchNotifications()}
             >
               Refresh
             </Button>
           )}
         </div>
-        
+
         {loading ? (
-          <div className="flex justify-center py-4">
+          <div className='flex justify-center py-4'>
             <Loader size={10} className='animate-spin' />
           </div>
         ) : notifications.length === 0 ? (
-          <p className="text-center py-4 text-sm text-muted-foreground">
+          <p className='text-center py-4 text-sm text-muted-foreground'>
             No notifications
           </p>
         ) : (
-          <ScrollArea className="h-[300px] pr-3">
-            <div className="space-y-2">
+          <ScrollArea className='h-[300px] pr-3'>
+            <div className='space-y-2'>
               {notifications.map((notification) => (
-                <div 
+                <div
                   key={notification.id}
                   className={`p-3 rounded-lg cursor-pointer ${
-                    notification.isRead 
-                      ? 'bg-background hover:bg-secondary/50' 
-                      : 'bg-secondary/30 hover:bg-secondary/50'
+                    notification.isRead
+                      ? "bg-background hover:bg-secondary/50"
+                      : "bg-secondary/30 hover:bg-secondary/50"
                   }`}
                   onClick={() => handleNotificationClick(notification)}
                 >
-                  <div className="flex justify-between items-start">
-                    <h4 className="font-medium text-sm">{notification.title}</h4>
+                  <div className='flex justify-between items-start'>
+                    <h4 className='font-medium text-sm'>
+                      {notification.title}
+                    </h4>
                     {!notification.isRead && (
-                      <Badge variant="outline" className="text-xs">New</Badge>
+                      <Badge variant='outline' className='text-xs'>
+                        New
+                      </Badge>
                     )}
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
-                  
+                  <p className='text-sm text-muted-foreground mt-1'>
+                    {notification.message}
+                  </p>
+
                   {notification.scheduledFor && (
-                    <div className="flex items-center mt-2 text-xs text-muted-foreground">
+                    <div className='flex items-center mt-2 text-xs text-muted-foreground'>
                       <span>
-                        {format(new Date(notification.scheduledFor), 'MMM d, yyyy h:mm a')}
+                        {format(
+                          new Date(notification.scheduledFor),
+                          "MMM d, yyyy h:mm a",
+                        )}
                       </span>
                     </div>
                   )}

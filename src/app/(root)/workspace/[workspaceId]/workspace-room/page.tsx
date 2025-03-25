@@ -1,17 +1,22 @@
-import Box from './_components/box'
-import { Table, TableBody, TableCaption, TableCell, TableHeader, TableRow } from '@/components/ui/table'
-import { getUser, getWorkspace, getWorkspaceUsers } from '@/action'
-import { Separator } from '@/components/ui/separator'
+import Box from "./_components/box";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { getUser, getWorkspace, getWorkspaceUsers } from "@/action";
+import { Separator } from "@/components/ui/separator";
 
-const WorskpaceRoom = async ({
-
-}) => {
-  const user = await getUser()
+const WorskpaceRoom = async ({}) => {
+  const user = await getUser();
   const workspaceId = user?.data?.workspaceId;
   if (!workspaceId) {
     throw new Error("Workspace ID is undefined");
   }
-  console.log('workspaceId', workspaceId)
+  console.log("workspaceId", workspaceId);
   if (!user?.data?.clerkId) {
     throw new Error("Clerk ID is undefined");
   }
@@ -46,29 +51,20 @@ const WorskpaceRoom = async ({
             <TableCell>Joined At</TableCell>
           </TableRow>
         </TableHeader>
-          {Array.isArray(workspaceUser) && (
+        {Array.isArray(workspaceUser) &&
           workspaceUser.map((user) => (
             <TableBody key={user.userId}>
               <TableRow>
-                <TableCell>
-                  {user.name}
-                </TableCell>
-                <TableCell>
-                  {user.userName}
-                </TableCell>
-                <TableCell>
-                  {user.role}
-                </TableCell>
-                <TableCell>
-                  {String(user.joinedAt).split('T')[0]}
-                </TableCell>
+                <TableCell>{user.name}</TableCell>
+                <TableCell>{user.userName}</TableCell>
+                <TableCell>{user.role}</TableCell>
+                <TableCell>{String(user.joinedAt).split("T")[0]}</TableCell>
               </TableRow>
             </TableBody>
-        ))
-      )}
+          ))}
       </Table>
     </div>
-  )
-}
+  );
+};
 
-export default WorskpaceRoom
+export default WorskpaceRoom;

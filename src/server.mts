@@ -10,29 +10,30 @@ const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
-  const httpServer = createServer(handle)
+  const httpServer = createServer(handle);
   const io = new Server(httpServer);
 
   io.on("connection", (socket) => {
     console.log(`User connected: ${socket.id}`);
-    
-    socket.on("join-room", ({roomId, userId}) => {
+
+    socket.on("join-room", ({ roomId, userId }) => {
       socket.join(roomId);
       console.log(`User ${userId} joined room ${roomId}`);
-      socket.to(roomId).emit("user_joined", `🔔 ${userId} joined room ${roomId}`);
-    })
+      socket
+        .to(roomId)
+        .emit("user_joined", `🔔 ${userId} joined room ${roomId}`);
+    });
 
-    socket.on("message", ({sender, room, message}) => {
+    socket.on("message", ({ sender, room, message }) => {
       console.log(`Message from ${sender} in room ${room}: ${message}`);
-      socket.to(room).emit("message", {sender, message});
-    })
+      socket.to(room).emit("message", { sender, message });
+    });
     socket.on("disconnect", () => {
       console.log(`User disconnected: ${socket.id}`);
-    })
-  })
+    });
+  });
 
-  
   httpServer.listen(port, () => {
-    console.log(`Server is running on https://${hostname}:${port}`)
-  })
-})
+    console.log(`Server is running on https://${hostname}:${port}`);
+  });
+});

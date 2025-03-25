@@ -1,26 +1,29 @@
-"use server"
+"use server";
 import { db, workspacesTable, workspaceMeetingTable } from "@/db";
 import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
-export async function createMeetingDB(workspaceId: string, {
-  name,
-  description,
-  startAt,
-  meetingId
-}: {
-  name: string,
-  description: string,
-  startAt: string,
-  meetingId: string
-}) {
+export async function createMeetingDB(
+  workspaceId: string,
+  {
+    name,
+    description,
+    startAt,
+    meetingId,
+  }: {
+    name: string;
+    description: string;
+    startAt: string;
+    meetingId: string;
+  },
+) {
   try {
     // Check if user exists
-    const user = await currentUser()
-    if(!user) redirect('sign-in');
+    const user = await currentUser();
+    if (!user) redirect("sign-in");
 
-    const username = user?.username
+    const username = user?.username;
 
     // Check if workspace exists
     const res = await db
@@ -29,39 +32,42 @@ export async function createMeetingDB(workspaceId: string, {
       .where(eq(workspacesTable.id, workspaceId))
       .execute();
 
-    if(res.length !== 0) return { message: 'Workspace not found', status: 404 }; 
+    if (res.length !== 0)
+      return { message: "Workspace not found", status: 404 };
 
     const meeting = await db
       .insert(workspaceMeetingTable)
       .values({
         workspaceId,
         name,
-        hostedBy: username ||"",
+        hostedBy: username || "",
         description,
         startAt: new Date(startAt),
         meetingId,
-        endAt: new Date(startAt)
+        endAt: new Date(startAt),
       })
-      .returning()
-    
-    if(!meeting || meeting.length === 0) return { message: 'Failed to create meeting', status: 500 };
+      .returning();
+
+    if (!meeting || meeting.length === 0)
+      return { message: "Failed to create meeting", status: 500 };
 
     console.log(`Meeting created: ${meeting}`);
     return { meeting };
   } catch (error: unknown) {
     console.log(error);
-    return {message: `Failed to operate function \n`, status: 500};
+    return { message: `Failed to operate function \n`, status: 500 };
   }
 }
 
 export async function getMeetingsData() {
   try {
     const meetingData = await db.select().from(workspaceMeetingTable).execute();
-    if(meetingData.length === 0) return { message: 'No meetings found', status: 404 };
+    if (meetingData.length === 0)
+      return { message: "No meetings found", status: 404 };
     console.log(`Meetings found: ${meetingData}`);
     return { meetingData };
   } catch (error: unknown) {
     console.log(error);
-    return {message: `Failed to operate function \n`, status: 500};
+    return { message: `Failed to operate function \n`, status: 500 };
   }
 }

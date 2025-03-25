@@ -8,7 +8,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { Metadata } from "next/types";
 import { ThemeProvider } from "@/providers/ThemeProvider";
-import { dark } from "@clerk/themes"
+import { dark } from "@clerk/themes";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,27 +24,27 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
   return (
-      <ClerkProvider
-        appearance={{
-          baseTheme: dark,
-          layout: {
-            animations: true,
-            logoPlacement: "inside",
-            socialButtonsVariant: "iconButton",
-            logoImageUrl: "/icons/logo.svg",
-          },
-        }}
-      >
-      <html lang="en">
+    <ClerkProvider
+      appearance={{
+        baseTheme: dark,
+        layout: {
+          animations: true,
+          logoPlacement: "inside",
+          socialButtonsVariant: "iconButton",
+          logoImageUrl: "/icons/logo.svg",
+        },
+      }}
+    >
+      <html lang='en'>
         <body className={`${inter.className}`}>
           <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
+            attribute='class'
+            defaultTheme='dark'
             enableSystem
             disableTransitionOnChange
           >
             <Toaster />
-              {children}
+            {children}
           </ThemeProvider>
         </body>
       </html>

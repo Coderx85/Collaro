@@ -1,31 +1,40 @@
-import React from 'react'
-import { Tabs } from './Tabs'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { getMeetingsData, getAllUsers, getAllWorkspaces } from '@/action'
+import React from "react";
+import { Tabs } from "./Tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { getMeetingsData, getAllUsers, getAllWorkspaces } from "@/action";
 
 // type Props = {}
 
 const AdminTab = async () => {
-  const meeting = await getMeetingsData()
-  const users = await getAllUsers()
-  const workspaces = await getAllWorkspaces()
+  const meeting = await getMeetingsData();
+  const users = await getAllUsers();
+  const workspaces = await getAllWorkspaces();
 
   const tabs = [
     {
-      title: 'Users',
-      value: 'users',
+      title: "Users",
+      value: "users",
       content: (
-          <Table className='w-full overflow-hidden relative h-full rounded-md text-md md:text-lg text-white bg-gradient-to-br from-primary to-dark-2'>
-            <TableHeader className='text-white'>
-              <TableRow>
-                <TableHead className='text-white'>Name</TableHead>
-                <TableHead className='text-white'>Email</TableHead>
-                <TableHead className='text-white'>Role</TableHead>
-                <TableHead className='text-white'>Workspace</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users && users.data && users.data.map((user) => (
+        <Table className='w-full overflow-hidden relative h-full rounded-md text-md md:text-lg text-white bg-gradient-to-br from-primary to-dark-2'>
+          <TableHeader className='text-white'>
+            <TableRow>
+              <TableHead className='text-white'>Name</TableHead>
+              <TableHead className='text-white'>Email</TableHead>
+              <TableHead className='text-white'>Role</TableHead>
+              <TableHead className='text-white'>Workspace</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {users &&
+              users.data &&
+              users.data.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
@@ -33,13 +42,13 @@ const AdminTab = async () => {
                   <TableCell>{user.workspaceId}</TableCell>
                 </TableRow>
               ))}
-            </TableBody>
-          </Table>
-      )
+          </TableBody>
+        </Table>
+      ),
     },
     {
-      title: 'Workspaces',
-      value: 'workspaces',
+      title: "Workspaces",
+      value: "workspaces",
       content: (
         <Table className='w-full overflow-hidden relative h-full rounded-2xl p-10 text-md md:text-lg text-white bg-gradient-to-br from-primary to-dark-2'>
           <TableHeader>
@@ -50,20 +59,22 @@ const AdminTab = async () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {workspaces && workspaces.data && workspaces.data.map((workspace) => (
-              <TableRow key={workspace.id}>
-                <TableCell>{workspace.id}</TableCell>
-                <TableCell>{workspace.name}</TableCell>
-                <TableCell>{workspace.createdBy}</TableCell>
-              </TableRow>
-            ))}
+            {workspaces &&
+              workspaces.data &&
+              workspaces.data.map((workspace) => (
+                <TableRow key={workspace.id}>
+                  <TableCell>{workspace.id}</TableCell>
+                  <TableCell>{workspace.name}</TableCell>
+                  <TableCell>{workspace.createdBy}</TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
-      )
+      ),
     },
     {
-      title: 'Meetings',
-      value: 'meetings',
+      title: "Meetings",
+      value: "meetings",
       content: (
         <Table className='w-full overflow-hidden relative rounded-md h-full text-sm md:text-lg text-white bg-primary/70'>
           <TableHeader>
@@ -75,19 +86,21 @@ const AdminTab = async () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {meeting && meeting.meetingData && meeting.meetingData.map((meeting) => (
-              <TableRow key={meeting.meetingId}>
-                <TableCell>{meeting.name}</TableCell>
-                <TableCell>{meeting.description}</TableCell>
-                <TableCell>{String(meeting.startAt)}</TableCell>
-                <TableCell>{String(meeting.endAt)}</TableCell>
-              </TableRow>
-            ))}
+            {meeting &&
+              meeting.meetingData &&
+              meeting.meetingData.map((meeting) => (
+                <TableRow key={meeting.meetingId}>
+                  <TableCell>{meeting.name}</TableCell>
+                  <TableCell>{meeting.description}</TableCell>
+                  <TableCell>{String(meeting.startAt)}</TableCell>
+                  <TableCell>{String(meeting.endAt)}</TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
-      )
-    }
-  ]
+      ),
+    },
+  ];
   return (
     <div className='bg-primary/10 p-4 rounded-lg'>
       {/* <Tabs defaultValue='users' className='rounded-sm'>
@@ -142,9 +155,12 @@ const AdminTab = async () => {
           ))}
         </TabsContent>
       </Tabs> */}
-      <Tabs tabs={tabs} contentClassName='text-white bg-gradient-to-br from-primary to-dark-2'/>
+      <Tabs
+        tabs={tabs}
+        contentClassName='text-white bg-gradient-to-br from-primary to-dark-2'
+      />
     </div>
-  )
-}
+  );
+};
 
-export default AdminTab
+export default AdminTab;

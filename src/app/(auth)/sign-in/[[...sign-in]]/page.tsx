@@ -92,7 +92,7 @@
 //       </form>
 //       <p className="text-sm text-muted-foreground">
 //         Don&amp! have an account?{' '}
-//         <Link 
+//         <Link
 //           href="/sign-up"
 //           className="text-primary"
 //         >
@@ -104,9 +104,9 @@
 // };
 
 // import { Button } from '@/components/ui/button'
-import { SignIn } from '@clerk/nextjs'
+import { SignIn } from "@clerk/nextjs";
 // import { cookies } from 'next/headers'
-import React from 'react'
+import React from "react";
 
 const page = async () => {
   // 'use server'
@@ -114,13 +114,11 @@ const page = async () => {
   //   const cookieStore = await cookies()
   //   console.log(cookieStore)
   // }
-    return (
+  return (
     // <Button onClick={() => store()}>
-      <SignIn 
-        fallbackRedirectUrl={"/workspace"}
-      />
+    <SignIn fallbackRedirectUrl={"/workspace"} />
     // </Button>
-  )
-}
+  );
+};
 
-export default page
+export default page;

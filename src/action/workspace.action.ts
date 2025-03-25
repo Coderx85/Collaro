@@ -1,4 +1,4 @@
-"use server"
+"use server";
 import { db, usersTable, workspacesTable, workspaceUsersTable } from "@/db";
 import { currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
@@ -11,11 +11,11 @@ export interface WorkspaceCheckResponse {
   status: number;
 }
 
-export async function getWorkspaceUsers(workspaceId: string)  {
+export async function getWorkspaceUsers(workspaceId: string) {
   const clerkUser = await currentUser();
   if (!clerkUser) {
     // console.log("User not found");
-    return { message: "User not found" }
+    return { message: "User not found" };
   }
 
   const user = await db
@@ -28,13 +28,18 @@ export async function getWorkspaceUsers(workspaceId: string)  {
   const workspaceUsers = await db
     .select()
     .from(workspaceUsersTable)
-    .where(and(eq(workspaceUsersTable.workspaceId, workspaceId), eq(workspaceUsersTable.userId, user[0].id)))
+    .where(
+      and(
+        eq(workspaceUsersTable.workspaceId, workspaceId),
+        eq(workspaceUsersTable.userId, user[0].id),
+      ),
+    )
     .execute();
-  
+
   // console.log('workspaceUsers \n', workspaceUsers)
-  
-  if(!workspaceUsers.length) 
-    return { message: "No users found for this workspace" }
+
+  if (!workspaceUsers.length)
+    return { message: "No users found for this workspace" };
 
   const members = await db
     .select()
@@ -42,10 +47,13 @@ export async function getWorkspaceUsers(workspaceId: string)  {
     .where(eq(usersTable.workspaceId, workspaceId))
     .execute();
 
-  return {data: members};
+  return { data: members };
 }
 
-export async function checkWorkspaceUser(userId: string, workspaceId: string): Promise<WorkspaceCheckResponse> {
+export async function checkWorkspaceUser(
+  userId: string,
+  workspaceId: string,
+): Promise<WorkspaceCheckResponse> {
   try {
     // console.log('userId ==', userId)
     // console.log('workspaceId ==', workspaceId)
@@ -54,16 +62,16 @@ export async function checkWorkspaceUser(userId: string, workspaceId: string): P
       .from(usersTable)
       .where(
         and(
-          eq(usersTable.clerkId, userId), 
-          eq(usersTable.workspaceId, workspaceId)
-        )
+          eq(usersTable.clerkId, userId),
+          eq(usersTable.workspaceId, workspaceId),
+        ),
       )
-      .execute(); 
+      .execute();
 
     // console.log('dbUser:: \n', dbUser[0])
 
-    if(!dbUser[0]) {
-      redirect('/unauthorized');
+    if (!dbUser[0]) {
+      redirect("/unauthorized");
     }
 
     const workspace = await db
@@ -71,15 +79,15 @@ export async function checkWorkspaceUser(userId: string, workspaceId: string): P
       .from(workspaceUsersTable)
       .where(
         and(
-          eq(workspaceUsersTable.workspaceId, workspaceId), 
-          eq(workspaceUsersTable.userId, dbUser[0]?.id)
-        )
+          eq(workspaceUsersTable.workspaceId, workspaceId),
+          eq(workspaceUsersTable.userId, dbUser[0]?.id),
+        ),
       )
       .execute();
 
     // console.log('workspace:: \n', workspace[0])
 
-    if(dbUser && workspace.length < 1) {
+    if (dbUser && workspace.length < 1) {
       const newMember = db
         .insert(workspaceUsersTable)
         .values({
@@ -90,35 +98,42 @@ export async function checkWorkspaceUser(userId: string, workspaceId: string): P
           workspaceName: workspace[0]?.name,
         })
         .returning();
-        console.log('newMember \n', newMember)
+      console.log("newMember \n", newMember);
 
-      return { 
-        data: `User added to workspace \n ${newMember}`, 
-        success: true, 
-        status: 201
-      }
+      return {
+        data: `User added to workspace \n ${newMember}`,
+        success: true,
+        status: 201,
+      };
     }
 
-    if(!workspace || workspace.length < 1) redirect('/not-found');
-    
-    return { 
-      data: "Workspace found", 
+    if (!workspace || workspace.length < 1) redirect("/not-found");
+
+    return {
+      data: "Workspace found",
       success: true,
-      status: 200 
-    }
+      status: 200,
+    };
   } catch (error: unknown) {
-    return { error: `Failed to check workspace:: \n ${error}`, success: false, status: 500 } 
+    return {
+      error: `Failed to check workspace:: \n ${error}`,
+      success: false,
+      status: 500,
+    };
   }
 }
 
-export async function validateWorkspaceAccess(userId: string, workspaceId: string) {
+export async function validateWorkspaceAccess(
+  userId: string,
+  workspaceId: string,
+) {
   const checkUser = await checkWorkspaceUser(userId, workspaceId);
 
   if (!checkUser.success) {
     if (checkUser.status === 404) {
-      redirect('/not-found');
+      redirect("/not-found");
     } else {
-      redirect('/unauthorized');
+      redirect("/unauthorized");
     }
   }
   return checkUser;
@@ -132,9 +147,10 @@ export async function getWorkspace(userId: string) {
       .where(eq(usersTable.clerkId, userId))
       .execute();
 
-    if(!user || user.length < 1) return { message: "User not found" }
+    if (!user || user.length < 1) return { message: "User not found" };
 
-    if(!user[0]?.workspaceId) return { message: "User does not belong to any workspace" }
+    if (!user[0]?.workspaceId)
+      return { message: "User does not belong to any workspace" };
 
     const workspace = await db
       .select()
@@ -143,14 +159,15 @@ export async function getWorkspace(userId: string) {
       .execute();
 
     const workspaceMember = await getWorkspaceUsers(user[0]?.workspaceId);
-    if(!workspaceMember.data) return { message: "No members found for this workspace" }
-    
-    const memberData = workspaceMember.data
-    const members = memberData.map(m => m.clerkId);
-    const data = { ...workspace[0], members }
-    return { data } 
+    if (!workspaceMember.data)
+      return { message: "No members found for this workspace" };
+
+    const memberData = workspaceMember.data;
+    const members = memberData.map((m) => m.clerkId);
+    const data = { ...workspace[0], members };
+    return { data };
   } catch (error: unknown) {
-    return { error: `Failed to get workspace:: \n ${error}`} 
+    return { error: `Failed to get workspace:: \n ${error}` };
   }
 }
 
@@ -158,12 +175,12 @@ export async function getAllWorkspaces() {
   try {
     const data = await db.select().from(workspacesTable).execute();
     const memberArray = [await db.select().from(workspaceUsersTable).execute()];
-    const member = memberArray[0]
+    const member = memberArray[0];
     return {
       ...data,
-      member
+      member,
     };
   } catch (error: unknown) {
-    return { error: `Failed to get workspaces:: \n ${error}`} 
+    return { error: `Failed to get workspaces:: \n ${error}` };
   }
 }

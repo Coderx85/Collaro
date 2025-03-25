@@ -7,5 +7,5 @@ export type clientCall = {
     callType: string;
     description: string;
     scheduled?: boolean;
-  }
-}
+  };
+};

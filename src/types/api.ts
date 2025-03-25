@@ -1,10 +1,10 @@
-import { UserRoleType } from './database';
+import { UserRoleType } from "./database";
 
 export type APIResponse<T> = {
   success: boolean;
   data?: T;
   error?: string;
-}
+};
 
 export type UserResponse = {
   id: string;
@@ -16,7 +16,7 @@ export type UserResponse = {
   workspaceId: string | null;
   createdAt: Date;
   updatedAt: Date | null;
-}
+};
 
 export type WorkspaceResponse = {
   id: string;
@@ -24,7 +24,7 @@ export type WorkspaceResponse = {
   createdBy: string;
   createdAt: Date;
   updatedAt: Date | null;
-}
+};
 
 export type CreateWorkspaceResponse = {
   id: string;
@@ -33,9 +33,9 @@ export type CreateWorkspaceResponse = {
   createdBy: string;
   createdAt: Date;
   updatedAt: Date | null;
-}
+};
 
-export type MeetingIdOnly = Pick<MeetingResponse, 'meetingId'>;
+export type MeetingIdOnly = Pick<MeetingResponse, "meetingId">;
 
 export type MeetingResponse = {
   ttile: string;
@@ -47,11 +47,11 @@ export type MeetingResponse = {
   startAt: Date;
   endAt?: Date | null;
   createdAt: Date;
-}
+};
 
 export type AnalyticsResponse = {
   totalMeetings: number;
   totalUsers: number;
   totalWorkspaces: number;
   createdAt: Date;
-}
+};

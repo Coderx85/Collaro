@@ -44,11 +44,10 @@
 //         }
 //     }
 
-
 //     return (
 //       <>
-//         <form 
-//           onSubmit={handleSubmit} 
+//         <form
+//           onSubmit={handleSubmit}
 //           className="flex flex-col my-auto text-white space-y-6 justify-center h-screen-min w-4/5"
 //         >
 //           <h1 className="text-4xl font-bold text-white text-center mb-12"> Sign Up </h1>
@@ -94,7 +93,7 @@
 //       </form>
 //       <p className="text-sm text-muted-foreground">
 //         Already have an account?{" "}
-//         <Link 
+//         <Link
 //           href="/sign-in"
 //           className="text-primary">Log In
 //         </Link>
@@ -105,13 +104,11 @@
 
 // export default SignUpPage;
 
-import { SignUp } from '@clerk/nextjs'
-import React from 'react'
+import { SignUp } from "@clerk/nextjs";
+import React from "react";
 
 const page = () => {
-  return (
-    <SignUp/>
-  )
-}
+  return <SignUp />;
+};
 
-export default page
+export default page;

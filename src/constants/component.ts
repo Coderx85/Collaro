@@ -4,65 +4,65 @@ import Previous from "@/components/icons/Previous";
 import Reccording from "@/components/icons/Reccording";
 import Upcoming from "@/components/icons/Upcoming";
 import { FaFolder } from "react-icons/fa";
-import { SidebarLink } from '@/types'
+import { SidebarLink } from "@/types";
 import { Users } from "lucide-react";
 import { SiAdminer } from "react-icons/si";
 
 export const sidebarLinks: SidebarLink[] = [
   {
-    route: '',
-    label: 'Home',
-    details: 'This is the home page',
+    route: "",
+    label: "Home",
+    details: "This is the home page",
     component: Home,
-    allowed: true
+    allowed: true,
   },
   {
-    route: '/upcoming',
-    label: 'Upcoming',
-    details: 'List of upcoming meetings',
+    route: "/upcoming",
+    label: "Upcoming",
+    details: "List of upcoming meetings",
     component: Upcoming,
-    allowed: true
+    allowed: true,
   },
   {
-    route: '/previous',
-    label: 'Previous',
-    details: 'List of previous meetings',
+    route: "/previous",
+    label: "Previous",
+    details: "List of previous meetings",
     component: Previous,
-    allowed: true
+    allowed: true,
   },
   {
-    route: '/recordings',
-    label: 'Recordings',
-    details: 'List of recordings',
+    route: "/recordings",
+    label: "Recordings",
+    details: "List of recordings",
     component: Reccording,
-    allowed: true
+    allowed: true,
   },
   {
-    route: '/personal-room',
-    label: 'User',
-    details: 'User Personal detail',
+    route: "/personal-room",
+    label: "User",
+    details: "User Personal detail",
     component: Personal,
-    allowed: true
+    allowed: true,
   },
   {
-    route: '/workspace-room',
-    label: 'Room',
-    details: 'Workspace Room detail',
+    route: "/workspace-room",
+    label: "Room",
+    details: "Workspace Room detail",
     component: FaFolder,
-    allowed: true
+    allowed: true,
   },
   {
     component: Users,
-    label: 'Members',
-    route: '/members',
-    details: 'View and manage workspace members',
-    allowed: false
+    label: "Members",
+    route: "/members",
+    details: "View and manage workspace members",
+    allowed: false,
   },
   {
-    component : SiAdminer,
-    label: 'Admin',
-    route: '/admin',
-    details: 'Manage workspace settings and permissions',
-    allowed: false
-  }
+    component: SiAdminer,
+    label: "Admin",
+    route: "/admin",
+    details: "Manage workspace settings and permissions",
+    allowed: false,
+  },
 ];
