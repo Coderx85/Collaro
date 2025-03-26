@@ -25,23 +25,21 @@ const RootLayout = async ({
   const members = workspaceData.data?.members || [];
 
   return (
-    <main>
-      <div className='flex'>
-        {/* Initialize workspace state */}
-        {workspace && (
-          <WorkspaceInitializer
-            workspaceId={workspaceId}
-            workspaceName={workspace.name}
-            members={members}
-          />
-        )}
+    <div className='flex w-full'>
+      {/* Initialize workspace state */}
+      {workspace && (
+        <WorkspaceInitializer
+          workspaceId={workspaceId}
+          workspaceName={workspace.name}
+          members={members}
+        />
+      )}
 
-        <Sidebar />
-        <section className='flex bg-primary/5 min-h-full flex-1 flex-col px-0 py-6 max-md:pb-14 sm:px-14'>
-          <div className='w-full'>{children}</div>
-        </section>
-      </div>
-    </main>
+      <Sidebar />
+      <section className='flex bg-primary/5 min-h-full flex-1 flex-col px-0 py-6 max-md:pb-14 sm:px-14'>
+        <div className='w-full'>{children}</div>
+      </section>
+    </div>
   );
 };
 

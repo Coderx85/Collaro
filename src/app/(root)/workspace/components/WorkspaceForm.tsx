@@ -54,6 +54,8 @@ const WorkspaceForm = () => {
       router.push("/workspace/" + workspaceData.id);
     } catch (error: unknown) {
       console.error(error);
+      toast.error("An error occurred while joining the workspace");
+      setError("An error occurred while joining the workspace");
     } finally {
       setLoading(false);
       setWorkspaceName("");
@@ -78,8 +80,8 @@ const WorkspaceForm = () => {
 
       console.log("Response:", data);
 
-      if (data.error) {
-        setError(data.error);
+      if (!data.success) {
+        setError(data.error || "Failed to create workspace");
         console.error("Cannot create workspace with Name:", workspaceName);
         return toast.error(
           `Cannot create workspace with Name: ${workspaceName}`,
@@ -89,10 +91,21 @@ const WorkspaceForm = () => {
       const workspaceData = data.success;
       toast.success("Workspace created successfully");
       console.log("Joining workspace:", workspaceData);
-      setWorkspace(workspaceData.id, workspaceData.name, workspaceData.members);
+
+      if (!workspaceData || !workspaceData.id || !workspaceData.name) {
+        throw new Error("Invalid workspace data received");
+      }
+
+      setWorkspace(
+        workspaceData.id,
+        workspaceData.name,
+        workspaceData.members || [],
+      );
       router.push(`/workspace/${workspaceData.id}`);
     } catch (error: unknown) {
       console.error(error);
+      toast.error("An error occurred while creating the workspace");
+      setError("An error occurred while creating the workspace");
     } finally {
       setLoading(false);
       setWorkspaceName("");
