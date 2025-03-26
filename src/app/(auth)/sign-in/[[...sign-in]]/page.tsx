@@ -1,124 +1,211 @@
-// 'use client';
+"use client";
+import * as Clerk from "@clerk/elements/common";
+import * as SignIn from "@clerk/elements/sign-in";
+// import Link from 'next/link'
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Icons } from "@/components/ui/icons";
 
-// import { FormEvent, useState } from 'react';
-// import { useSignIn } from '@clerk/nextjs';
-// import { useRouter } from 'next/navigation';
-// import Link from 'next/link';
-// import { Input } from '@/components/ui/input';
-// import { Button } from '@/components/ui/button';
-// import { Label } from '@/components/ui/label';
-// import { Alert, AlertDescription } from '@/components/ui/alert';
-// import { Eye, EyeOff } from 'lucide-react';
-// import Loader from '@/components/Loader';
-
-// const SignInPage = () => {
-//   const { isLoaded, signIn, setActive } = useSignIn();
-//   const [emailAddress, setEmailAddress] = useState('');
-//   const [password, setPassword] = useState('');
-//   const [error, setError] = useState('');
-//   const [showPassword, setShowPassword] = useState(false);
-//   const router = useRouter();
-
-//   if (!isLoaded) return <Loader />;
-
-//   async function handleSubmit(e: FormEvent) {
-//     e.preventDefault();
-//     if (!isLoaded) return <Loader />;
-
-//     try {
-//       const result = await signIn.create({
-//         identifier: emailAddress,
-//         password,
-//       });
-
-//       if (result.status === 'complete') {
-//         await setActive({ session: result.createdSessionId });
-//         router.push('/dashboard');
-//       } else {
-//         console.error(JSON.stringify(result, null, 2));
-//       }
-//     } catch (e: any) {
-//       console.error(JSON.stringify(e, null, 2));
-//       setError(e.errors[0].message);
-//     }
-//   }
-
-//   return (
-//     <>
-//       <form
-//         onSubmit={handleSubmit}
-//         className="flex flex-col my-auto text-white space-y-6 justify-center h-screen-min w-4/5"
-//       >
-//         <h1 className="text-4xl font-bold text-white text-center mb-12">Log In</h1>
-//           <Label htmlFor="email">Email</Label>
-//           <Input
-//             variant={'outline'}
-//             type="email"
-//             id="email"
-//             value={emailAddress}
-//             onChange={(e) => setEmailAddress(e.target.value)}
-//             required
-//           />
-//           <Label htmlFor="password" className=''>Password</Label>
-//           <div className="relative">
-//             <Input
-//               variant={'outline'}
-//               type={showPassword ? 'text' : 'password'}
-//               id="password"
-//               value={password}
-//               onChange={(e) => setPassword(e.target.value)}
-//               required
-//             />
-//             <button
-//               type="button"
-//               onClick={() => setShowPassword(!showPassword)}
-//               className="absolute right-2 top-1/2 -translate-y-1/2"
-//             >
-//               {showPassword ? (
-//                 <EyeOff className="h-4 w-4 text-gray-500" />
-//               ) : (
-//                 <Eye className="h-4 w-4 text-gray-500" />
-//               )}
-//             </button>
-//           </div>
-//         {error && (
-//           <Alert variant="destructive">
-//             <AlertDescription>{error}</AlertDescription>
-//           </Alert>
-//         )}
-//         <Button type="submit" className="w-full">
-//           Log In
-//         </Button>
-//       </form>
-//       <p className="text-sm text-muted-foreground">
-//         Don&amp! have an account?{' '}
-//         <Link
-//           href="/sign-up"
-//           className="text-primary"
-//         >
-//           Sign Up
-//         </Link>
-//       </p>
-//     </>
-//   );
-// };
-
-// import { Button } from '@/components/ui/button'
-import { SignIn } from "@clerk/nextjs";
-// import { cookies } from 'next/headers'
-import React from "react";
-
-const page = async () => {
-  // 'use server'
-  // const store = async () => {
-  //   const cookieStore = await cookies()
-  //   console.log(cookieStore)
-  // }
+export default function SignInPage() {
   return (
-    // <Button onClick={() => store()}>
-    <SignIn fallbackRedirectUrl={"/workspace"} />
-    // </Button>
-  );
-};
+    <div className='flex items-center justify-center px-4 py-8 min-h-[calc(100vh-73px)] bg-gradient-to-br from-slate-300 dark:from-slate-950 to-slate-700'>
+      <SignIn.Root>
+        <Clerk.Loading>
+          {(isGlobalLoading) => (
+            <>
+              <SignIn.Step name='start' className='w-full max-w-md'>
+                <Card className='w-full bg-gradient-to-br from-slate-500/85 border-gray-100 border-2 to-slate-500/85 dark:from-slate-950/50 dark:to-slate-950/50'>
+                  <CardHeader>
+                    <CardTitle className='text-black dark:text-white py-2'>
+                      Sign in to DevnTalk
+                    </CardTitle>
+                    <CardDescription className='text-white/85'>
+                      Welcome back! Please sign in to continue
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className='grid gap-y-4'>
+                    <div className='grid gap-x-4'>
+                      <Clerk.Connection name='google' asChild>
+                        <Button
+                          className='flex items-center justify-center py-5 gap-3 font-bold text-primary border-2 border-primary bg-white/50 hover:bg-gray-200'
+                          variant='outline'
+                          type='button'
+                          disabled={isGlobalLoading}
+                        >
+                          <Clerk.Loading scope='provider:google'>
+                            {(isLoading) =>
+                              isLoading ? (
+                                <Icons.spinner className='size-4 animate-spin' />
+                              ) : (
+                                <>
+                                  <Icons.google className='size-4' />
+                                  Sign in with Google
+                                </>
+                              )
+                            }
+                          </Clerk.Loading>
+                        </Button>
+                      </Clerk.Connection>
+                    </div>
+                    <p className='flex items-center gap-x-3 text-sm text-muted-foreground before:h-px before:flex-1 before:bg-border after:h-px after:flex-1 after:bg-border'>
+                      or
+                    </p>
+                    <Clerk.Field
+                      name='identifier'
+                      className='space-y-2 text-black dark:text-white'
+                    >
+                      <Clerk.Label asChild>
+                        <Label>Email address</Label>
+                      </Clerk.Label>
+                      <Clerk.Input
+                        className='bg-white/50 border-0'
+                        type='email'
+                        required
+                        asChild
+                        placeholder='Enter your email address'
+                      >
+                        <Input />
+                      </Clerk.Input>
+                      <Clerk.FieldError className='mt-2 block text-xs text-rose-400' />
+                    </Clerk.Field>
+                    <Clerk.Field
+                      name='password'
+                      className='space-y-2 text-black dark:text-white'
+                    >
+                      <Clerk.Label asChild>
+                        <Label>Password</Label>
+                      </Clerk.Label>
+                      <Clerk.Input
+                        className='bg-white/50 border-0'
+                        type='password'
+                        required
+                        asChild
+                        placeholder='Enter your password'
+                      >
+                        <Input />
+                      </Clerk.Input>
+                      <Clerk.FieldError className='mt-2 block text-xs text-rose-400' />
+                    </Clerk.Field>
+                  </CardContent>
+                  <CardFooter>
+                    <div className='grid w-full gap-y-4'>
+                      <SignIn.Action submit asChild>
+                        <Button disabled={isGlobalLoading}>
+                          <Clerk.Loading>
+                            {(isLoading) => {
+                              return isLoading ? (
+                                <Icons.spinner className='size-4 animate-spin' />
+                              ) : (
+                                "Continue"
+                              );
+                            }}
+                          </Clerk.Loading>
+                        </Button>
+                      </SignIn.Action>
 
-export default page;
+                      <Button variant='link' asChild>
+                        <Clerk.Link navigate='sign-up'>
+                          Don&apos;t have an account? Sign up
+                        </Clerk.Link>
+                      </Button>
+                    </div>
+                  </CardFooter>
+                </Card>
+              </SignIn.Step>
+
+              <SignIn.Strategy name='password' className='w-full max-w-md'>
+                <Card className='w-full bg-gradient-to-br from-slate-500/85 border-gray-100 border-2 to-slate-500/85 dark:from-slate-950/50 dark:to-slate-950/50'>
+                  <CardHeader>
+                    <CardTitle className='text-black dark:text-white py-2'>
+                      Enter your password
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className='grid gap-y-4'>
+                    <Clerk.Field
+                      name='password'
+                      className='space-y-2 text-black dark:text-white'
+                    >
+                      <Clerk.Label asChild>
+                        <Label>Password</Label>
+                      </Clerk.Label>
+                      <Clerk.Input
+                        className='bg-white/50 border-0'
+                        type='password'
+                        required
+                        asChild
+                      >
+                        <Input />
+                      </Clerk.Input>
+                      <Clerk.FieldError className='mt-2 block text-xs text-rose-400' />
+                    </Clerk.Field>
+                  </CardContent>
+                  <CardFooter>
+                    <div className='grid w-full gap-y-4'>
+                      <SignIn.Action submit asChild>
+                        <Button disabled={isGlobalLoading}>Continue</Button>
+                      </SignIn.Action>
+                      <SignIn.Action navigate='forgot-password' asChild>
+                        <Button variant='link'>Forgot password?</Button>
+                      </SignIn.Action>
+                    </div>
+                  </CardFooter>
+                </Card>
+              </SignIn.Strategy>
+
+              <SignIn.Strategy
+                name='reset_password_email_code'
+                className='w-full max-w-md'
+              >
+                <Card className='w-full bg-gradient-to-br from-slate-500/85 border-gray-100 border-2 to-slate-500/85 dark:from-slate-950/50 dark:to-slate-950/50'>
+                  <CardHeader>
+                    <CardTitle className='text-black dark:text-white py-2'>
+                      Check your email
+                    </CardTitle>
+                    <CardDescription className='text-white/85'>
+                      We sent a code to <SignIn.SafeIdentifier />.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className='grid gap-y-4'>
+                    <Clerk.Field
+                      name='code'
+                      className='space-y-2 text-black dark:text-white'
+                    >
+                      <Clerk.Label asChild>
+                        <Label>Email code</Label>
+                      </Clerk.Label>
+                      <Clerk.Input
+                        className='bg-white/50 border-0'
+                        type='otp'
+                        required
+                        asChild
+                      >
+                        <Input />
+                      </Clerk.Input>
+                      <Clerk.FieldError className='mt-2 block text-xs text-rose-400' />
+                    </Clerk.Field>
+                  </CardContent>
+                  <CardFooter>
+                    <div className='grid w-full gap-y-4'>
+                      <SignIn.Action submit asChild>
+                        <Button disabled={isGlobalLoading}>Continue</Button>
+                      </SignIn.Action>
+                    </div>
+                  </CardFooter>
+                </Card>
+              </SignIn.Strategy>
+            </>
+          )}
+        </Clerk.Loading>
+      </SignIn.Root>
+    </div>
+  );
+}
