@@ -20,7 +20,7 @@ export type SidebarLink = {
   label: string;
   details: string;
   component: React.ComponentType<{ selected: boolean; className: string }>;
-  allowed: boolean;
+  adminRoute: boolean;
 };
 
 export interface FeatureCard {
