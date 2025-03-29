@@ -7,11 +7,13 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { faqs } from "@/constants";
+import { FaQuestionCircle } from "react-icons/fa";
 
 export default function FAQ() {
   return (
-    <div className="w-full max-w-full px-4 sm:px-6 md:px-8 mx-auto flex flex-col mt-10 sm:mt-16 md:mt-20 py-4 sm:py-6 md:py-8 lg:min-h-screen">
-      <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-center mb-4 sm:mb-6">
+    <>
+      <h2 className="text-lg sm:text-xl flex justify-center items-center md:text-2xl font-bold text-center mb-4 sm:mb-6">
+        <FaQuestionCircle className="size-6 mr-3 dark:text-white text-black" />{" "}
         Frequently Asked Questions
       </h2>
       <div className="w-full max-w-4xl mx-auto">
@@ -24,6 +26,6 @@ export default function FAQ() {
           ))}
         </Accordion>
       </div>
-    </div>
+    </>
   );
 }
