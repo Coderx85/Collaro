@@ -1,4 +1,5 @@
 import { db, usersTable, workspacesTable, workspaceUsersTable } from "@/db";
+import { aj } from "@/lib/arcjet";
 import { APIResponse, CreateWorkspaceResponse } from "@/types";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
@@ -12,6 +13,15 @@ export async function POST(
     const user = await currentUser();
     if (!user) {
       return new NextResponse("User not found", { status: 404 });
+    }
+
+    const check = await aj.protect(req, { userId: user.id, requested: 5 });
+
+    if (check.isDenied()) {
+      return NextResponse.json({
+        success: false,
+        error: "Rate limit exceeded",
+      });
     }
 
     const username = user.username;

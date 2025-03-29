@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { eq, and } from "drizzle-orm";
 import { APIResponse, WorkspaceResponse } from "@/types";
 import { redirect } from "next/navigation";
+import { aj } from "@/lib/arcjet";
 
 export async function POST(
   req: NextRequest,
@@ -25,6 +26,15 @@ export async function POST(
       redirect("/sign-in");
     }
     // console.log("✅ Clerk User exist", clerkUser);
+
+    const check = await aj.protect(req, { userId: clerkUser.id, requested: 5 });
+
+    if (check.isDenied()) {
+      return NextResponse.json({
+        success: false,
+        error: "Rate limit exceeded",
+      });
+    }
 
     // Check if the user exists
     const dbUser = await db
