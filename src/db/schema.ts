@@ -32,7 +32,6 @@ export const usersTable = pgTable("users", {
 export const workspacesTable = pgTable("workspaces", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull().unique(),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   createdBy: uuid("created_by")
     .notNull()
     .references((): any => usersTable.id, {

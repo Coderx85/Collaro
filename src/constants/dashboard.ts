@@ -1,3 +1,4 @@
+import { FeatureCard } from "@/types";
 import {
   FaVideo,
   FaComments,

@@ -1,3 +1,5 @@
+import { IconType } from "react-icons/lib";
+
 export interface MeetingCardProps {
   title: string;
   date: string;
@@ -24,7 +26,7 @@ export type SidebarLink = {
 };
 
 export interface FeatureCard {
-  icon: React.ComponentType<{ size: number }>;
+  icon: IconType;
   title: string;
   description: string;
 }

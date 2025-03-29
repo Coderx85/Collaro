@@ -1,9 +1,8 @@
 import Home from "@/components/icons/Home";
-import Personal from "@/components/icons/Personal";
 import Previous from "@/components/icons/Previous";
 import Reccording from "@/components/icons/Reccording";
 import Upcoming from "@/components/icons/Upcoming";
-import { FaFolder } from "react-icons/fa";
+import { FaFolder, FaTools, FaUserCircle } from "react-icons/fa";
 import { SidebarLink } from "@/types";
 import { Users } from "lucide-react";
 import { SiAdminer } from "react-icons/si";
@@ -35,7 +34,7 @@ export const sidebarLinks: SidebarLink[] = [
     label: "Home",
     details: "This is the home page",
     component: Home,
-    adminRoute: true,
+    adminRoute: false,
   },
   {
     route: "/upcoming",
@@ -62,7 +61,14 @@ export const sidebarLinks: SidebarLink[] = [
     route: "/personal-room",
     label: "User",
     details: "User Personal detail",
-    component: Personal,
+    component: FaUserCircle,
+    adminRoute: false,
+  },
+  {
+    route: "/setting",
+    label: "Settings",
+    details: "User settings",
+    component: FaTools,
     adminRoute: false,
   },
 ];
