@@ -47,8 +47,15 @@ const AlertButton = () => {
   return (
     <Button
       variant={!hasActiveMeeting ? "inactive" : "active"}
-      className='font-bold w-full'
-      disabled={isLoading}
+      className={`font-bold w-full text-black ${!hasActiveMeeting ? "bg-red-500" : "bg-green-500"} ${
+        isLoading ? "bg-gray-500" : ""
+      } ${
+        hasActiveMeeting ? "hover:bg-green-600" : "hover:bg-red-600"
+      } ${isLoading ? "cursor-not-allowed" : ""} ${
+        hasActiveMeeting ? "cursor-pointer" : "cursor-not-allowed"
+      }
+      `}
+      disabled={!hasActiveMeeting}
     >
       {isLoading
         ? "Checking..."

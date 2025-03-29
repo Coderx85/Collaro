@@ -47,25 +47,25 @@ const LeaveTeamButton = () => {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
-          variant='destructive'
+          variant="destructive"
           className={cn(
-            "justify-start rounded-md p-4 w-full",
+            "justify-start rounded-lg p-4 m-2",
             "transition-all duration-200 ease-in-out",
             "hover:bg-red-600/90 hover:scale-[0.98]",
             "active:scale-95",
           )}
-          size='lg'
+          size="lg"
         >
-          <span className='flex gap-2 items-center'>
-            <LogOutIcon className='size-6' />
+          <span className="flex gap-2 items-center">
+            <LogOutIcon className="size-5" />
             Leave Team
           </span>
         </Button>
       </DialogTrigger>
-      <DialogContent className='sm:max-w-[425px]'>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className='flex items-center gap-2'>
-            <AlertTriangle className='size-6 text-destructive' />
+          <DialogTitle className="flex items-center gap-2">
+            <AlertTriangle className="size-6 text-destructive" />
             Leave Team
           </DialogTitle>
           <DialogDescription>
@@ -73,24 +73,24 @@ const LeaveTeamButton = () => {
           </DialogDescription>
         </DialogHeader>
 
-        <DialogFooter className='flex justify-end gap-4 sm:gap-0'>
+        <DialogFooter className="flex justify-end gap-4 sm:gap-0">
           <Button
-            variant='destructive'
+            variant="destructive"
             onClick={handleLeave}
             disabled={loading}
             className={cn(
-              "transition-all duration-200 ease-in-out",
+              "transition-all duration-200 ease-in-out rounded-2xl p-4",
               loading && "bg-destructive/90 hover:bg-destructive/90",
             )}
           >
             {loading ? (
-              <span className='flex gap-2 items-center'>
-                <LucideLoader2 className='size-4 animate-spin' />
+              <span className="flex gap-2 items-center">
+                <LucideLoader2 className="size-4 animate-spin" />
                 Leaving...
               </span>
             ) : (
-              <span className='flex gap-2 items-center'>
-                <LogOut className='size-4' />
+              <span className="flex gap-2 items-center">
+                <LogOut className="size-4" />
                 Leave Team
               </span>
             )}

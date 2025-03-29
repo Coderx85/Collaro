@@ -40,20 +40,20 @@ const Sidebar = () => {
   );
 
   return (
-    <section className='hidden xl:flex xl:flex-col xl:fixed left-0 top-0 h-full w-50 bg-gray-800 text-white'>
-      <div className='flex items-center gap-2 justify-self-start p-4.5'>
+    <section className="hidden xl:flex xl:flex-col xl:fixed left-0 top-0 h-full w-50 bg-gradient-to-b from-primary to-primary text-white">
+      <div className="flex items-center gap-2 justify-self-start p-4.5">
         <Image
-          src='/icons/logo.svg'
+          src="/icons/logo.svg"
           width={32}
           height={32}
-          alt='yoom logo'
-          className='max-sm:size-10'
+          alt="yoom logo"
+          className="max-sm:size-10"
         />
-        <p className='group text-[26px] font-extrabold text-white duration-75 hover:text-white max-sm:hidden'>
-          Devn<span className='text-primary'>Talk</span>
+        <p className="group text-[26px] font-extrabold text-white duration-75 hover:text-white max-sm:hidden">
+          Devn<span className="text-primary">Talk</span>
         </p>
       </div>
-      <div className='flex flex-1 flex-col gap-1.5 p-3 overflow-y-auto'>
+      <div className="flex flex-1 flex-col gap-3.5 p-3 overflow-y-auto">
         <TooltipProvider>
           <AlertButton />
           {sidebarLinks.map((item: SidebarLink, index) => {
@@ -78,18 +78,18 @@ const Sidebar = () => {
                     handleNavigation(`/workspace/${workspaceId}${item.route}`)
                   }
                 >
-                  <div className='flex gap-3 text-md justify-center font-semibold text-current max-lg:hidden'>
-                    <item.component selected={isActive} className='size-5' />
+                  <div className="flex gap-3 text-md justify-center font-semibold text-current max-lg:hidden">
+                    <item.component selected={isActive} className="size-5" />
                     {item.label}
                   </div>
                 </TooltipTrigger>
 
                 <TooltipContent
-                  className='z-10 bg-transparent backdrop-blur-xl'
+                  className="z-10 bg-transparent backdrop-blur-xl"
                   key={`${item.label}-content-${index}`}
-                  side='top'
+                  side="top"
                 >
-                  <p className='text-sm text-white'>{item.details}</p>
+                  <p className="text-sm text-white">{item.details}</p>
                 </TooltipContent>
               </Tooltip>
             ) : null;
