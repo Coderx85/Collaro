@@ -10,6 +10,29 @@ import {
   FaGlobe,
 } from "react-icons/fa";
 
+export const homeTabs = [
+  {
+    name: "Home",
+    id: "#home",
+  },
+  {
+    name: "About",
+    id: "#about",
+  },
+  {
+    name: "Contact",
+    id: "#contact",
+  },
+  {
+    name: "Features",
+    id: "#features",
+  },
+  {
+    name: "FAQs",
+    id: "#faq",
+  },
+];
+
 export const faqs = [
   {
     question: "How do I start a video call?",

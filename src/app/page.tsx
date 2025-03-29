@@ -7,30 +7,47 @@ import { UserButton } from "@clerk/nextjs";
 import { ThemeToggle } from "@/components/home/ThemeToggle";
 import { Feature } from "@/components/home/Feature";
 import FAQ from "@/components/home/FAQs";
+import { homeTabs } from "@/constants/dashboard";
 
 const Rootpage = async () => {
   const { userId } = await auth();
   return (
     <>
       {/* Sticky Navbar */}
-      <div className="sticky top-0 z-50 flex items-center justify-between w-full px-4 sm:px-8 py-2 xl:py-4 bg-gradient-to-r from-zinc-900/50 to-zinc-700/50 dark:from-slate-800 dark:to-slate-900 shadow-md">
-        <Link
-          href="/"
-          className="flex gap-1 sm:gap-2 items-center cursor-pointer"
-        >
-          <Image
-            src="/icons/logo.svg"
-            alt="logo"
-            width={26}
-            height={26}
-            className="h-auto w-6 sm:w-7 justify-center xl:size-8"
-          />
-          <span>
-            <span className="text-lg sm:text-xl xl:text-2xl font-bold text-white shadow-2xl">
-              DevnTalk
+      <div className="sticky top-0 z-50 flex items-center justify-between w-full px-4 sm:px-8 py-2 xl:py-4 bg-gradient-to-r from-gray-900/50 to-gray-700/50 dark:from-gray-800 dark:to-gray-900 backdrop-blur-2xl shadow-md">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <Link
+            href="/"
+            className="flex gap-1 sm:gap-2 items-center cursor-pointer"
+          >
+            <Image
+              src="/icons/logo.svg"
+              alt="logo"
+              width={26}
+              height={26}
+              className="h-auto w-6 sm:w-7 justify-center xl:size-8"
+            />
+            <span>
+              <span className="text-lg sm:text-xl xl:text-2xl font-bold text-white shadow-2xl">
+                DevnTalk
+              </span>
             </span>
-          </span>
-        </Link>
+          </Link>
+        </div>
+        <div>
+          <ul className="hidden sm:flex gap-4 text-lg sm:text-base font-semibold text-slate-900 dark:text-white">
+            {homeTabs.map((tab) => (
+              <li key={tab.name}>
+                <Link
+                  href={tab.id}
+                  className="hover:text-white text-white/65 duration-150 transform-fill transition-colors"
+                >
+                  {tab.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
         <div className="flex items-center gap-2 sm:gap-4">
           <ThemeToggle />
           {userId ? (
@@ -44,7 +61,7 @@ const Rootpage = async () => {
             </div>
           ) : (
             <Link href={"/sign-in"}>
-              <Button className="text-white bg-primary hover:bg-primary/90 transition-colors text-sm sm:text-base">
+              <Button className="text-white bg-transparent dark:bg-transparent hover:bg-primary/90 backdrop-blur-2xl transition-colors text-sm sm:text-base">
                 Sign In
               </Button>
             </Link>
@@ -54,7 +71,7 @@ const Rootpage = async () => {
 
       {/* Main Content with scroll snap */}
       <section
-        className="relative mx-auto flex flex-col bg-gradient-to-br dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 from-gray-300 via-gray-500 to-gray-300 items-center justify-center overflow-y-auto scroll-smooth"
+        className="relative mx-auto flex flex-col bg-gradient-to-br dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 from-gray-900/50 via-gray-800/20 to-gray-700/50 items-center justify-center overflow-y-auto scroll-smooth"
         style={{ scrollSnapType: "y mandatory" }}
       >
         <div className="absolute inset-y-0 left-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80">
@@ -72,7 +89,7 @@ const Rootpage = async () => {
           className="px-4 py-6 md:py-16 lg:py-28 min-h-screen justify-center w-full flex flex-col items-center"
           style={{ scrollSnapAlign: "start" }}
         >
-          <h1 className="text-xl sm:text-2xl md:text-4xl xl:text-6xl flex xl:flex-row flex-col dark:text-white text-slate-900 mx-auto text-center items-center">
+          <h1 className="text-xl sm:text-2xl md:text-4xl gap-3 xl:text-6xl flex xl:flex-row flex-col dark:text-white text-slate-900 mx-auto text-center items-center">
             {"Welcome to "}
             <span className="text-3xl sm:text-4xl xl:text-6xl font-bold text-primary border-b-4 border-b-black dark:border-b-white">
               DevnTalk
@@ -99,29 +116,39 @@ const Rootpage = async () => {
             </Link>
           </div>
           <p className="mt-4 w-4/5 gap-4 md:w-3/5 xl:max-w-4xl mx-auto text-center text-xs sm:text-sm xl:text-lg text-slate-600 dark:text-gray-400">
-            For any queries, contact us at{" "}
-            <p>
-              <Link className="underline text-white" href="/">
-                Contact Us
-              </Link>{" "}
-              |{" "}
-              <Link href={"/about-me"} className="underline text-white">
-                About Me
-              </Link>
-            </p>
+            For any queries, contact us at <br />
+            <Link
+              className="underline text-black dark:text-white"
+              href="/contact-us"
+              target="_blank"
+            >
+              Contact Us
+            </Link>{" "}
+            |{" "}
+            <Link
+              href={"/about-me"}
+              className="underline text-black dark:text-white"
+            >
+              About Me
+            </Link>
           </p>
         </div>
 
         {/* Features Section */}
-        <div className="w-full xl:px-4 px-8 py-10 md:py-16 flex flex-col items-center justify-center">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-6 md:mb-10 text-slate-900 dark:text-white">
-            Features
-          </h2>
+        <div
+          className="w-full xl:px-4 px-8 py-10 md:py-16 flex flex-col items-center justify-center"
+          id="features"
+        >
           <Feature />
         </div>
 
         {/* FAQ Section */}
-        <FAQ />
+        <div
+          id="faq"
+          className="w-full px-8 py-10 md:py-16 flex flex-col min-h-screen items-center justify-center"
+        >
+          <FAQ />
+        </div>
       </section>
     </>
   );
