@@ -9,23 +9,24 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "text-bold bg-primary text-white",
+        default:
+          "text-bold bg-transparent dark:bg-transparent text-sm sm:text-base lg:text-lg xl:text-xl text-white hover:bg-primary/90 hover:dark:bg-slate-500/90",
         destructive:
-          "text-bold bg-red-500 text-2xl text-slate-50 hover:bg-red-500/90 dark:bg-red-700 dark:text-slate-50 dark:hover:bg-red-900/90",
+          "text-bold bg-red-500 text-sm sm:text-base lg:text-lg text-slate-50 hover:bg-red-500/90 dark:bg-red-700 dark:text-slate-50 dark:hover:bg-red-900/90",
         outline:
-          "capatilize border border-2 border-primary bg-transparent text-white hover:bg-white/50 dark:border-slate-800 dark:hover:bg-slate-800 dark:hover:text-slate-50",
+          "capitalize border text-sm sm:text-base lg:text-lg xl:text-xl border-2 border-primary bg-transparent text-white hover:bg-white/50 dark:border-slate-800 dark:hover:text-slate-50",
         secondary:
           "bg-slate-100 text-slate-900 hover:bg-slate-100/80 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-slate-800/80",
         ghost:
-          "border-2 border-white hover:bg-slate-100 text-5xl hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50",
+          "border-2 border-white hover:bg-slate-100 text-2xl sm:text-3xl lg:text-5xl hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50",
         link: "text-slate-900 underline-offset-4 hover:underline dark:text-slate-50",
         inactive: "border-2 border-slate-600 bg-white text-slate-600",
-        active: "bg-alert text-white",
+        active: "bg-alert text-white bg-red-700",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 w-9 rounded-md px-3",
-        lg: "h-15 w-15 rounded-md px-4",
+        default: "h-9 sm:h-10 px-3 sm:px-4 py-2",
+        sm: "h-7 sm:h-9 w-7 sm:w-9 rounded-md px-2 sm:px-3",
+        lg: "rounded-md px-3 sm:px-4 py-2.5",
       },
     },
     defaultVariants: {

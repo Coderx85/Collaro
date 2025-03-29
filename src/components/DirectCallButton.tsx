@@ -44,7 +44,7 @@ const DirectCallButton = ({ memberId, memberName }: DirectCallButtonProps) => {
         data: {
           starts_at: new Date().toISOString(),
           custom: {
-            description: `Direct call with ${memberName}`,
+            description: `Direct call with @${memberName}`,
             callType: "direct",
           },
           members: [{ user_id: memberId, role: "call_member" }],
@@ -96,13 +96,13 @@ const DirectCallButton = ({ memberId, memberName }: DirectCallButtonProps) => {
   return (
     <>
       <Button
-        variant='outline'
+        variant="outline"
         size={"sm"}
-        className='rounded-full'
+        className="rounded-full"
         onClick={() => setIsDialogOpen(true)}
         title={`Call ${memberName}`}
       >
-        <PhoneCall className='h-4 w-4' />
+        <PhoneCall className="h-4 w-4" />
       </Button>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -111,11 +111,11 @@ const DirectCallButton = ({ memberId, memberName }: DirectCallButtonProps) => {
             <DialogTitle>Call {memberName}</DialogTitle>
           </DialogHeader>
 
-          <div className='flex flex-col items-center justify-center gap-6 py-4'>
+          <div className="flex flex-col items-center justify-center gap-6 py-4">
             <p>Start a direct video call with {memberName}?</p>
 
-            <div className='flex gap-4'>
-              <Button variant='outline' onClick={() => setIsDialogOpen(false)}>
+            <div className="flex gap-4">
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                 Cancel
               </Button>
 
