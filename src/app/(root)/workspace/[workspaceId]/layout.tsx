@@ -6,8 +6,11 @@ import StreamVideoProvider from "@/providers/StreamClientProvider";
 import { Loader } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "DevnTalk",
+  title: "Home | DevnTalk",
   description: "A workspace for your team, powered by Stream Chat and Clerk.",
+  icons: {
+    icon: "/icons/home.svg",
+  },
 };
 
 const RootLayout = async ({
@@ -26,7 +29,7 @@ const RootLayout = async ({
   const workspace = workspaceData.data;
   const param = await params;
   const workspaceId = param.workspaceId;
-  const members = workspaceData.data?.members || [];
+  const members = workspaceData.data?.member || [];
 
   return (
     <StreamVideoProvider>
@@ -44,11 +47,9 @@ const RootLayout = async ({
         {sidebar}
         <div className="flex flex-col flex-1 min-h-screen xl:ml-50">
           {navbar}
-          <Suspense fallback={<Loader />}>
-            <main className="flex-1 overflow-y-auto p-6 mt-16 dark:bg-gradient-to-br bg-white dark:from-slate-900 dark:to-slate-900">
-              {children}
-            </main>
-          </Suspense>
+          <main className="flex-1 overflow-y-auto p-6 mt-16 dark:bg-gradient-to-br bg-white dark:from-slate-900 dark:to-slate-900">
+            <Suspense fallback={<Loader />}>{children}</Suspense>
+          </main>
         </div>
       </div>
     </StreamVideoProvider>
