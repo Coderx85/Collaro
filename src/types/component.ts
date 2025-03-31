@@ -17,6 +17,15 @@ export interface MeetingDetailsProps {
   meetingLink: string;
 }
 
+export interface SidebarProps {
+  params: {
+    workspaceId: string;
+    url: {
+      pathname: string;
+    };
+  };
+}
+
 export type SidebarLink = {
   route: string;
   label: string;
@@ -24,6 +33,11 @@ export type SidebarLink = {
   component: React.ComponentType<{ selected: boolean; className: string }>;
   adminRoute: boolean;
 };
+
+export interface NavLinks {
+  role: "admin" | "member";
+  workspaceId: string;
+}
 
 export interface FeatureCard {
   icon: IconType;
