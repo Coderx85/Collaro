@@ -14,32 +14,30 @@ export interface WorkspaceCheckResponse {
 export async function getWorkspaceUsers(workspaceId: string) {
   const clerkUser = await currentUser();
   if (!clerkUser) {
-    // console.log("User not found");
     return { message: "User not found" };
   }
 
-  const user = await db
+  const [user] = await db
     .select()
     .from(usersTable)
     .where(eq(usersTable.clerkId, clerkUser.id))
     .execute();
 
+  if (!user) return { message: "User not found in the database" };
+
   // Check if workspace exists and user belongs to it
-  const workspaceUsers = await db
+  const [workspaceUsers] = await db
     .select()
     .from(workspaceUsersTable)
     .where(
       and(
         eq(workspaceUsersTable.workspaceId, workspaceId),
-        eq(workspaceUsersTable.userId, user[0].id),
+        eq(workspaceUsersTable.userId, user.id),
       ),
     )
     .execute();
 
-  // console.log('workspaceUsers \n', workspaceUsers)
-
-  if (!workspaceUsers.length)
-    return { message: "No users found for this workspace" };
+  if (!workspaceUsers) return { message: "No users found for this workspace" };
 
   const members = await db
     .select()
@@ -55,9 +53,7 @@ export async function checkWorkspaceUser(
   workspaceId: string,
 ): Promise<WorkspaceCheckResponse> {
   try {
-    // console.log('userId ==', userId)
-    // console.log('workspaceId ==', workspaceId)
-    const dbUser = await db
+    const [dbUser] = await db
       .select()
       .from(usersTable)
       .where(
@@ -68,37 +64,35 @@ export async function checkWorkspaceUser(
       )
       .execute();
 
-    // console.log('dbUser:: \n', dbUser[0])
-
-    if (!dbUser[0]) {
+    if (!dbUser) {
       redirect("/unauthorized");
     }
 
-    const workspace = await db
+    const [workspace] = await db
       .select()
       .from(workspaceUsersTable)
       .where(
         and(
           eq(workspaceUsersTable.workspaceId, workspaceId),
-          eq(workspaceUsersTable.userId, dbUser[0]?.id),
+          eq(workspaceUsersTable.userId, dbUser?.id),
         ),
       )
       .execute();
 
     // console.log('workspace:: \n', workspace[0])
 
-    if (dbUser && workspace.length < 1) {
+    if (dbUser && workspace) {
       const newMember = db
         .insert(workspaceUsersTable)
         .values({
-          name: dbUser[0]?.name,
+          name: dbUser?.name,
           userId,
-          role: dbUser[0]?.role,
+          role: dbUser?.role,
           workspaceId,
-          workspaceName: workspace[0]?.name,
+          workspaceName: workspace?.name,
         })
         .returning();
-      console.log("newMember \n", newMember);
+      // console.log("newMember \n", newMember);
 
       return {
         data: `User added to workspace \n ${newMember}`,
@@ -107,7 +101,7 @@ export async function checkWorkspaceUser(
       };
     }
 
-    if (!workspace || workspace.length < 1) redirect("/not-found");
+    if (!workspace) redirect("/not-found");
 
     return {
       data: "Workspace found",
@@ -163,8 +157,18 @@ export async function getWorkspace(userId: string) {
       return { message: "No members found for this workspace" };
 
     const memberData = workspaceMember.data;
-    const members = memberData.map((m) => m.clerkId);
-    const data = { ...workspace[0], members };
+    // console.log("memberData:: \n", memberData);
+    const member = memberData.map((member) => {
+      return {
+        id: member.id,
+        name: member.name,
+        userName: member.userName,
+        // imageUrl: member.imageUrl,
+        email: member.email,
+        role: member.role,
+      };
+    });
+    const data = { ...workspace[0], member };
     return { data };
   } catch (error: unknown) {
     return { error: `Failed to get workspace:: \n ${error}` };

@@ -4,6 +4,7 @@ import { db, usersTable, workspaceUsersTable, workspacesTable } from "@/db";
 import { APIResponse, UserResponse } from "@/types";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function getUserWorkspaceId() {
@@ -15,15 +16,15 @@ export async function getUserWorkspaceId() {
     }
 
     // Get user from database
-    const user = await db
+    const [user] = await db
       .select()
       .from(usersTable)
       .where(eq(usersTable.clerkId, clerkUser.id))
       .execute();
 
     // Create new user if doesn't exist
-    if (user.length === 0) {
-      const newUser = await db
+    if (!user) {
+      const [newUser] = await db
         .insert(usersTable)
         .values({
           clerkId: clerkUser.id,
@@ -37,94 +38,77 @@ export async function getUserWorkspaceId() {
       await (
         await clerkClient()
       ).users.updateUserMetadata(clerkUser.id, {
-        publicMetadata: { role: newUser[0]?.role },
+        publicMetadata: { role: newUser?.role },
       });
 
+      revalidateTag("user");
       return {
         data: {
+          ...newUser,
           workspaceId: "",
           workspaceName: "",
-          userName: newUser[0].userName,
-          role: newUser[0].role,
-          id: newUser[0].id,
         },
         success: true,
       };
-      // redirect('/unauthorised');
     } else {
       // Update existing user's Clerk metadata
       await (
         await clerkClient()
       ).users.updateUserMetadata(clerkUser.id, {
-        publicMetadata: { role: user[0].role },
+        publicMetadata: { role: user.role },
       });
     }
 
-    const workspaceId = user[0]?.workspaceId || "";
-    // if (!workspaceId) {
-    //   redirect('/unauthorised');
-    // }
-
-    if (workspaceId) {
-      // Check if the workspace exists
-      const workspace = await db
-        .select()
-        .from(workspacesTable)
-        .where(eq(workspacesTable.id, workspaceId))
-        .execute();
-
-      if (workspace.length === 0) {
-        redirect("/not-found");
-      }
-
-      // Check if the user is a member of the workspace
-      const workspaceMember = await db
-        .select()
-        .from(workspaceUsersTable)
-        .where(
-          and(
-            eq(workspaceUsersTable.userId, user[0]?.id),
-            eq(workspaceUsersTable.workspaceId, workspaceId),
-          ),
-        )
-        .execute();
-
-      if (workspaceMember.length === 0) {
-        const updateWorkspaceMember = await db
-          .insert(workspaceUsersTable)
-          .values({
-            userId: user[0]?.id,
-            workspaceId,
-            workspaceName: workspace[0]?.name,
-            role: user[0]?.role,
-            name: user[0]?.name,
-          })
-          .returning();
-
-        if (updateWorkspaceMember.length === 0) {
-          redirect("/not-found");
-        }
-      }
-
+    if (!user.workspaceId)
       return {
-        data: {
-          workspaceId,
-          workspaceName: workspace[0]?.name,
-          userName: user[0].userName,
-          role: user[0].role,
-          id: user[0].id,
-        },
+        data: { ...user, workspaceId: "", workspaceName: "" },
         success: true,
       };
+
+    // if (workspaceId) {
+    // Check if the workspace exists
+    const [workspace] = await db
+      .select()
+      .from(workspacesTable)
+      .where(eq(workspacesTable.id, user.workspaceId))
+      .execute();
+
+    // if (!workspace) return redirect("/not-found");
+
+    // Check if the user is a member of the workspace
+    const [workspaceMember] = await db
+      .select()
+      .from(workspaceUsersTable)
+      .where(
+        and(
+          eq(workspaceUsersTable.userId, user.id),
+          eq(workspaceUsersTable.workspaceId, user.workspaceId),
+        ),
+      )
+      .execute();
+
+    if (!workspaceMember) {
+      await db
+        .insert(workspaceUsersTable)
+        .values({
+          userId: user.id,
+          workspaceId: workspace.id,
+          workspaceName: workspace.name,
+          role: user?.role,
+          name: user?.name,
+        })
+        .returning();
+
+      if (!workspaceMember) {
+        redirect("/not-found");
+      }
     }
 
     return {
       data: {
-        workspaceId: "",
-        workspaceName: "",
-        userName: user[0].userName,
-        role: user[0].role,
-        id: user[0].id,
+        ...user,
+        workspaceName: workspace.name,
+        workspaceId: workspace.id,
       },
       success: true,
     };
@@ -136,11 +120,6 @@ export async function getUserWorkspaceId() {
       success: false,
     };
   }
-}
-
-interface getUserResponse {
-  data?: UserResponse;
-  error?: string;
 }
 
 export async function getWorkspaceMembers(workspaceId: string) {
@@ -156,7 +135,7 @@ export async function getWorkspaceMembers(workspaceId: string) {
   }
 }
 
-export async function getUser(): Promise<getUserResponse> {
+export async function getUser(): Promise<APIResponse<UserResponse>> {
   try {
     // Get the current user
     const clerkUser = await currentUser();
@@ -165,18 +144,18 @@ export async function getUser(): Promise<getUserResponse> {
     const clerkId = clerkUser.id.toString();
 
     // Check if the user exists in the database
-    const user = await db
+    const [user] = await db
       .select()
       .from(usersTable)
       .where(eq(usersTable.clerkId, clerkId))
       .execute();
 
     // If the user does not exist,
-    if (!user.length) return { error: "User does not exist" };
+    if (!user) return { error: "User does not exist", success: false };
 
-    return { data: user[0] };
+    return { data: user, success: true };
   } catch (error: unknown) {
-    return { error: `Failed to get user:: \n ${error}` };
+    return { error: `Failed to get user:: \n ${error}`, success: false };
   }
 }
 
