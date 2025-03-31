@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { APIResponse, MeetingResponse } from "@/types";
 import { db, usersTable, workspaceMeetingTable, workspacesTable } from "@/db";
+import { aj } from "@/lib";
 
 export async function POST(
   req: NextRequest,
@@ -14,6 +15,16 @@ export async function POST(
     if (!user) {
       return NextResponse.json({ success: false, error: "User not found" });
     }
+
+    const check = await aj.protect(req, { userId: user.id, requested: 5 });
+
+    if (check.isDenied()) {
+      return NextResponse.json({
+        success: false,
+        error: "Rate limit exceeded",
+      });
+    }
+
     const username = user.username;
 
     const dbUser = await db

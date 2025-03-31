@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { currentUser } from "@clerk/nextjs/server";
+import { aj } from "@/lib";
 import { db, workspaceMeetingTable } from "@/db";
 import { eq } from "drizzle-orm";
 
@@ -7,6 +9,21 @@ export async function PATCH(
   { params }: { params: { meetingId: string } },
 ) {
   const { meetingId } = await params;
+
+  const user = await currentUser();
+  if (!user) {
+    return NextResponse.json({ success: false, error: "User not found" });
+  }
+
+  const check = await aj.protect(req, { userId: user.id, requested: 5 });
+
+  if (check.isDenied()) {
+    return NextResponse.json({
+      success: false,
+      error: "Rate limit exceeded",
+    });
+  }
+
   console.log("MeetingId: \n", meetingId);
   try {
     // Update the meeting in the database with end time
