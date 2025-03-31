@@ -1,22 +1,16 @@
-"use client";
 import Link from "next/link";
-import React from "react";
 import Image from "next/image";
-import { SignedIn, UserButton, useSignIn } from "@clerk/nextjs";
+import { UserButton } from "@clerk/nextjs";
 import { SignOutButton } from "@/components/SignOutButton";
 import { ThemeToggle } from "@/components/home/ThemeToggle";
 import MobileNav from "./_components/MobileNav";
 import NotificationBell from "./_components/NotificationBell";
 
 const Navbar = () => {
-  const isActive = useSignIn();
   return (
-    <nav className="fixed top-0 left-0 xl:left-50 right-0 h-16 bg-gray-800 text-white flex items-center justify-between px-6">
+    <nav className="fixed top-0 left-0 xl:left-50 right-0 h-16 bg-gray-900 dark:bg-gray-600/50 text-white flex items-center justify-between px-6">
       <div>
-        <Link
-          href={!isActive ? "/" : "/workspace"}
-          className="flex items-center gap-1 xl:hidden"
-        >
+        <Link href={"/workspace"} className="flex items-center gap-1 xl:hidden">
           <Image
             src="/icons/logo.svg"
             width={32}
@@ -32,10 +26,8 @@ const Navbar = () => {
       <div className="flex items-center justify-end gap-3 px-4 py-2 text-lg font-bold">
         <NotificationBell />
         <ThemeToggle />
-        <SignedIn>
-          <UserButton />
-          <SignOutButton />
-        </SignedIn>
+        <UserButton />
+        <SignOutButton />
         <MobileNav />
       </div>
     </nav>

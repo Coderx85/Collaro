@@ -51,14 +51,15 @@ const WorskpaceRoom = async ({}) => {
             <TableCell>Joined At</TableCell>
           </TableRow>
         </TableHeader>
-        {Array.isArray(workspaceUser) &&
-          workspaceUser.map((user) => (
-            <TableBody key={user.userId}>
+        {workspaceUser?.data &&
+          workspaceUser.data.length > 0 &&
+          workspaceUser.data.map((user) => (
+            <TableBody key={user.id}>
               <TableRow>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.userName}</TableCell>
                 <TableCell>{user.role}</TableCell>
-                <TableCell>{String(user.joinedAt).split("T")[0]}</TableCell>
+                <TableCell>{String(user.createdAt).split("T")[0]}</TableCell>
               </TableRow>
             </TableBody>
           ))}
