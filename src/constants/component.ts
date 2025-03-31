@@ -9,6 +9,13 @@ import { SiAdminer } from "react-icons/si";
 
 export const sidebarLinks: SidebarLink[] = [
   {
+    route: "",
+    label: "Home",
+    details: "This is the home page",
+    component: Home,
+    adminRoute: false,
+  },
+  {
     route: "/workspace-room",
     label: "Room",
     details: "Workspace Room detail",
@@ -28,13 +35,6 @@ export const sidebarLinks: SidebarLink[] = [
     route: "/admin",
     details: "Manage workspace settings and permissions",
     adminRoute: true,
-  },
-  {
-    route: "",
-    label: "Home",
-    details: "This is the home page",
-    component: Home,
-    adminRoute: false,
   },
   {
     route: "/upcoming",
