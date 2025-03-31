@@ -46,19 +46,19 @@ const MemberList = () => {
   if (isLoading) return <Loader />;
 
   return (
-    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {memberDetails.map((member) => (
-        <Card key={member.id} className='overflow-hidden'>
-          <CardContent className='p-4'>
-            <div className='flex items-center justify-between'>
-              <div className='flex items-center gap-3'>
+        <Card key={member.id} className="overflow-hidden">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
                 <Avatar key={member.id}>
                   <AvatarFallback>
                     {member.name.substring(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className='font-medium'>{member.name}</h3>
+                  <h3 className="font-medium">{member.name}</h3>
                 </div>
               </div>
 

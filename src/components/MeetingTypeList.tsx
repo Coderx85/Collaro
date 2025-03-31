@@ -217,33 +217,33 @@ const MeetingTypeList = () => {
   const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/meeting/${callDetail?.id}`;
 
   return (
-    <section className='grid mt-20 gap-5 mgrid-cols-2 xl:grid-cols-4'>
+    <section className="grid mt-20 gap-5 mgrid-cols-2 xl:grid-cols-4">
       <HomeCard
-        img='/icons/add-meeting.svg'
-        title='New Meeting'
-        variant='primary'
-        description='Start an instant meeting'
+        img="/icons/add-meeting.svg"
+        title="New Meeting"
+        variant="primary"
+        description="Start an instant meeting"
         handleClick={() => setMeetingState("isInstantMeeting")}
       />
       <HomeCard
-        img='/icons/join-meeting.svg'
-        title='Join Meeting'
-        description='via invitation link'
-        variant='orange'
+        img="/icons/join-meeting.svg"
+        title="Join Meeting"
+        description="via invitation link"
+        variant="orange"
         handleClick={() => setMeetingState("isJoiningMeeting")}
       />
       <HomeCard
-        img='/icons/schedule.svg'
-        title='Schedule Meeting'
-        description='Plan your meeting'
-        variant='purple'
+        img="/icons/schedule.svg"
+        title="Schedule Meeting"
+        description="Plan your meeting"
+        variant="purple"
         handleClick={() => setMeetingState("isScheduleMeeting")}
       />
       <HomeCard
-        img='/icons/recordings.svg'
-        title='View Recordings'
-        description='Meeting Recordings'
-        variant='yellow'
+        img="/icons/recordings.svg"
+        title="View Recordings"
+        description="Meeting Recordings"
+        variant="yellow"
         handleClick={() => router.push(`/workspace/${workspaceId}/recordings`)}
       />
 
@@ -251,33 +251,33 @@ const MeetingTypeList = () => {
         <MeetingModal
           isOpen={meetingState === "isScheduleMeeting"}
           onClose={() => setMeetingState(undefined)}
-          title='Create Meeting'
+          title="Create Meeting"
           handleClick={createMeeting}
         >
-          <div className='flex flex-col gap-2.5'>
-            <label className='text-base font-normal leading-[22.4px] text-sky-2'>
+          <div className="flex flex-col gap-2.5">
+            <label className="text-base font-normal leading-[22.4px] text-sky-2">
               Add a description
             </label>
             <Textarea
-              className='border-none bg-dark-3 focus-visible:ring-0 focus-visible:ring-offset-0'
+              className="border-none bg-dark-3 focus-visible:ring-0 focus-visible:ring-offset-0"
               onChange={(e) =>
                 setValues({ ...values, description: e.target.value })
               }
             />
           </div>
-          <div className='flex w-full flex-col gap-2.5'>
-            <label className='text-base font-normal leading-[22.4px] text-sky-2'>
+          <div className="flex w-full flex-col gap-2.5">
+            <label className="text-base font-normal leading-[22.4px] text-sky-2">
               Select Date and Time
             </label>
             <ReactDatePicker
               selected={values.dateTime}
               onChange={(date) => setValues({ ...values, dateTime: date! })}
               showTimeSelect
-              timeFormat='HH:mm'
+              timeFormat="HH:mm"
               timeIntervals={15}
-              timeCaption='time'
-              dateFormat='MMMM d, yyyy h:mm aa'
-              className='w-full rounded bg-dark-3 p-2 focus:outline-hidden'
+              timeCaption="time"
+              dateFormat="MMMM d, yyyy h:mm aa"
+              className="w-full rounded bg-dark-3 p-2 focus:outline-hidden"
             />
           </div>
         </MeetingModal>
@@ -285,7 +285,7 @@ const MeetingTypeList = () => {
         <MeetingModal
           isOpen={meetingState === "isScheduleMeeting"}
           onClose={() => setMeetingState(undefined)}
-          title='Meeting Created'
+          title="Meeting Created"
           handleClick={() => {
             downloadICS({
               startTime: values.dateTime,
@@ -296,33 +296,33 @@ const MeetingTypeList = () => {
             toast({ title: "Link Copied" });
           }}
           image={"/icons/checked.svg"}
-          buttonIcon='/icons/copy.svg'
-          className='text-center'
-          buttonText='Copy Meeting Link'
+          buttonIcon="/icons/copy.svg"
+          className="text-center"
+          buttonText="Copy Meeting Link"
         />
       )}
 
       <MeetingModal
         isOpen={meetingState === "isJoiningMeeting"}
         onClose={() => setMeetingState(undefined)}
-        title='Type the link here'
-        className='text-center'
-        buttonText='Join Meeting'
+        title="Type the link here"
+        className="text-center"
+        buttonText="Join Meeting"
         handleClick={() => router.push(`/meeting/${values.link}`)}
       >
         <Input
-          placeholder='Meeting link'
+          placeholder="Meeting link"
           onChange={(e) => setValues({ ...values, link: e.target.value })}
-          className='border-none bg-dark-3 focus-visible:ring-0 focus-visible:ring-offset-0'
+          className="border-none bg-dark-3 focus-visible:ring-0 focus-visible:ring-offset-0"
         />
       </MeetingModal>
 
       <MeetingModal
         isOpen={meetingState === "isInstantMeeting"}
         onClose={() => setMeetingState(undefined)}
-        title='Start an Instant Meeting'
-        className='text-center'
-        buttonText='Start Meeting'
+        title="Start an Instant Meeting"
+        className="text-center"
+        buttonText="Start Meeting"
         handleClick={createMeeting}
       />
     </section>
