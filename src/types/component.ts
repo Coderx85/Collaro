@@ -39,6 +39,18 @@ export interface NavLinks {
   workspaceId: string;
 }
 
+export interface WorkspaceInitializerProps {
+  workspaceId?: string;
+  workspaceName?: string;
+  members?: {
+    id: string;
+    name: string;
+    userName: string;
+    email: string;
+    role: string;
+  }[];
+}
+
 export interface FeatureCard {
   icon: IconType;
   title: string;

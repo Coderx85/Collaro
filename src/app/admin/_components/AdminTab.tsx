@@ -22,13 +22,13 @@ const AdminTab = async () => {
       title: "Users",
       value: "users",
       content: (
-        <Table className='w-full overflow-hidden relative h-full rounded-md text-md md:text-lg text-white bg-gradient-to-br from-primary to-dark-2'>
-          <TableHeader className='text-white'>
+        <Table className="w-full overflow-hidden relative h-full rounded-md text-md md:text-lg text-white bg-gradient-to-br from-primary to-dark-2">
+          <TableHeader className="text-white">
             <TableRow>
-              <TableHead className='text-white'>Name</TableHead>
-              <TableHead className='text-white'>Email</TableHead>
-              <TableHead className='text-white'>Role</TableHead>
-              <TableHead className='text-white'>Workspace</TableHead>
+              <TableHead className="text-white">Name</TableHead>
+              <TableHead className="text-white">Email</TableHead>
+              <TableHead className="text-white">Role</TableHead>
+              <TableHead className="text-white">Workspace</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -50,7 +50,7 @@ const AdminTab = async () => {
       title: "Workspaces",
       value: "workspaces",
       content: (
-        <Table className='w-full overflow-hidden relative h-full rounded-2xl p-10 text-md md:text-lg text-white bg-gradient-to-br from-primary to-dark-2'>
+        <Table className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-md md:text-lg text-white bg-gradient-to-br from-primary to-dark-2">
           <TableHeader>
             <TableRow>
               <TableCell>ID</TableCell>
@@ -76,7 +76,7 @@ const AdminTab = async () => {
       title: "Meetings",
       value: "meetings",
       content: (
-        <Table className='w-full overflow-hidden relative rounded-md h-full text-sm md:text-lg text-white bg-primary/70'>
+        <Table className="w-full overflow-hidden relative rounded-md h-full text-sm md:text-lg text-white bg-primary/70">
           <TableHeader>
             <TableRow>
               <TableCell>Name</TableCell>
@@ -102,7 +102,7 @@ const AdminTab = async () => {
     },
   ];
   return (
-    <div className='bg-primary/10 p-4 rounded-lg'>
+    <div className="bg-primary/10 p-4 rounded-lg">
       {/* <Tabs defaultValue='users' className='rounded-sm'>
         <TabsList className='grid w-full grid-cols-3 text-white gap-2'>
           <TabsTrigger value='users' className='bg-primary p-4 rounded-2xl'>
@@ -157,7 +157,7 @@ const AdminTab = async () => {
       </Tabs> */}
       <Tabs
         tabs={tabs}
-        contentClassName='text-white bg-gradient-to-br from-primary to-dark-2'
+        contentClassName="text-white bg-gradient-to-br from-primary to-dark-2"
       />
     </div>
   );
