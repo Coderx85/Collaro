@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { db, usersTable } from "@/db";
 import { eq } from "drizzle-orm";
+import { aj } from "@/lib";
 
 export async function GET(
   req: NextRequest,
@@ -11,6 +12,15 @@ export async function GET(
     const user = await currentUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const check = await aj.protect(req, { userId: user.id, requested: 5 });
+
+    if (check.isDenied()) {
+      return NextResponse.json({
+        success: false,
+        error: "Rate limit exceeded",
+      });
     }
 
     const { workspaceId } = (await params) || "";

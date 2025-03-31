@@ -1,5 +1,5 @@
 import { db, usersTable, workspacesTable, workspaceUsersTable } from "@/db";
-import { aj } from "@/lib/arcjet";
+import { aj } from "@/lib";
 import { APIResponse, CreateWorkspaceResponse } from "@/types";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";

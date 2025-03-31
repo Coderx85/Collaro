@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { eq, and } from "drizzle-orm";
 import { APIResponse, WorkspaceResponse } from "@/types";
 import { redirect } from "next/navigation";
-import { aj } from "@/lib/arcjet";
+import { aj } from "@/lib";
 
 export async function POST(
   req: NextRequest,

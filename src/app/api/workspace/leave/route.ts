@@ -1,9 +1,10 @@
 import { currentUser } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db, usersTable, workspacesTable } from "@/db";
+import { aj } from "@/lib";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
     const clerkUser = await currentUser();
     if (!clerkUser) {
@@ -23,6 +24,19 @@ export async function POST() {
         { message: "You are not in a workspace" },
         { status: 400 },
       );
+    }
+
+    // Check if user is the creator of the workspace
+    const check = await aj.protect(req, {
+      userId: user[0].clerkId,
+      requested: 5,
+    });
+
+    if (check.isDenied()) {
+      return NextResponse.json({
+        success: false,
+        error: "Rate limit exceeded",
+      });
     }
 
     // Check if workspace exists
