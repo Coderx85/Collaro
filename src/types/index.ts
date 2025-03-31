@@ -5,3 +5,5 @@ export * from "./database";
 export * from "./component";
 
 export * from "./action";
+
+export * from "./portfolio";

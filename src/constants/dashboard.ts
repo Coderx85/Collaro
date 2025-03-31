@@ -16,20 +16,20 @@ export const homeTabs = [
     id: "#home",
   },
   {
-    name: "About",
-    id: "#about",
-  },
-  {
-    name: "Contact",
-    id: "#contact",
-  },
-  {
     name: "Features",
     id: "#features",
   },
   {
     name: "FAQs",
     id: "#faq",
+  },
+  {
+    name: "About",
+    id: "#about",
+  },
+  {
+    name: "Contact",
+    id: "#contact",
   },
 ];
 

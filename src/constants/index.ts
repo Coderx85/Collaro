@@ -6,7 +6,7 @@ export const avatarImages = [
   "/images/avatar-5.png",
 ];
 
-export * from "./about-me";
+export * from "./portfolio";
 
 export * from "./dashboard";
 
