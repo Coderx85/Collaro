@@ -2,11 +2,11 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NavLinks, SidebarLink } from "@/types";
+import { SidebarLinks, SidebarLink } from "@/types";
 import { sidebarLinks } from "@/constants";
 import { cn } from "@/lib/utils";
 
-const Navlink = ({ role, workspaceId }: NavLinks) => {
+const Sidebarlink = ({ role, workspaceId }: SidebarLinks) => {
   const pahtname = usePathname();
   return (
     <div className="gap-2 flex flex-col">
@@ -48,4 +48,4 @@ const Navlink = ({ role, workspaceId }: NavLinks) => {
   );
 };
 
-export default Navlink;
+export default Sidebarlink;
