@@ -9,3 +9,10 @@ export type clientCall = {
     scheduled?: boolean;
   };
 };
+
+export interface WorkspaceCheckResponse {
+  data?: string;
+  error?: string;
+  success: boolean;
+  status: number;
+}

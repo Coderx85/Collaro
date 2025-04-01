@@ -1,14 +1,7 @@
 import Box from "./_components/box";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { getUser, getWorkspace, getWorkspaceUsers } from "@/action";
 import { Separator } from "@/components/ui/separator";
+import { MemberList } from "./_components/member-list";
 
 const WorskpaceRoom = async ({}) => {
   const user = await getUser();
@@ -40,30 +33,11 @@ const WorskpaceRoom = async ({}) => {
           <Box title="Created At" description={String(workspace.createdAt)} />
         </div>
       )}
+      <Separator className="border-2 my-2 border-white/50" />
 
-      <Table className="border-2 border-gray-800 mt-8">
-        <TableCaption>Workspace Users</TableCaption>
-        <TableHeader className="bg-gray-800">
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Username</TableCell>
-            <TableCell>Role</TableCell>
-            <TableCell>Joined At</TableCell>
-          </TableRow>
-        </TableHeader>
-        {workspaceUser?.data &&
-          workspaceUser.data.length > 0 &&
-          workspaceUser.data.map((user) => (
-            <TableBody key={user.id}>
-              <TableRow>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.userName}</TableCell>
-                <TableCell>{user.role}</TableCell>
-                <TableCell>{String(user.createdAt).split("T")[0]}</TableCell>
-              </TableRow>
-            </TableBody>
-          ))}
-      </Table>
+      {workspaceUser?.data && workspaceUser.data.length > 0 && (
+        <MemberList users={workspaceUser.data} workspaceId={workspaceId} />
+      )}
     </div>
   );
 };
