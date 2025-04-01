@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -154,26 +153,26 @@ const NotificationBell = () => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant={"outline"} size={"lg"} className='relative'>
-          <Bell className='h-5 w-5' />
+        <Button className="relative rounded-full p-2" size={"icon"}>
+          <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
             <Badge
-              variant='destructive'
-              className='absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full p-0'
+              variant="destructive"
+              className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full p-0"
             >
               {unreadCount}
             </Badge>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className='w-80' align='end'>
-        <div className='flex items-center justify-between mb-2'>
-          <h3 className='font-medium'>Notifications</h3>
+      <PopoverContent className="w-80" align="end">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-medium">Notifications</h3>
           {unreadCount > 0 && (
             <Button
-              variant='ghost'
-              size='sm'
-              className='text-xs'
+              variant="ghost"
+              size="sm"
+              className="text-xs"
               onClick={() => fetchNotifications()}
             >
               Refresh
@@ -182,16 +181,16 @@ const NotificationBell = () => {
         </div>
 
         {loading ? (
-          <div className='flex justify-center py-4'>
-            <Loader size={10} className='animate-spin' />
+          <div className="flex justify-center py-4">
+            <Loader size={10} className="animate-spin" />
           </div>
         ) : notifications.length === 0 ? (
-          <p className='text-center py-4 text-sm text-muted-foreground'>
+          <p className="text-center py-4 text-sm text-muted-foreground">
             No notifications
           </p>
         ) : (
-          <ScrollArea className='h-[300px] pr-3'>
-            <div className='space-y-2'>
+          <ScrollArea className="h-[300px] pr-3">
+            <div className="space-y-2">
               {notifications.map((notification) => (
                 <div
                   key={notification.id}
@@ -202,22 +201,22 @@ const NotificationBell = () => {
                   }`}
                   onClick={() => handleNotificationClick(notification)}
                 >
-                  <div className='flex justify-between items-start'>
-                    <h4 className='font-medium text-sm'>
+                  <div className="flex justify-between items-start">
+                    <h4 className="font-medium text-sm">
                       {notification.title}
                     </h4>
                     {!notification.isRead && (
-                      <Badge variant='outline' className='text-xs'>
+                      <Badge variant="outline" className="text-xs">
                         New
                       </Badge>
                     )}
                   </div>
-                  <p className='text-sm text-muted-foreground mt-1'>
+                  <p className="text-sm text-muted-foreground mt-1">
                     {notification.message}
                   </p>
 
                   {notification.scheduledFor && (
-                    <div className='flex items-center mt-2 text-xs text-muted-foreground'>
+                    <div className="flex items-center mt-2 text-xs text-muted-foreground">
                       <span>
                         {format(
                           new Date(notification.scheduledFor),

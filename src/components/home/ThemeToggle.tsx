@@ -18,16 +18,15 @@ export function ThemeToggle() {
 
   return (
     <Button
-      variant={"ghost"}
-      size={"sm"}
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      aria-label='Toggle theme'
-      className='rounded-full border-white/15 xl:text-7xl text-3xl xl:size-10 size-8 hover:bg-primary/20 bg-dark-1/30 dark:bg-white/50 dark:text-black hover:text-primary'
+      aria-label="Toggle theme"
+      size={"icon"}
+      className="rounded-full border-white/50 border-2 p-1.5 hover:bg-black/50 hover:dark:bg-gray-500/50 dark:text-black"
     >
       {theme === "dark" ? (
-        <Sun className='text-black text-5xl' height={25} width={25} />
+        <Sun className="text-yellow-300/75 size-5" />
       ) : (
-        <Moon className='size-4 text-white text-7xl' />
+        <Moon className="size-5 text-white" />
       )}
     </Button>
   );
