@@ -2,7 +2,7 @@ import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { currentUser } from "@clerk/nextjs/server";
 import LeaveTeamButton from "../_components/LeaveButton";
 import Image from "next/image";
-import Navlink from "./_components/Navlink";
+import Navlink from "./_components/items";
 import AlertButton from "../_components/AlertButton";
 import { SidebarProps } from "@/types";
 
