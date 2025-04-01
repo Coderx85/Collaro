@@ -34,7 +34,7 @@ export type SidebarLink = {
   adminRoute: boolean;
 };
 
-export interface NavLinks {
+export interface SidebarLinks {
   role: "admin" | "member";
   workspaceId: string;
 }
