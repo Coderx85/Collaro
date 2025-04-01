@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Feature } from "@/components/home/Feature";
 import FAQ from "@/components/home/FAQs";
@@ -22,52 +23,63 @@ const Rootpage = async () => {
 
       {/* Hero Section */}
       <div
-        className="px-4 py-6 md:py-16 lg:py-28 min-h-screen justify-center w-full flex flex-col items-center"
+        className="px-4 py-6 md:py-10 grid grid-cols-2 lg:py-0 min-h-screen w-full"
         style={{ scrollSnapAlign: "start" }}
       >
-        <h1 className="text-xl sm:text-2xl md:text-4xl gap-3 xl:text-6xl flex xl:flex-row flex-col dark:text-white text-slate-900 mx-auto text-center items-center">
-          {"Welcome to "}
-          <span className="text-3xl sm:text-4xl xl:text-6xl font-bold text-primary border-b-4 border-b-black dark:border-b-white">
-            DevnTalk
-          </span>
-        </h1>
-        <p className="w-4/5 md:w-3/5 px-4 mt-4 md:mt-6 xl:mt-8 xl:max-w-5xl text-xs sm:text-sm xl:text-lg xl:text-center text-justify leading-6 text-slate-700 dark:text-gray-300">
-          A modern platform for seamless developer discussions, video
-          conferencing, and collaboration. Join us to connect with developers,
-          share ideas, and collaborate on projects.
-        </p>
-        <div className="flex justify-center flex-col sm:flex-row mt-5 gap-3 sm:gap-5">
-          <Link href="/workspace">
-            <Button className="rounded-lg font-bold bg-gradient-to-br from-primary/85 dark:to-white/5 hover:from-primary/90 hover:to-primary to-black shadow-md text-white text-sm sm:text-base">
-              Get Started
-            </Button>
-          </Link>
-          <Link href="/guide">
-            <Button
-              className="rounded-lg font-bold border-2 dark:bg-transparent bg-white/80 border-primary hover:bg-primary/10 text-primary shadow-md text-sm sm:text-base"
-              variant={"outline"}
-            >
-              User Guide
-            </Button>
-          </Link>
+        <div className="hidden lg:flex py-32">
+          <Image
+            src="/images/hero.jpeg"
+            alt="hero"
+            width={600}
+            height={400}
+            className="w-[650px] h-[400px] object-cover"
+          />
         </div>
-        <p className="mt-4 w-4/5 gap-4 md:w-3/5 xl:max-w-4xl mx-auto text-center text-xs sm:text-sm xl:text-lg text-slate-600 dark:text-gray-400">
-          For any queries, contact us or want to know about me <br />
-          <Link
-            className="underline text-black dark:text-white/85 hover:text-primary"
-            href="/contact-us"
-            target="_blank"
-          >
-            Contact Us
-          </Link>{" "}
-          |{" "}
-          <Link
-            href={"/about-me"}
-            className="underline text-black dark:text-white/85 hover:text-primary"
-          >
-            About Me
-          </Link>
-        </p>
+        <div className="flex flex-col w-full items-center gap-4 py-32">
+          <h1 className="text-xl sm:text-2xl md:text-4xl gap-3 xl:text-6xl flex xl:flex-row flex-col dark:text-white text-slate-900 mx-auto text-center items-center">
+            {"Welcome to "}
+            <span className="text-3xl sm:text-4xl xl:text-6xl font-bold text-primary border-b-4 border-b-black dark:border-b-white">
+              DevnTalk
+            </span>
+          </h1>
+          <p className="w-full md:w-3/5 px-2 mt-4 md:mt-6 xl:mt-8 xl:max-w-5xl text-xs sm:text-sm xl:text-lg xl:text-center text-justify leading-6 text-slate-700 dark:text-gray-300">
+            A modern platform for seamless developer discussions, video
+            conferencing, and collaboration. Join us to connect with developers,
+            share ideas, and collaborate on projects.
+          </p>
+          <div className="flex justify-center flex-col sm:flex-row mt-5 gap-3 sm:gap-5">
+            <Link href="/workspace">
+              <Button className="rounded-lg font-bold bg-gradient-to-br from-primary/85 dark:to-white/5 hover:from-primary/90 hover:to-primary to-black shadow-md text-white text-sm sm:text-base">
+                Get Started
+              </Button>
+            </Link>
+            <Link href="/guide">
+              <Button
+                className="rounded-lg font-bold border-2 dark:bg-transparent bg-white/80 border-primary hover:bg-primary/10 text-primary shadow-md text-sm sm:text-base"
+                variant={"outline"}
+              >
+                User Guide
+              </Button>
+            </Link>
+          </div>
+          <p className="mt-4 w-4/5 gap-4 md:w-3/5 xl:max-w-4xl mx-auto text-center text-xs sm:text-sm xl:text-lg text-slate-600 dark:text-gray-400">
+            For any queries, contact us or want to know about me <br />
+            <Link
+              className="underline text-black dark:text-white/85 hover:text-primary"
+              href="/contact-us"
+              target="_blank"
+            >
+              Contact Us
+            </Link>{" "}
+            |{" "}
+            <Link
+              href={"/about-me"}
+              className="underline text-black dark:text-white/85 hover:text-primary"
+            >
+              About Me
+            </Link>
+          </p>
+        </div>
       </div>
 
       {/* Features Section */}

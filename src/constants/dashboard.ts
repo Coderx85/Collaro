@@ -13,7 +13,7 @@ import {
 export const homeTabs = [
   {
     name: "Home",
-    id: "#home",
+    id: "/",
   },
   {
     name: "Features",
@@ -25,11 +25,11 @@ export const homeTabs = [
   },
   {
     name: "About",
-    id: "#about",
+    id: "/about-me",
   },
   {
     name: "Contact",
-    id: "#contact",
+    id: "/contact",
   },
 ];
 
