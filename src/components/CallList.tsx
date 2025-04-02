@@ -1,7 +1,7 @@
 "use client";
 
 import Loader from "./Loader";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import MeetingCard from "./MeetingCard";
 import { useGetCalls } from "@/hooks/useGetCalls";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -10,6 +10,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Call, CallRecording } from "@stream-io/video-react-sdk";
 import { FaSearch } from "react-icons/fa";
+import { getFormattedDate } from "@/hooks/getFormatDate";
 
 const MAX_CARDS = 6;
 
@@ -22,10 +23,32 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 3);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedDate, setSelectedDate] = useState<string>("");
 
   const clearSearch = () => {
     setSearchTerm("");
   };
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleShortcut = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "k") {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleShortcut);
+    return () => {
+      window.removeEventListener("keydown", handleShortcut);
+    };
+  }, []);
+
+  // Reset pagination when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchTerm]);
+
   // Show loading spinner when searching
   useEffect(() => {
     if (searchTerm) {
@@ -98,9 +121,17 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
       (meeting as CallRecording)?.filename ||
       "";
 
-    // Ensure we don't call toLowerCase on undefined
     const searchLower = debouncedSearchTerm?.toLowerCase() || "";
-    return title.toLowerCase().includes(searchLower);
+
+    // Fix date extraction
+    const meetingDate =
+      getFormattedDate((meeting as Call)?.state?.startsAt) ||
+      getFormattedDate((meeting as CallRecording)?.start_time) ||
+      "";
+
+    const matchDate = selectedDate ? meetingDate === selectedDate : true;
+    const matchTitle = title.toLowerCase().includes(searchLower);
+    return matchTitle && matchDate;
   });
 
   // Pagination logic
@@ -137,37 +168,61 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
             : "Recordings"}
       </h1>
 
-      <div className="mb-4 relative">
-        <Input
-          variant={"outline"}
-          type="text"
-          placeholder="Search meetings..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-        />
-        {!isSearching && !searchTerm && (
-          <div className="absolute right-3 top-2">
-            <FaSearch className="text-gray-500 backdrop-blur-lg" />
-          </div>
-        )}
-        {searchTerm && !isSearching && (
-          <Button
-            hidden={!searchTerm}
-            onClick={clearSearch}
-            type={"button"}
-            size={"icon"}
-            className="absolute right-1 backdrop-blur-3xl top-1 hover:bg-transparent dark:bg-transparent text-white rounded-sm px-2 align-middle hover:text-gray-700 dark:text-gray-200 dark:hover:text-gray-200"
-            aria-label="Clear search"
-          >
-            ✕
-          </Button>
-        )}
-        {isSearching && (
-          <div className="absolute right-1 top-1 animate-spin backdrop-blur-lg ">
-            ⏳
-          </div>
-        )}
+      {/* SearchBox */}
+      <div className="mb-4 flex w-full group gap-2">
+        <div className="relative flex w-4/5">
+          <Input
+            ref={searchInputRef}
+            variant={"outline"}
+            type="text"
+            placeholder="Search meetings..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+          />
+          {!isSearching && !searchTerm && (
+            <div className="absolute right-3 top-2">
+              <FaSearch className="text-gray-500 backdrop-blur-lg" />
+            </div>
+          )}
+          {searchTerm && !isSearching && (
+            <Button
+              hidden={!searchTerm}
+              onClick={clearSearch}
+              type={"button"}
+              size={"icon"}
+              className="absolute right-1 backdrop-blur-3xl top-1 hover:bg-transparent dark:bg-transparent text-white rounded-sm px-2 align-middle hover:text-gray-700 dark:text-gray-200 dark:hover:text-gray-200"
+              aria-label="Clear search"
+            >
+              ✕
+            </Button>
+          )}
+          {isSearching && (
+            <div className="absolute right-1 top-1 animate-spin backdrop-blur-lg ">
+              ⏳
+            </div>
+          )}
+        </div>
+        <div className="relative flex w-1/5">
+          <Input
+            type="date"
+            variant={"outline"}
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="px-4 py-2 border w-full rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+          />
+          {selectedDate && (
+            <Button
+              onClick={() => setSelectedDate("")}
+              type={"button"}
+              size={"icon"}
+              className="absolute right-1 top-1 hover:bg-transparent dark:bg-transparent text-white rounded-sm px-2 align-middle hover:text-gray-700 dark:text-gray-200 dark:hover:text-gray-200"
+              aria-label="Clear date filter"
+            >
+              ✕
+            </Button>
+          )}
+        </div>
       </div>
 
       {isSearching ? (
