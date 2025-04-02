@@ -40,13 +40,20 @@ export const useGetCalls = () => {
 
   const now = new Date();
 
-  const endedCalls = calls?.filter(({ state: { startsAt, endedAt } }: Call) => {
-    return (startsAt && new Date(startsAt) < now) || !!endedAt;
-  });
+  // Refactored to avoid destructuring which can cause errors if state is undefined
+  const endedCalls =
+    calls?.filter((call: Call) => {
+      if (!call.state) return false;
+      const { startsAt, endedAt } = call.state;
+      return (startsAt && new Date(startsAt) < now) || !!endedAt;
+    }) || [];
 
-  const upcomingCalls = calls?.filter(({ state: { startsAt } }: Call) => {
-    return startsAt && new Date(startsAt) > now;
-  });
+  const upcomingCalls =
+    calls?.filter((call: Call) => {
+      if (!call.state) return false;
+      const { startsAt } = call.state;
+      return startsAt && new Date(startsAt) > now;
+    }) || [];
 
-  return { endedCalls, upcomingCalls, callRecordings: calls, isLoading };
+  return { endedCalls, upcomingCalls, callRecordings: calls || [], isLoading };
 };
