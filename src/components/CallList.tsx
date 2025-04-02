@@ -6,7 +6,10 @@ import MeetingCard from "./MeetingCard";
 import { useGetCalls } from "@/hooks/useGetCalls";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useRouter } from "next/navigation";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 import { Call, CallRecording } from "@stream-io/video-react-sdk";
+import { FaSearch } from "react-icons/fa";
 
 const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
   const router = useRouter();
@@ -16,7 +19,9 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 3);
   const [isSearching, setIsSearching] = useState<boolean>(false);
-
+  const clearSearch = () => {
+    setSearchTerm("");
+  };
   useEffect(() => {
     if (searchTerm) {
       setIsSearching(true);
@@ -92,7 +97,7 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
 
   return (
     <>
-      <h1 className="mb-5 text-2xl font-bold bg-gradient-to-r from-[#FF0080] to-[#FF8C00] bg-clip-text text-transparent">
+      <h1 className="mb-5 text-4xl capitalize font-bold bg-gradient-to-r from-[#FF0080] to-[#FF8C00] bg-clip-text text-transparent">
         {type === "ended"
           ? "Previous Meetings"
           : type === "upcoming"
@@ -100,23 +105,41 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
             : "Recordings"}
       </h1>
 
-      {/* Search Box */}
       <div className="mb-4 relative">
-        <input
+        <Input
+          variant={"outline"}
           type="text"
           placeholder="Search meetings..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
         />
+        {!isSearching && !searchTerm && (
+          <div className="absolute right-3 top-2">
+            <FaSearch className="text-gray-500 backdrop-blur-lg" />
+          </div>
+        )}
+        {searchTerm && !isSearching && (
+          <Button
+            hidden={!searchTerm}
+            onClick={clearSearch}
+            type={"button"}
+            size={"icon"}
+            className="absolute right-1 backdrop-blur-3xl top-1 hover:bg-transparent dark:bg-transparent text-white rounded-sm px-2 align-middle hover:text-gray-700 dark:text-gray-200 dark:hover:text-gray-200"
+            aria-label="Clear search"
+          >
+            ✕
+          </Button>
+        )}
         {isSearching && (
-          <div className="absolute right-3 top-2 animate-spin">⏳</div>
+          <div className="absolute right-1 top-1 animate-spin backdrop-blur-lg ">
+            ⏳
+          </div>
         )}
       </div>
 
-      {/* Display Skeleton if Searching */}
       {isSearching ? (
-        <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-2 overflow-hidden">
           {Array.from({ length: 4 }).map((_, index) => (
             <div
               key={index}
