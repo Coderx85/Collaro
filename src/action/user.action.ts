@@ -4,7 +4,7 @@ import { db, usersTable, workspaceUsersTable, workspacesTable } from "@/db";
 import { APIResponse, UserResponse } from "@/types";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
-import { revalidateTag } from "next/cache";
+// import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function getUserWorkspaceId() {
@@ -41,7 +41,7 @@ export async function getUserWorkspaceId() {
         publicMetadata: { role: newUser?.role },
       });
 
-      revalidateTag("user");
+      // revalidateTag("user");
       return {
         data: {
           ...newUser,
@@ -99,9 +99,9 @@ export async function getUserWorkspaceId() {
         })
         .returning();
 
-      if (!workspaceMember) {
-        redirect("/not-found");
-      }
+      // if (!workspaceMember) {
+      //   redirect("/not-found");
+      // }
     }
 
     return {

@@ -2,9 +2,9 @@
 import { db, usersTable, workspacesTable, workspaceUsersTable } from "@/db";
 import { currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
 import { APIResponse } from "@/types/api";
-import { WorkspaceCheckResponse } from "@/types/workspace";
+import { WorkspaceCheckResponse } from "@/types";
 
 // This function is used to get the users of a workspace
 export async function getWorkspaceUsers(workspaceId: string) {
@@ -19,7 +19,8 @@ export async function getWorkspaceUsers(workspaceId: string) {
     .where(eq(usersTable.clerkId, clerkUser.id))
     .execute();
 
-  if (!user) return { message: "User not found in the database" };
+  if (!user)
+    return { message: "User not found in the database", succesa: false };
 
   // Check if workspace exists and user belongs to it
   const [workspaceUsers] = await db
@@ -33,7 +34,8 @@ export async function getWorkspaceUsers(workspaceId: string) {
     )
     .execute();
 
-  if (!workspaceUsers) return { message: "No users found for this workspace" };
+  if (!workspaceUsers)
+    return { message: "No users found for this workspace", success: false };
 
   const members = await db
     .select()
@@ -41,7 +43,7 @@ export async function getWorkspaceUsers(workspaceId: string) {
     .where(eq(usersTable.workspaceId, workspaceId))
     .execute();
 
-  return { data: members };
+  return { data: members, success: true };
 }
 
 // This function is used to check if a user belongs to a workspace
@@ -85,56 +87,56 @@ export async function checkWorkspaceUser(
     }
 
     // Check if workspace exists
-    const [workspace] = await db
-      .select()
-      .from(workspacesTable)
-      .where(eq(workspacesTable.id, workspaceId))
-      .execute();
+    // const [workspace] = await db
+    //   .select()
+    //   .from(workspacesTable)
+    //   .where(eq(workspacesTable.id, workspaceId))
+    //   .execute();
 
-    if (!workspace) {
-      console.log(`Workspace ${workspaceId} not found`);
-      return {
-        error: "Workspace not found",
-        success: false,
-        status: 404,
-      };
-    }
+    // if (!workspace) {
+    //   console.log(`Workspace ${workspaceId} not found`);
+    //   return {
+    //     error: "Workspace not found",
+    //     success: false,
+    //     status: 404,
+    //   };
+    // }
 
-    // Check if user is already in workspace_users table
-    const [workspaceUser] = await db
-      .select()
-      .from(workspaceUsersTable)
-      .where(
-        and(
-          eq(workspaceUsersTable.workspaceId, workspaceId),
-          eq(workspaceUsersTable.userId, dbUser.id),
-        ),
-      )
-      .execute();
+    // // Check if user is already in workspace_users table
+    // const [workspaceUser] = await db
+    //   .select()
+    //   .from(workspaceUsersTable)
+    //   .where(
+    //     and(
+    //       eq(workspaceUsersTable.workspaceId, workspaceId),
+    //       eq(workspaceUsersTable.userId, dbUser.id),
+    //     ),
+    //   )
+    //   .execute();
 
-    // Only insert if user is not already in workspace_users table
-    if (!workspaceUser) {
-      console.log(
-        `Adding user ${dbUser.id} to workspace_users table for workspace ${workspaceId}`,
-      );
-      // Add user to workspace_users table
-      await db
-        .insert(workspaceUsersTable)
-        .values({
-          name: dbUser.name,
-          userId: dbUser.id,
-          role: dbUser.role,
-          workspaceId,
-          workspaceName: workspace.name,
-        })
-        .execute();
+    // // Only insert if user is not already in workspace_users table
+    // if (!workspaceUser) {
+    //   console.log(
+    //     `Adding user ${dbUser.id} to workspace_users table for workspace ${workspaceId}`,
+    //   );
+    //   // Add user to workspace_users table
+    //   await db
+    //     .insert(workspaceUsersTable)
+    //     .values({
+    //       name: dbUser.name,
+    //       userId: dbUser.id,
+    //       role: dbUser.role,
+    //       workspaceId,
+    //       workspaceName: workspace.name,
+    //     })
+    //     .execute();
 
-      return {
-        data: "User added to workspace",
-        success: true,
-        status: 201,
-      };
-    }
+    //   return {
+    //     data: "User added to workspace",
+    //     success: true,
+    //     status: 201,
+    //   };
+    // }
 
     return {
       data: "User has access to workspace",
@@ -151,26 +153,19 @@ export async function checkWorkspaceUser(
   }
 }
 
-// This function is used to validate if a user belongs to a workspace
-export async function validateWorkspaceAccess(
-  userId: string,
-  workspaceId: string,
-  isPageReload = false,
-) {
-  const checkUser = await checkWorkspaceUser(userId, workspaceId);
+// // This function is used to validate if a user belongs to a workspace
+// export async function validateWorkspaceAccess(
+//   userId: string,
+//   workspaceId: string,
+// ) {
+//   const checkUser = await getWorkspace(workspaceId);
 
-  // Don't redirect on page reloads to avoid "not found" errors
-  if (!checkUser.success && !isPageReload) {
-    if (checkUser.status === 404) {
-      redirect("/not-found");
-    } else if (checkUser.status === 401) {
-      redirect("/login");
-    } else {
-      redirect("/unauthorized");
-    }
-  }
-  return checkUser;
-}
+//   if (!checkUser.data) {
+//     redirect("/unauthorized");
+//   }
+
+//   return ;
+// }
 
 // This function is used to get the workspace of a user
 export async function getWorkspace(userId: string) {
@@ -200,7 +195,7 @@ export async function getWorkspace(userId: string) {
     // console.log("memberData:: \n", memberData);
     const member = memberData.map((member) => {
       return {
-        id: member.id,
+        id: member.clerkId,
         name: member.name,
         userName: member.userName,
         // imageUrl: member.imageUrl,
@@ -219,8 +214,8 @@ export async function getWorkspace(userId: string) {
 export async function getAllWorkspaces() {
   try {
     const data = await db.select().from(workspacesTable).execute();
-    const memberArray = [await db.select().from(workspaceUsersTable).execute()];
-    const member = memberArray[0];
+    const [member] = [await db.select().from(workspaceUsersTable).execute()];
+    // const member = memberArray[0];
     return {
       ...data,
       member,
@@ -234,7 +229,7 @@ export async function getAllWorkspaces() {
 export async function updateUserRole(
   userId: string,
   workspaceId: string,
-  role: string,
+  role: "owner" | "admin" | "member",
 ): Promise<APIResponse<{ role: string }>> {
   try {
     const updatedUser = await db

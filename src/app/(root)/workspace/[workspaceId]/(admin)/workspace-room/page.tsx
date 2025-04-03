@@ -1,7 +1,11 @@
 import Box from "./_components/box";
-import { getUser, getWorkspace, getWorkspaceUsers } from "@/action";
+import {
+  getUser,
+  getWorkspace,
+  // getWorkspaceUsers
+} from "@/action";
 import { Separator } from "@/components/ui/separator";
-import { MemberList } from "./_components/member-list";
+// import { MemberList } from "./_components/member-list";
 
 const WorskpaceRoom = async ({}) => {
   const user = await getUser();
@@ -15,7 +19,7 @@ const WorskpaceRoom = async ({}) => {
   }
   const data = await getWorkspace(user.data.clerkId);
   const workspace = data.data;
-  const workspaceUser = await getWorkspaceUsers(workspaceId);
+  // const workspaceUser = await getWorkspaceUsers(workspaceId);
   // console.log('data \n', workspaceUser)
 
   return (
@@ -35,9 +39,9 @@ const WorskpaceRoom = async ({}) => {
       )}
       <Separator className="border-2 my-2 border-white/50" />
 
-      {workspaceUser?.data && workspaceUser.data.length > 0 && (
+      {/* {workspaceUser?.data && workspaceUser.data.length > 0 && (
         <MemberList users={workspaceUser.data} workspaceId={workspaceId} />
-      )}
+      )} */}
     </div>
   );
 };
