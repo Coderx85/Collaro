@@ -7,3 +7,5 @@ export * from "./component";
 export * from "./action";
 
 export * from "./portfolio";
+
+export * from "./store";

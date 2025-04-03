@@ -50,7 +50,23 @@ const WorkspaceForm = () => {
       const workspaceData: CreateWorkspaceResponse = data.success;
       toast.success("Workspace joined successfully");
       console.log("Joining workspace:", workspaceData);
-      setWorkspace(workspaceData.id, workspaceData.name, workspaceData.members);
+      const members = Array.isArray(workspaceData.members)
+        ? workspaceData.members.map((member) => {
+            // If already an object, use it directly
+            if (typeof member === "object" && member !== null) {
+              return member;
+            }
+            // Create proper member object structure from string
+            return {
+              id: String(member),
+              name: "",
+              userName: "",
+              email: "",
+              role: "",
+            };
+          })
+        : [];
+      setWorkspace(workspaceData.id, workspaceData.name, members);
       router.push("/workspace/" + workspaceData.id);
     } catch (error: unknown) {
       console.error(error);
@@ -96,11 +112,20 @@ const WorkspaceForm = () => {
         throw new Error("Invalid workspace data received");
       }
 
-      setWorkspace(
-        workspaceData.id,
-        workspaceData.name,
-        workspaceData.members || [],
-      );
+      const members = Array.isArray(workspaceData.members)
+        ? workspaceData.members.map((member: any) => {
+            // Create proper member object structure from string
+            return {
+              id: String(member),
+              name: "",
+              userName: "",
+              email: "",
+              role: "",
+            };
+          })
+        : [];
+
+      setWorkspace(workspaceData.id, workspaceData.name, members);
       router.push(`/workspace/${workspaceData.id}`);
     } catch (error: unknown) {
       console.error(error);
@@ -111,29 +136,30 @@ const WorkspaceForm = () => {
       setWorkspaceName("");
     }
   };
+
   return (
-    <Tabs defaultValue='join' className='w-[400px] rounded-sm'>
-      <TabsList className='grid w-full grid-cols-2 gap-2'>
-        <TabsTrigger value='join'>Join</TabsTrigger>
-        <TabsTrigger value='create'>Create</TabsTrigger>
+    <Tabs defaultValue="join" className="w-[400px] rounded-sm">
+      <TabsList className="grid w-full grid-cols-2 gap-2">
+        <TabsTrigger value="join">Join</TabsTrigger>
+        <TabsTrigger value="create">Create</TabsTrigger>
       </TabsList>
 
       {/* Join Workspace Form */}
-      <TabsContent value='join'>
-        <Card className='rounded-none border-none bg-black'>
+      <TabsContent value="join">
+        <Card className="rounded-none border-none bg-black">
           <CardHeader>
             <CardTitle>Join Workspace</CardTitle>
             <CardDescription>Enter the workspace Name.</CardDescription>
-            {error && <p className='text-red-500'>{error}</p>}
+            {error && <p className="text-red-500">{error}</p>}
           </CardHeader>
-          <form className='space-y-1'>
-            <CardContent className='space-y-2'>
-              <Label htmlFor='join-workspace-id'>{`Workspace Name`}</Label>
+          <form className="space-y-1">
+            <CardContent className="space-y-2">
+              <Label htmlFor="join-workspace-id">{`Workspace Name`}</Label>
               <Input
-                id='join-workspace-id'
+                id="join-workspace-id"
                 value={workspaceName}
                 disabled={loading}
-                name=''
+                name=""
                 onChange={(e) => {
                   setWorkspaceName(e.target.value);
                   setError("");
@@ -147,8 +173,8 @@ const WorkspaceForm = () => {
                 disabled={loading}
               >
                 {loading ? (
-                  <span className='flex justify-center gap-3'>
-                    <Loader2 className='size-4 animate-spin' />
+                  <span className="flex justify-center gap-3">
+                    <Loader2 className="size-4 animate-spin" />
                     {"Joining Workspace"}
                   </span>
                 ) : (
@@ -161,18 +187,18 @@ const WorkspaceForm = () => {
       </TabsContent>
 
       {/* Create Workspace Form */}
-      <TabsContent value='create'>
-        <Card className='rounded-none border-none bg-black'>
+      <TabsContent value="create">
+        <Card className="rounded-none border-none bg-black">
           <CardHeader>
             <CardTitle>Create Workspace</CardTitle>
             <CardDescription>Enter a new workspace Name.</CardDescription>
-            {error && <p className='text-red-500'>{error}</p>}
+            {error && <p className="text-red-500">{error}</p>}
           </CardHeader>
-          <CardContent className='space-y-2'>
-            <div className='space-y-1'>
-              <Label htmlFor='create-workspace-name'>Workspace Name</Label>
+          <CardContent className="space-y-2">
+            <div className="space-y-1">
+              <Label htmlFor="create-workspace-name">Workspace Name</Label>
               <Input
-                id='create-workspace-id'
+                id="create-workspace-id"
                 value={workspaceName}
                 disabled={loading}
                 onChange={(e) => setWorkspaceName(e.target.value)}
@@ -186,8 +212,8 @@ const WorkspaceForm = () => {
               disabled={loading}
             >
               {loading ? (
-                <span className='flex justify-center gap-3'>
-                  <Loader2 className='size-4 animate-spin' />
+                <span className="flex justify-center gap-3">
+                  <Loader2 className="size-4 animate-spin" />
                   {"Creating Workspace"}
                 </span>
               ) : (

@@ -25,9 +25,12 @@ export async function POST(
       console.error("Clerk User not found");
       redirect("/sign-in");
     }
-    // console.log("✅ Clerk User exist", clerkUser);
+    console.log("✅ Clerk User exist", clerkUser);
 
-    const check = await aj.protect(req, { userId: clerkUser.id, requested: 5 });
+    const check = await aj.protect(req, {
+      userId: clerkUser.id,
+      requested: 15,
+    });
 
     if (check.isDenied()) {
       return NextResponse.json({

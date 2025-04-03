@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useWorkspaceStore } from "@/store/workspace";
 import { WorkspaceInitializerProps } from "@/types";
 
@@ -11,7 +11,7 @@ export const WorkspaceInitializer = ({
 }: WorkspaceInitializerProps) => {
   const { setWorkspace, isInitialized, setInitialized } = useWorkspaceStore();
 
-  useEffect(() => {
+  const initializeWorkspace = useCallback(() => {
     if (!isInitialized && workspaceId && workspaceName) {
       console.log(
         "Initializing workspace in store:",
@@ -30,6 +30,10 @@ export const WorkspaceInitializer = ({
     isInitialized,
     setInitialized,
   ]);
+
+  useEffect(() => {
+    initializeWorkspace();
+  }, [initializeWorkspace]);
 
   return null;
 };

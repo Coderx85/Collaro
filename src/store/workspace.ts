@@ -1,31 +1,5 @@
+import { WorkspaceState } from "@/types";
 import { create } from "zustand";
-
-type WorkspaceState = {
-  workspaceId: string | null;
-  workspaceName: string | null;
-  members?: {
-    id: string;
-    name: string;
-    userName: string;
-    email: string;
-    role: string;
-  }[];
-  isInitialized: boolean;
-
-  setWorkspace: (
-    id: string,
-    name: string,
-    members?: {
-      id: string;
-      name: string;
-      userName: string;
-      email: string;
-      role: string;
-    }[],
-  ) => void;
-  clearWorkspace: () => void;
-  setInitialized: (value: boolean) => void;
-};
 
 export const useWorkspaceStore = create<WorkspaceState>((set) => ({
   workspaceId: null,
