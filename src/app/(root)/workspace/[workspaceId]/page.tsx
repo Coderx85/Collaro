@@ -1,12 +1,14 @@
-import { validateWorkspaceAccess } from "@/action";
+// import { validateWorkspaceAccess } from "@/action";
 import MeetingTypeList from "@/components/MeetingTypeList";
 import ProfileCard from "@/components/ProfileCard";
-import { currentUser } from "@clerk/nextjs/server";
+import { DailyMeetingsChart } from "@/components/charts/DailyMeetingsChart";
+import { WeeklyMeetingsChart } from "@/components/charts/WeeklyMeetingsChart";
+// import { currentUser } from "@clerk/nextjs/server";
 
-type Params = Promise<{ workspaceId: string }>;
+// type Params = Promise<{ workspaceId: string }>;
 
-const Home = async (props: { params: Params }) => {
-  const user = await currentUser();
+const Home = async () => {
+  // const user = await currentUser();
   const now = new Date();
   const time = now.toLocaleTimeString("en-IN", {
     hour: "2-digit",
@@ -15,9 +17,9 @@ const Home = async (props: { params: Params }) => {
   const date = new Intl.DateTimeFormat("en-IN", { dateStyle: "full" }).format(
     now,
   );
-  const userId: string = user?.id || "";
-  const workspaceId = await props.params;
-  await validateWorkspaceAccess(userId, workspaceId.workspaceId);
+  // const userId: string = user?.id || "";
+  // const workspaceId = await props.params;
+  // await validateWorkspaceAccess(userId, workspaceId.workspaceId);
 
   return (
     <section className="flex size-full flex-col gap-5 text-white py-4 px-2 xl:p-2">
@@ -39,7 +41,10 @@ const Home = async (props: { params: Params }) => {
           </div>
         </div>
       </div>
-
+      <div className="grid grid-cols-2 gap-4 lg:flex-row lg:gap-2 bg-primary/10 dark:bg-gray-600/50 rounded-lg border-4 border-black dark:border-white p-4">
+        <WeeklyMeetingsChart />
+        <DailyMeetingsChart />
+      </div>
       <MeetingTypeList />
     </section>
   );
