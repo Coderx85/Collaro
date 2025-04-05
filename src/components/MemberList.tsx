@@ -15,7 +15,7 @@ interface Member {
 
 const MemberList = () => {
   const [memberDetails, setMemberDetails] = useState<Member[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const { members, workspaceId } = useWorkspaceStore();
 
   useEffect(() => {
