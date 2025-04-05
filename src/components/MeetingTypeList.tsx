@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { v4 } from "uuid";
 import { useRouter } from "next/navigation";
 import { useToast } from "./ui/use-toast";
 import { useUser } from "@clerk/nextjs";
@@ -12,7 +13,6 @@ import Loader from "./Loader";
 import ReactDatePicker from "react-datepicker";
 import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { useWorkspaceStore } from "@/store/workspace";
-import { MeetingDetailsProps } from "@/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Checkbox } from "./ui/checkbox";
 import { Button } from "./ui/button";
@@ -118,58 +118,6 @@ const MeetingTypeList = () => {
     return toast({ title: "Meeting Created" });
   }
 
-  // Generate ICS file function
-  async function generateICS({
-    startTime,
-    description,
-    meetingLink,
-  }: MeetingDetailsProps) {
-    const formattedStartTime = new Date(startTime)
-      .toISOString()
-      .replace(/-|:|\.\d+/g, "");
-    const formattedEndTime = new Date(
-      new Date(startTime).getTime() + 60 * 60 * 1000,
-    ) // 1-hour default duration
-      .toISOString()
-      .replace(/-|:|\.\d+/g, "");
-
-    const icsData = `
-      BEGIN:VCALENDAR
-      VERSION:2.0
-      PRODID:-//Devtalk//EN
-      CALSCALE:GREGORIAN
-      BEGIN:VEVENT
-      SUMMARY:Devtalk Meeting
-      DESCRIPTION:${description}
-      DTSTART:${formattedStartTime}
-      DTEND:${formattedEndTime}
-      LOCATION:${meetingLink}
-      URL:${meetingLink}
-      END:VEVENT
-      END:VCALENDAR
-    `;
-
-    return new Blob([icsData], { type: "text/calendar" });
-  }
-
-  // Download ICS file function
-  async function downloadICS({
-    startTime,
-    description,
-    meetingLink,
-  }: MeetingDetailsProps) {
-    const icsBlob = await generateICS({ startTime, description, meetingLink });
-    const url = URL.createObjectURL(icsBlob);
-    const a = document.createElement("a");
-    if (!a) return;
-    a.href = url;
-    a.download = "meeting.ics";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
   if (!client || !user) return <Loader />;
 
   // Create Meeting function
@@ -181,90 +129,109 @@ const MeetingTypeList = () => {
         toast({ title: "Please select a date and time" });
         return;
       }
-      const id = crypto.randomUUID(); // Stream's unique id generator
-      const call = client.call("default", id);
-      if (!call) throw new Error("Failed to create meeting");
+
+      const id = v4();
+      let call;
+
+      try {
+        call = client.call("default", id);
+        if (!call) throw new Error("Failed to create meeting");
+        setCallDetail(call);
+      } catch (error) {
+        console.error("Error creating call:", error);
+        toast({ title: "Failed to create meeting" });
+        return;
+      }
+
       const startsAt =
         values.dateTime.toISOString() || new Date(Date.now()).toISOString();
       const description = values.description || "Instant Meeting";
-
-      // Mark this as a scheduled meeting if appropriate
       const isScheduled = meetingState === "isScheduleMeeting";
 
-      // Use selected members for instant meetings or all members for scheduled meetings
-      const meetingMembers =
+      // Get meeting members
+      const potentialMembers =
         showMemberSelection || meetingState === "isInstantMeeting"
           ? selectedMembers
           : members?.map((member) =>
               typeof member === "object" ? member.id : member,
             ) || [];
 
-      // Fixed structure for call creation with scheduled flag
-      await call.getOrCreate({
-        data: {
-          starts_at: startsAt,
-          custom: {
-            description,
-            scheduled: isScheduled, // Add flag for scheduled meetings
-          },
-          team: workspaceName!,
-          members: [
-            { user_id: user.id, role: "host" },
-            ...(meetingMembers
-              .filter((memberId) => memberId !== user.id)
-              .map((memberId) => ({
+      // Verify members exist before creating call
+
+      try {
+        const response = await call.getOrCreate({
+          ring: true,
+          data: {
+            starts_at: startsAt,
+            custom: {
+              description,
+              scheduled: isScheduled,
+            },
+            team: workspaceName!,
+            members: [
+              { user_id: user.id, role: "host" },
+              ...potentialMembers.map((memberId: any) => ({
                 user_id: memberId,
                 role: "guest",
-              })) || []),
-          ],
-        },
-        members_limit: (meetingMembers?.length || 0) + 1, // Adjust limit to account for filtered members
-        notify: true,
-      });
+              })),
+            ],
+          },
+          members_limit: potentialMembers.length + 1,
+        });
 
-      setCallDetail(call);
+        if (!response) throw new Error("Failed to create meeting");
+        setCallDetail(call);
 
-      // Save meeting to DB
-      await createMeetingDB(workspaceId!, {
-        name: `${meetingState}`,
-        description: `${description}`,
-        startAt: `${startsAt}`,
-        meetingId: `${call.id}`,
-      });
+        // Only proceed with DB operations if call creation was successful
+        await createMeetingDB(workspaceId!, {
+          name: `${meetingState}`,
+          description: `${description}`,
+          startAt: `${startsAt}`,
+          meetingId: `${call.id}`,
+        });
 
-      // Create notifications for all workspace members
-      if (isScheduled && members && members.length > 0) {
-        try {
-          await fetch("/api/notifications/create", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              title: "Upcoming Meeting",
-              message: description || "A meeting has been scheduled",
-              meetingId: call.id,
-              workspaceId: workspaceId,
-              scheduledFor: startsAt,
-              userIds: members,
-            }),
-          });
-          console.log("Notifications created for scheduled meeting");
-        } catch (error) {
-          console.error("Failed to create notifications:", error);
+        if (isScheduled && members && members.length > 0) {
+          await createNotifications(call.id, description, startsAt);
         }
-      }
 
-      toast({
-        title: "Meeting Created",
-      });
+        toast({ title: "Meeting Created" });
 
-      if (!values.description) {
-        router.push(`/meeting/${call.id}`);
+        if (!values.description) {
+          router.push(`/meeting/${call.id}`);
+        }
+      } catch (error) {
+        console.error("Error in call.getOrCreate:", error);
+        toast({ title: "Failed to create meeting" });
       }
     } catch (error) {
-      console.error(error);
-      toast({ title: "Failed to create Meeting" });
+      console.error("Error in createMeeting:", error);
+      toast({ title: "Failed to create meeting" });
+    }
+  };
+
+  // Helper function to create notifications
+  const createNotifications = async (
+    callId: string,
+    description: string,
+    startsAt: string,
+  ) => {
+    try {
+      await fetch("/api/notifications/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: "Upcoming Meeting",
+          message: description || "A meeting has been scheduled",
+          meetingId: callId,
+          workspaceId: workspaceId,
+          scheduledFor: startsAt,
+          userIds: members,
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to create notifications:", error);
     }
   };
 
@@ -344,11 +311,6 @@ const MeetingTypeList = () => {
             onClose={() => setMeetingState(undefined)}
             title="Meeting Created"
             handleClick={() => {
-              downloadICS({
-                startTime: values.dateTime,
-                description: values.description,
-                meetingLink,
-              });
               navigator.clipboard.writeText(meetingLink);
               toast({ title: "Link Copied" });
             }}
