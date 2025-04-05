@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DevnTalk
+
+DevnTalk is a developer-centric collaboration platform that integrates real-time communication, live streaming, and structured meetings. 
+It allows users to create or join workspaces, invite members. Designed for remote teams. DevnTalk enhances productivity by providing a seamless environment for discussions, and project tracking.
+
+![Home-Page](/public/images/home.png)
+
+## Features
+
+1. **Workspaces & RBAC**: Create or join workspaces with Role-Based Access Control, ensuring secure and organized collaboration.
+
+2. **Real-Time Communication**: Engage in instant meetings for daily stand-ups and utilize live streaming for announcements, enhancing team interaction.
+
+3. **GitHub Integration**: Seamlessly link discussions to GitHub repositories, pull requests, and issues, streamlining the development workflow.
+
+4. **Task Management**: Assign tasks, set deadlines, and track progress using the integrated task board, facilitating efficient project management.
+
+
+## Technologies Used
+
+DevnTalk leverages a modern tech stack to deliver a robust and efficient platform:
+
+### Frontend:
+
+- **Next.js**: React framework for server-side rendering and static site generation.
+
+- **TypeScript**: Typed superset of JavaScript for improved developer experience.
+
+- **Tailwind CSS**: Utility-first CSS framework for rapid UI development.
+
+### Backend:
+ 
+- **Node.js**: JavaScript runtime for building scalable server-side applications.
+
+- **Express**: Web application framework for Node.js.
+
+- **Prisma**: Next-generation ORM for database management.
+
+
+### Authentication:
+
+- **Clerk**: User management and authentication service.
+
+
+### Video Conferencing:
+
+- **Stream Video SDK**: SDK for integrating video calling capabilities.
+
+
+### Database:
+
+- **PostgreSQL**: Relational database for data storage.
+
 
 ## Getting Started
 
-First, run the development server:
+Follow these steps to set up and run DevnTalk locally:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+1. Clone the Repository:
+```git
+  git clone https://github.com/Coderx85/DevnTalk.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Navigate to the Project Directory:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```git
+cd DevnTalk
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Install Dependencies:
+```git
+npm install
+```
 
-## Learn More
+4. Set Up Environment Variables: 
+- Create a .env.local file in the root directory and add the necessary environment variables as specified in the .env.example file.
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. Run the Development Server:
+```git
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+6. Access the Application: 
 
-## Deploy on Vercel
+Open http://localhost:3000 in your browser to view the application.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contributing
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+We welcome contributions to DevnTalk. To contribute:
+
+1. **Fork the Repository**: 
+
+Click on the 'Fork' button at the top right of the repository page.
+
+2. **Create a Feature Branch:**
+```git
+git checkout -b feature/YourFeatureName
+```
+
+3. **Commit Your Changes**:
+```git
+git commit -m 'Add some feature'
+```
+
+4. **Push to the Branch**:
+```git
+git push origin feature/YourFeatureName
+```
+
+5. **Submit a Pull Reques**t: 
+
+Open a pull request to the main branch of the original repository.
+
+Please ensure your code adheres to the project's coding standards and includes appropriate documentation.
