@@ -168,13 +168,13 @@ const MeetingTypeList = () => {
               scheduled: isScheduled,
             },
             team: workspaceName!,
-            members: [
-              { user_id: user.id, role: "host" },
-              ...potentialMembers.map((memberId: any) => ({
-                user_id: memberId,
-                role: "guest",
-              })),
-            ],
+            // members: [
+            //   { user_id: user.id, role: "host" },
+            //   ...potentialMembers.map((memberId: any) => ({
+            //     user_id: memberId,
+            //     role: "guest",
+            //   })),
+            // ],
           },
           members_limit: potentialMembers.length + 1,
         });
