@@ -4,7 +4,6 @@ import { db, usersTable, workspaceUsersTable, workspacesTable } from "@/db";
 import { APIResponse, UserResponse } from "@/types";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
-// import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function getUserWorkspaceId() {
@@ -24,40 +23,15 @@ export async function getUserWorkspaceId() {
 
     // Create new user if doesn't exist
     if (!user) {
-      const [newUser] = await db
-        .insert(usersTable)
-        .values({
-          clerkId: clerkUser.id,
-          email: clerkUser.primaryEmailAddress?.emailAddress || "",
-          name: clerkUser.fullName || "",
-          userName: clerkUser.username || "",
-          role: "member",
-        })
-        .returning();
-
-      await (
-        await clerkClient()
-      ).users.updateUserMetadata(clerkUser.id, {
-        publicMetadata: { role: newUser?.role },
-      });
-
-      // revalidateTag("user");
-      return {
-        data: {
-          ...newUser,
-          workspaceId: "",
-          workspaceName: "",
-        },
-        success: true,
-      };
-    } else {
-      // Update existing user's Clerk metadata
-      await (
-        await clerkClient()
-      ).users.updateUserMetadata(clerkUser.id, {
-        publicMetadata: { role: user.role },
-      });
+      return redirect("/sign-in");
     }
+
+    // Update existing user's Clerk metadata
+    await (
+      await clerkClient()
+    ).users.updateUserMetadata(clerkUser.id, {
+      publicMetadata: { role: user.role },
+    });
 
     if (!user.workspaceId)
       return {
@@ -65,15 +39,12 @@ export async function getUserWorkspaceId() {
         success: true,
       };
 
-    // if (workspaceId) {
     // Check if the workspace exists
     const [workspace] = await db
       .select()
       .from(workspacesTable)
       .where(eq(workspacesTable.id, user.workspaceId))
       .execute();
-
-    // if (!workspace) return redirect("/not-found");
 
     // Check if the user is a member of the workspace
     const [workspaceMember] = await db
@@ -98,10 +69,6 @@ export async function getUserWorkspaceId() {
           name: user?.name,
         })
         .returning();
-
-      // if (!workspaceMember) {
-      //   redirect("/not-found");
-      // }
     }
 
     return {

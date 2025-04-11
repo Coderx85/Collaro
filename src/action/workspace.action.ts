@@ -2,7 +2,7 @@
 import { db, usersTable, workspacesTable, workspaceUsersTable } from "@/db";
 import { currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
-// import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { APIResponse } from "@/types/api";
 import { WorkspaceCheckResponse } from "@/types";
 
@@ -153,19 +153,19 @@ export async function checkWorkspaceUser(
   }
 }
 
-// // This function is used to validate if a user belongs to a workspace
-// export async function validateWorkspaceAccess(
-//   userId: string,
-//   workspaceId: string,
-// ) {
-//   const checkUser = await getWorkspace(workspaceId);
+// This function is used to validate if a user belongs to a workspace
+export async function validateWorkspaceAccess(
+  // userId: string,
+  workspaceId: string,
+) {
+  const checkUser = await getWorkspace(workspaceId);
 
-//   if (!checkUser.data) {
-//     redirect("/unauthorized");
-//   }
+  if (!checkUser.data) {
+    redirect("/unauthorized");
+  }
 
-//   return ;
-// }
+  return;
+}
 
 // This function is used to get the workspace of a user
 export async function getWorkspace(userId: string) {
