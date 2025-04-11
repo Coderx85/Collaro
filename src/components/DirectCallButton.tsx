@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 // import { useWorkspaceStore } from '@/store/workspace';
 import Loader from "./Loader";
+import { useWorkspaceStore } from "@/store/workspace";
 
 interface DirectCallButtonProps {
   memberId: string;
@@ -23,6 +24,7 @@ const DirectCallButton = ({ memberId, memberName }: DirectCallButtonProps) => {
   const client = useStreamVideoClient();
   const { user } = useUser();
   const { toast } = useToast();
+  const { workspaceName } = useWorkspaceStore();
   // const { workspaceId } = useWorkspaceStore();
 
   const startDirectCall = async () => {
@@ -48,6 +50,7 @@ const DirectCallButton = ({ memberId, memberName }: DirectCallButtonProps) => {
             callType: "direct",
           },
           members: [{ user_id: memberId, role: "call_member" }],
+          team: workspaceName!,
         },
         // ring: true,
       });

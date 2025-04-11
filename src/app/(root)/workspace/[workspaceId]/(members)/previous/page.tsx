@@ -2,7 +2,7 @@ import CallList from "@/components/CallList";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Previous Calls | DevnTalk",
+  title: "Previous Calls",
   description: "",
   icons: {
     icon: "/icons/Previous.svg",
