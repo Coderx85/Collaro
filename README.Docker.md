@@ -1,22 +1,109 @@
-### Building and running your application
+# Docker Setup Guide 🐳
 
-When you're ready, start your application by running:
-`docker compose up --build`.
+## Prerequisites
 
-Your application will be available at http://localhost:3000.
+- Docker Engine 24.0+
+- Docker Compose V2
+- Node.js 18+ (for local development)
 
-### Deploying your application to the cloud
+## Quick Start 🚀
 
-First, build your image, e.g.: `docker build -t myapp .`.
-If your cloud uses a different CPU architecture than your development
-machine (e.g., you are on a Mac M1 and your cloud provider is amd64),
-you'll want to build the image for that platform, e.g.:
-`docker build --platform=linux/amd64 -t myapp .`.
+1. **Environment Variables**
+```bash
+cp .env.example .env.local
+```
 
-Then, push it to your registry, e.g. `docker push myregistry.com/myapp`.
+Required variables:
+```env
+NODE_ENV=development
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+STREAM_API_KEY=
+STREAM_API_SECRET=
+DATABASE_URL=
+NEXT_TELEMETRY_DISABLED=1
+```
 
-Consult Docker's [getting started](https://docs.docker.com/go/get-started-sharing/)
-docs for more detail on building and pushing.
+2. **Development**
+```bash
+docker compose up --build
+```
 
-### References
-* [Docker's Node.js guide](https://docs.docker.com/language/nodejs/)
+Access: [http://localhost:3000](http://localhost:3000)
+
+## Container Details 📦
+
+### Development Container
+```yaml
+services:
+  devntalk-app:
+    build: .
+    container_name: devntalk-container
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    volumes:
+      - .:/app
+    command: yarn dev
+```
+
+### Production Container
+```dockerfile
+FROM node:slim
+WORKDIR /app
+COPY package*.json ./
+RUN yarn install --frozen-lockfile
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+## Production Deployment 🚀
+
+1. **Build**
+```bash
+docker build -t devntalk:latest .
+```
+
+2. **Platform-Specific Build**
+```bash
+docker build --platform=linux/amd64 -t devntalk:latest .
+```
+
+3. **Push to Registry**
+```bash
+docker tag devntalk:latest registry.example.com/devntalk:latest
+docker push registry.example.com/devntalk:latest
+```
+
+## Resource Guidelines 📊
+
+- Minimum RAM: 4GB
+- Recommended CPU: 2 cores
+- Storage: 10GB
+
+## Troubleshooting 🔧
+
+### Common Issues
+
+1. **Port Conflicts**
+```bash
+# Check port usage
+lsof -i :3000
+# Stop conflicting process
+kill $(lsof -t -i:3000)
+```
+
+2. **Node Modules Issues**
+```bash
+# Rebuild node_modules
+docker compose down -v
+docker compose up --build
+```
+
+3. **Performance**
+- Enable BuildKit: `export DOCKER_BUILDKIT=1`
+- Use volume mounts for development
+- Configure resource limits in Docker Desktop
