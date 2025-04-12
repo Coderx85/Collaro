@@ -19,7 +19,7 @@ const aj = arcjet({
   ],
 });
 
-const adminRoute = createRouteMatcher(["/admin/:path*", "meeting/:path*"]);
+const isAdminRoute = createRouteMatcher(["/admin/:path*"]);
 
 export default clerkMiddleware(async (auth, req) => {
   const check = await aj.protect(req);
@@ -28,7 +28,13 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.json("Rate limit exceeded", { status: 403 });
   }
 
-  if (adminRoute(req)) await auth.protect();
+  if (
+    isAdminRoute(req) &&
+    (await auth()).sessionClaims?.metadata?.role !== "admin"
+  ) {
+    const url = new URL("/", req.url);
+    return NextResponse.redirect(url);
+  }
 
   if (protectedRoute(req)) await auth.protect();
 
