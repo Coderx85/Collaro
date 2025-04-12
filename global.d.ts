@@ -1,9 +1,20 @@
+export {};
+import { UserRoleType } from "@/types/database";
+
 interface UserPublicMetadata {
-  role?: string;
+  role?: UserRoleType;
 }
 
-declare namespace Clerk {
-  interface User {
-    publicMetadata: UserPublicMetadata;
+declare global {
+  declare namespace Clerk {
+    interface User {
+      publicMetadata: UserPublicMetadata;
+    }
+  }
+
+  interface CustomJwtSessionClaims {
+    metadata: {
+      role?: Roles;
+    };
   }
 }
