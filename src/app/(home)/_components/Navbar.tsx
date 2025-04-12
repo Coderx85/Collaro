@@ -23,7 +23,7 @@ const Navbar = async () => {
             height={26}
             className="h-auto w-6 sm:w-7 justify-center xl:size-8"
           />
-          <span className="text-lg sm:text-xl xl:text-2xl font-bold text-white shadow-2xl">
+          <span className="text-lg sm:text-xl xl:text-2xl font-bold text-white dark: shadow-2xl">
             DevnTalk
           </span>
         </Link>
