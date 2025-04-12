@@ -17,7 +17,7 @@ import { Icons } from "@/components/ui/icons";
 
 export default function SignInPage() {
   return (
-    <div className="flex items-center justify-center px-4 sm:px-6 xl:px-8 py-4 sm:py-6 xl:py-8 min-h-[calc(100vh-68px)] xl:min-h-[calc(100vh-73px)] bg-gradient-to-br from-slate-300 dark:from-slate-950 to-slate-700">
+    <div className="flex items-center justify-center px-4 sm:px-6 xl:px-8 py-4 sm:py-6 xl:py-8 min-h-screen xl:min-h-screen bg-gradient-to-br from-slate-300 dark:from-slate-950 to-slate-700">
       <SignIn.Root>
         <Clerk.Loading>
           {(isGlobalLoading) => (
@@ -32,12 +32,12 @@ export default function SignInPage() {
                       Welcome back! Please sign in to continue
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="grid gap-y-3 sm:gap-y-4">
-                    <div className="grid gap-x-4">
+                  <CardContent className="grid gap-y-3 sm:gap-y-4 gap-5">
+                    <div className="grid gap-y-4">
                       <Clerk.Connection name="google" asChild>
                         <Button
-                          className="flex items-center justify-center py-4 sm:py-5 gap-2 sm:gap-3 text-primary border-2 border-primary bg-white/50 dark:bg-transparent hover:bg-gray-200 text-sm sm:text-base"
-                          variant="outline"
+                          className="group flex items-center justify-center py-5 gap-3 text-base border-2 border-blue-700/80 dark:border-blue-800/75 bg-white/50 dark:bg-transparent hover:bg-blue-600 dark:hover:bg-blue-800/85 transition-all duration-200"
+                          variant={"secondary"}
                           type="button"
                           disabled={isGlobalLoading}
                         >
@@ -46,17 +46,42 @@ export default function SignInPage() {
                               isLoading ? (
                                 <Icons.spinner className="size-4 animate-spin" />
                               ) : (
-                                <>
-                                  <Icons.google className="size-4" />
-                                  Sign in with Google
-                                </>
+                                <div className="flex items-center justify-center gap-4 text-blue-700 text-md group-hover:text-white">
+                                  <Icons.google className="size-5" />
+                                  <span className="font-semibold">
+                                    Sign in with Google
+                                  </span>
+                                </div>
+                              )
+                            }
+                          </Clerk.Loading>
+                        </Button>
+                      </Clerk.Connection>
+                      <Clerk.Connection name="github" asChild>
+                        <Button
+                          className="group flex items-center justify-center py-5 gap-4 text-base border-2 border-green-700/80 dark:border-green-800/75 bg-white/50 dark:bg-transparent hover:bg-green-600 dark:hover:bg-green-800/85 transition-all duration-200"
+                          variant="secondary"
+                          type="button"
+                          disabled={isGlobalLoading}
+                        >
+                          <Clerk.Loading scope="provider:github">
+                            {(isLoading) =>
+                              isLoading ? (
+                                <Icons.spinner className="size-4 animate-spin" />
+                              ) : (
+                                <div className="flex items-center justify-center gap-4 text-green-700 text-md group-hover:text-white">
+                                  <Icons.gitHub className="size-6" />
+                                  <span className="font-semibold">
+                                    Sign in with GitHub
+                                  </span>
+                                </div>
                               )
                             }
                           </Clerk.Loading>
                         </Button>
                       </Clerk.Connection>
                     </div>
-                    <p className="flex items-center gap-x-3 text-xs sm:text-sm text-muted-foreground before:h-px before:flex-1 before:bg-border after:h-px after:flex-1 after:bg-border">
+                    <p className="flex items-center gap-x-3 text-xs sm:text-sm text-blackx before:h-px before:flex-1 before:bg-border after:h-px after:flex-1 after:bg-border">
                       or
                     </p>
                     <Clerk.Field
@@ -69,7 +94,7 @@ export default function SignInPage() {
                         </Label>
                       </Clerk.Label>
                       <Clerk.Input
-                        className="bg-white/50 dark:bg-transparent border-0 h-9 sm:h-10 px-2 text-sm"
+                        className="bg-white/50 dark:bg-transparent border-0 border-b-2 border-white/50 h-9 sm:h-10 px-2 text-sm"
                         type="email"
                         required
                         asChild
@@ -87,7 +112,7 @@ export default function SignInPage() {
                         <Label className="text-sm sm:text-base">Password</Label>
                       </Clerk.Label>
                       <Clerk.Input
-                        className="bg-white/50 dark:bg-transparent border-0 h-9 sm:h-10 px-2 text-sm"
+                        className="bg-white/50 dark:bg-transparent border-0 border-b-2 border-white/50 h-9 sm:h-10 px-2 text-sm"
                         type="password"
                         required
                         asChild
@@ -119,8 +144,8 @@ export default function SignInPage() {
 
                       <Button
                         variant="link"
+                        className="text-xs sm:text-sm text-white"
                         asChild
-                        className="text-xs sm:text-sm"
                       >
                         <Clerk.Link navigate="sign-up">
                           Don&apos;t have an account? Sign up
@@ -130,7 +155,6 @@ export default function SignInPage() {
                   </CardFooter>
                 </Card>
               </SignIn.Step>
-
               <SignIn.Strategy name="password">
                 <Card className="w-full sm:max-w-md bg-gradient-to-br from-slate-500/85 border-gray-100 border-2 to-slate-500/85 dark:from-slate-950/50 dark:to-slate-950/50">
                   <CardHeader>
@@ -147,7 +171,7 @@ export default function SignInPage() {
                         <Label className="text-sm sm:text-base">Password</Label>
                       </Clerk.Label>
                       <Clerk.Input
-                        className="bg-white/50 dark:bg-transparent border-0 h-9 sm:h-10 px-2 text-sm"
+                        className="bg-white/50 dark:bg-transparent border-0 border-b-2 border-white/50 h-9 sm:h-10 px-2 text-sm"
                         type="password"
                         required
                         asChild
@@ -164,7 +188,15 @@ export default function SignInPage() {
                           disabled={isGlobalLoading}
                           className="text-sm sm:text-base py-5"
                         >
-                          Continue
+                          <Clerk.Loading>
+                            {(isLoading) => {
+                              return isLoading ? (
+                                <Icons.spinner className="size-4 animate-spin" />
+                              ) : (
+                                "Continue"
+                              );
+                            }}
+                          </Clerk.Loading>
                         </Button>
                       </SignIn.Action>
                       <SignIn.Action navigate="forgot-password" asChild>
