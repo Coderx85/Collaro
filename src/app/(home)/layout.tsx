@@ -13,7 +13,7 @@ const layout = async ({ children }: { children: ReactNode }) => {
   return (
     <>
       <Navbar />
-      <div className="bg-gradient-to-br dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 from-gray-900/50 via-gray-800/20 to-gray-700/50">
+      <div className="pattern-bg bg-gradient-to-br  from-gray-900/50 via-gray-800/20 to-gray-700/50">
         {children}
       </div>
     </>

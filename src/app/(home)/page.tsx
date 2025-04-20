@@ -4,11 +4,12 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Feature } from "@/components/home/Feature";
 import FAQ from "@/components/home/FAQs";
+import ContactForm from "./_components/ContactForm";
 
 const Rootpage = async () => {
   return (
     <section
-      className="relative mx-auto flex flex-col bg-gradient-to-br dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 from-gray-900/50 via-gray-800/20 to-gray-700/50 items-center justify-center overflow-y-auto scroll-smooth"
+      className="relative mx-auto flex flex-col items-center justify-center overflow-y-auto scroll-smooth"
       style={{ scrollSnapType: "y mandatory" }}
     >
       <div className="absolute inset-y-0 left-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80">
@@ -23,10 +24,10 @@ const Rootpage = async () => {
 
       {/* Hero Section */}
       <div
-        className="px-4 py-6 md:py-10 grid grid-cols-2 lg:py-0 min-h-screen w-full"
+        className="px-4 py-6 md:py-10 grid grid-cols-2 lg:py-0 w-full"
         style={{ scrollSnapAlign: "start" }}
       >
-        <div className="hidden lg:flex py-32">
+        <div className="hidden lg:flex py-32 px-10">
           <Image
             src="/images/hero.jpeg"
             alt="hero"
@@ -35,14 +36,15 @@ const Rootpage = async () => {
             className="w-[650px] h-[400px] object-cover"
           />
         </div>
-        <div className="flex flex-col w-full items-center gap-4 py-32">
-          <h1 className="text-xl sm:text-2xl md:text-4xl gap-3 xl:text-6xl flex xl:flex-row flex-col dark:text-white text-slate-900 mx-auto text-center items-center">
+        <div className="flex flex-col w-full items-center gap-4 py-32 xl:gap-2.5">
+          <h1 className="text-xl sm:text-2xl md:text-4xl font-semibold xl:text-8xl gap-3  flex xl:flex-row flex-col dark:text-white text-slate-900 mx-auto text-center items-center">
             {"Welcome to "}
-            <span className="text-3xl sm:text-4xl xl:text-6xl font-bold text-primary border-b-4 border-b-black dark:border-b-white">
-              DevnTalk
-            </span>
           </h1>
-          <p className="w-full md:w-3/5 px-2 mt-4 md:mt-6 xl:mt-8 xl:max-w-5xl text-xs sm:text-sm xl:text-lg xl:text-center text-justify leading-6 text-slate-700 dark:text-gray-300">
+          <span className="text-3xl sm:text-4xl xl:text-8xl group/heading font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/70 to-primary/90 hover:to-primary transition-all duration-300">
+            DevnTalk
+            {/* <span className="absolute -bottom-2 left-0 w-0 group-hover/heading:w-full h-[2px] bg-gradient-to-r from-primary/50 to-primary transition-all duration-500" /> */}
+          </span>
+          <p className="w-full md:w-4/5 px-2 mt-4 md:mt-6 xl:mt-2 xl:max-w-5xl text-xs xl:text-lg sm:text-sm  xl:text-center text-justify leading-6 text-slate-700 dark:text-gray-300">
             A modern platform for seamless developer discussions, video
             conferencing, and collaboration. Join us to connect with developers,
             share ideas, and collaborate on projects.
@@ -62,10 +64,10 @@ const Rootpage = async () => {
               </Button>
             </Link>
           </div>
-          <p className="mt-4 w-4/5 gap-4 md:w-3/5 xl:max-w-4xl mx-auto text-center text-xs sm:text-sm xl:text-lg text-slate-600 dark:text-gray-400">
+          <p className="mt-4 w-4/5 gap-4 md:w-3/5 xl:max-w-4xl mx-auto text-center text-xs sm:text-sm xl:text-xl text-slate-600 dark:text-gray-400">
             For any queries, contact us or want to know about me <br />
             <Link
-              className="underline text-black dark:text-white/85 hover:text-primary"
+              className="underline text-black dark:text-white/85 hover:text-primary xl:text-2xl py-2"
               href="/contact-us"
               target="_blank"
             >
@@ -74,7 +76,7 @@ const Rootpage = async () => {
             |{" "}
             <Link
               href={"/about-me"}
-              className="underline text-black dark:text-white/85 hover:text-primary"
+              className="underline text-black dark:text-white/85 hover:text-primary xl:text-2xl py-2"
             >
               About Me
             </Link>
@@ -84,7 +86,7 @@ const Rootpage = async () => {
 
       {/* Features Section */}
       <div
-        className="w-full xl:px-4 px-8 py-10 md:py-16 flex flex-col items-center justify-center"
+        className="w-full xl:px-4 px-8 py-10 md:py-28 flex flex-col items-center justify-center"
         id="features"
       >
         <Feature />
@@ -93,10 +95,12 @@ const Rootpage = async () => {
       {/* FAQ Section */}
       <div
         id="faq"
-        className="w-full px-8 py-10 md:py-16 flex flex-col min-h-screen items-center justify-center"
+        className="w-full px-8 py-10 md:py-40 flex flex-col min-h-screen items-center"
       >
         <FAQ />
       </div>
+
+      <ContactForm />
     </section>
   );
 };
