@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Feature } from "@/components/home/Feature";
 import FAQ from "@/components/home/FAQs";
 import ContactForm from "./_components/ContactForm";
+import { InfiniteMovingCards } from "@/components/home/infinite-moving-cards";
+import { clients } from "@/constants";
 
 const Rootpage = async () => {
   return (
@@ -83,6 +85,12 @@ const Rootpage = async () => {
           </p>
         </div>
       </div>
+      <InfiniteMovingCards
+        direction="right"
+        speed="normal"
+        pauseOnHover
+        items={clients}
+      />
 
       {/* Features Section */}
       <div
