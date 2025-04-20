@@ -212,6 +212,13 @@
   }
 
   /* =============================== */
+
+  .pattern-bg {
+    background-image: url('/pattern.png');
+    background-repeat: repeat;
+    background-size: fixed;
+    background-position: center;
+  }
 }
 
 @layer utilities {
@@ -234,6 +241,23 @@
       animation-timing-function: ease-in;
       width: 100%;
     }
+  }
+
+  @keyframes border-flow {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-border-flow {
+    animation: border-flow 3s linear infinite;
+  }
+
+  .animate-border-flow-reverse {
+    animation: border-flow 3s linear infinite reverse;
   }
 }
 
