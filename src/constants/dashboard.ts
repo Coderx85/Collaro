@@ -121,3 +121,7 @@ export const featureCard: FeatureCard[] = [
       "Get real-time notifications for messages, mentions, and updates, so you never miss an important conversation.",
   },
 ];
+
+export const clients = [...new Array(10)].map((click, index: number) => ({
+  href: `/home/${index + 1}.png`,
+}));
