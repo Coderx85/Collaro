@@ -1,13 +1,13 @@
 import { FeatureCard } from "@/types";
 import {
-  FaVideo,
-  FaComments,
-  FaUsers,
-  FaFileUpload,
+  FaCalendarAlt,
+  FaBolt,
+  FaLayerGroup,
+  FaUserShield,
+  FaMobileAlt,
+  FaMoon,
+  FaUsersCog,
   FaBell,
-  FaCogs,
-  FaShieldAlt,
-  FaGlobe,
 } from "react-icons/fa";
 
 export const homeTabs = [
@@ -29,90 +29,95 @@ export const homeTabs = [
   },
   {
     name: "Contact",
-    id: "/contact",
+    id: "#contact",
   },
 ];
 
 export const faqs = [
   {
-    question: "How do I start a video call?",
+    question: "What is DevnTalk used for?",
     answer:
-      "Click on the 'Start Call' button, select participants, and begin your video session instantly.",
+      "DevnTalk helps teams collaborate within workspaces using real-time discussions, task tracking, and community features—all in one place.",
   },
   {
-    question: "Is my data secure on this platform?",
+    question: "How do I create a workspace?",
     answer:
-      "Yes, we use end-to-end encryption to keep your conversations and files safe from unauthorized access.",
+      "Click on 'Create Workspace' from the dashboard, give it a name, and invite your team members to join.",
   },
   {
-    question: "Can I use this on mobile?",
+    question: "Is there a way to manage roles and permissions?",
     answer:
-      "Absolutely! Our platform is fully responsive and works seamlessly on mobile, tablets, and desktops.",
+      "Workspace admins can manage roles, invite or remove members, and control access to features like settings and integrations.",
   },
   {
-    question: "How do I share files during a chat?",
+    question: "Can I access DevnTalk on mobile?",
     answer:
-      "Click on the attachment icon in the chat box, select your file, and send it instantly.",
+      "Yes! DevnTalk is fully responsive and works well on both desktop and mobile browsers.",
   },
   {
-    question: "Do I need to install any software?",
+    question: "How do notifications work?",
     answer:
-      "No installation required! You can access everything directly from your web browser.",
+      "You'll receive in-app toasts and updates when you're mentioned, added to a workspace, or a new thread is created.",
   },
   {
-    question: "How do I join a developer community?",
+    question: "Is there a dark mode available?",
     answer:
-      "Go to the 'Communities' tab, browse available groups, and click 'Join' to connect with like-minded developers.",
+      "Yes, DevnTalk supports dark mode. You can toggle it from the user settings panel.",
+  },
+  {
+    question: "Do I need to sign up to view a workspace?",
+    answer:
+      "Yes, DevnTalk uses authentication to ensure workspaces remain private and secure—only invited members can access them.",
   },
 ];
 
 export const featureCard: FeatureCard[] = [
   {
-    icon: FaVideo,
-    title: "Easy Video Calls",
+    icon: FaLayerGroup,
+    title: "Workspace Based Structure",
     description:
-      "Start high-quality video calls instantly with just one click. No complicated setup required, just connect and talk!",
+      "Each workspace acts like its own private collaboration space.",
   },
   {
-    icon: FaComments,
-    title: "Instant Messaging",
+    icon: FaBolt,
+    title: "Instant Meetings",
     description:
-      "Chat with developers in real-time, share ideas, and keep all conversations in one place for better collaboration.",
+      "Need to jump on a quick call? Start an instant meeting with a single click and invite workspace members.",
   },
   {
-    icon: FaUsers,
-    title: "Join Developer Communities",
+    icon: FaCalendarAlt,
+    title: "Schedule Team Meetings",
     description:
-      "Find and join groups of like-minded developers, work on projects together, and share your expertise with others.",
+      "Pick a time, choose workspace members, and schedule a virtual meeting with automatic reminders for attendees.",
   },
   {
-    icon: FaFileUpload,
-    title: "Simple File Sharing",
+    icon: FaUserShield,
+    title: "Role-Based Access",
     description:
-      "Easily upload and share files, code snippets, and documents with your team in just a few clicks.",
+      "Protect sensitive actions—like workspace settings or integrations—by giving access only to workspace admins.",
+  },
+  {
+    icon: FaUsersCog,
+    title: "Team-Centric Features",
+    description:
+      "Everything is centered around the workspace team—from meetings to settings to member roles.",
+  },
+  {
+    icon: FaMobileAlt,
+    title: "Mobile-Friendly Interface",
+    description:
+      "DevnTalk is built to work beautifully on any device—whether you're on a phone, tablet, or desktop.",
+  },
+  {
+    icon: FaMoon,
+    title: "Dark Mode Support",
+    description:
+      "Reduce eye strain and match your vibe with a clean, distraction-free dark mode experience.",
   },
   {
     icon: FaBell,
     title: "Stay Notified",
     description:
       "Get real-time notifications for messages, mentions, and updates, so you never miss an important conversation.",
-  },
-  {
-    icon: FaCogs,
-    title: "Personalized Experience",
-    description:
-      "Customize your profile, set preferences, and tailor your experience to fit your workflow and communication style.",
-  },
-  {
-    icon: FaShieldAlt,
-    title: "Secure & Private",
-    description:
-      "End-to-end encryption and privacy settings ensure your conversations and data stay safe and protected.",
-  },
-  {
-    icon: FaGlobe,
-    title: "Use Anywhere",
-    description:
-      "Access your chats, files, and calls from your desktop, tablet, or mobile device—stay connected on the go!",
   },
 ];
