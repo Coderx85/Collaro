@@ -7,7 +7,6 @@ import FAQ from "@/components/home/FAQs";
 import ContactForm from "./_components/ContactForm";
 import { InfiniteMovingCards } from "@/components/home/infinite-moving-cards";
 import { clients } from "@/constants";
-import GuideSection from "@/components/home/Guide";
 
 const Rootpage = async () => {
   return (
@@ -100,8 +99,6 @@ const Rootpage = async () => {
       >
         <Feature />
       </div>
-
-      <GuideSection />
 
       {/* FAQ Section */}
       <div
