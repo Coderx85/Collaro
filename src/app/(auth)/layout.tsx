@@ -19,9 +19,9 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
             className="h-auto w-6 sm:w-7 xl:w-8"
           />
           <span>
-            <span className="text-xl sm:text-2xl font-bold text-primary shadow-2xl">
-              DevnTalk
-            </span>
+            <p className="group text-[26px] font-extrabold text-white duration-75 hover:text-white">
+              Collaro
+            </p>
           </span>
         </Link>
         <div className="flex items-center gap-4">

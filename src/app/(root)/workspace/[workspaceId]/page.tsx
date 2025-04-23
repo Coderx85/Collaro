@@ -1,8 +1,8 @@
 // import { validateWorkspaceAccess } from "@/action";
 import MeetingTypeList from "@/components/MeetingTypeList";
 import ProfileCard from "@/components/ProfileCard";
-import { DailyMeetingsChart } from "@/components/charts/DailyMeetingsChart";
-import { WeeklyMeetingsChart } from "@/components/charts/WeeklyMeetingsChart";
+// import { DailyMeetingsChart } from "@/components/charts/DailyMeetingsChart";
+// import { WeeklyMeetingsChart } from "@/components/charts/WeeklyMeetingsChart";
 // import { currentUser } from "@clerk/nextjs/server";
 
 // type Params = Promise<{ workspaceId: string }>;
@@ -41,10 +41,10 @@ const Home = async () => {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-4 pb-14 lg:flex-row lg:gap-2 bg-primary/10 dark:bg-gray-600/50 rounded-lg border-4 border-black dark:border-white p-4">
+      {/* <div className="grid grid-cols-2 gap-4 pb-14 lg:flex-row lg:gap-2 bg-primary/10 dark:bg-gray-600/50 rounded-lg border-4 border-black dark:border-white p-4">
         <WeeklyMeetingsChart />
         <DailyMeetingsChart />
-      </div>
+      </div> */}
       <MeetingTypeList />
     </section>
   );

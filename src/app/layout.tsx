@@ -13,8 +13,9 @@ import { dark } from "@clerk/themes";
 const geist = Geist({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "DevTalk",
-  description: "Video calling App",
+  title: "Collaro",
+  description:
+    "A modern developer collaboration platform built for remote teams. Collaro seamlessly integrates real-time communication, live streaming, and structured meetings to enhance team productivity.",
   icons: {
     icon: "/icons/logo.svg",
   },

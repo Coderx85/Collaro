@@ -1,9 +1,9 @@
-# DevnTalk <img src="public/icons/logo.svg" alt="DevnTalk Logo" width="30" align="center" />
+# Collaro <img src="public/icons/logo.svg" alt="Collaro Logo" width="30" align="center" />
 
-A modern developer collaboration platform built for remote teams. DevnTalk seamlessly integrates real-time communication, live streaming, and structured meetings to enhance team productivity.
+A modern developer collaboration platform built for remote teams. Collaro seamlessly integrates real-time communication, live streaming, and structured meetings to enhance team productivity.
 
 <div align="center">
-  <img src="public/images/home.png" alt="DevnTalk Homepage" width="100%" />
+  <img src="public/images/home.png" alt="Collaro Homepage" width="100%" />
 </div>
 
 ## ✨ Key Features
@@ -94,8 +94,8 @@ A modern developer collaboration platform built for remote teams. DevnTalk seaml
 
 1. **Clone & Install**
 ```bash
-git clone https://github.com/Coderx85/DevnTalk.git
-cd DevnTalk
+git clone https://github.com/Coderx85/Collaro.git
+cd Collaro
 npm install
 ```
 
