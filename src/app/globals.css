@@ -132,6 +132,37 @@
     box-sizing: border-box;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 10px;
+    transition: background 0.3s ease;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #888;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: #444;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: #666;
+  }
+
   /* ======== stream css overrides ======== */
   .str-video__call-stats {
     max-width: 500px;

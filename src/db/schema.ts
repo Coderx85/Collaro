@@ -7,8 +7,11 @@ import {
   pgEnum,
   serial,
   boolean,
+  // PgArray,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm/sql";
+
+// export const members = PgArray()
 
 // Define role enum first
 export const roleEnum = pgEnum("role", ["owner", "admin", "member"]);
@@ -84,6 +87,7 @@ export const workspaceMeetingTable = pgTable("workspace_meetings", {
     .references(() => usersTable.id, {
       onDelete: "set null",
     }),
+  // members: PgArray(""),
   meetingId: uuid("meeting_id").notNull().unique(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   startAt: timestamp("start_at").notNull(),
