@@ -11,7 +11,10 @@ const Sidebar = async ({ params }: SidebarProps) => {
   const user = await currentUser();
 
   const role =
-    user?.publicMetadata?.role === "admin" || "owner" ? "admin" : "member";
+    user?.publicMetadata?.role === "admin" ||
+    user?.publicMetadata?.role === "owner"
+      ? "admin"
+      : "member";
 
   return (
     <section className="hidden xl:flex xl:flex-col xl:fixed left-0 top-0 h-full w-50 bg-gray-900 dark:bg-gray-600/50 text-white">
@@ -20,11 +23,11 @@ const Sidebar = async ({ params }: SidebarProps) => {
           src="/icons/logo.svg"
           width={32}
           height={32}
-          alt="devntalk logo"
+          alt="collaro logo"
           className="max-sm:size-10"
         />
-        <p className="group text-[26px] font-extrabold text-white duration-75 hover:text-white max-sm:hidden">
-          Devn<span className="text-primary">Talk</span>
+        <p className="group text-3xl font-extrabold text-white duration-75 hover:text-white max-sm:hidden">
+          Col<span className="text-primary">laro</span>
         </p>
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-3 overflow-y-auto">

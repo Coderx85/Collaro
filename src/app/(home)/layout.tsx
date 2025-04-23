@@ -3,9 +3,9 @@ import { Metadata } from "next";
 import Navbar from "./_components/Navbar";
 
 export const metadata: Metadata = {
-  title: "DevnTalk - Home",
+  title: "Collaro - Home",
   description:
-    "DevnTalk is a platform for developers to connect and share knowledge.",
+    "Collaro is a platform for developers to connect and share knowledge.",
   icons: "/logo.svg",
 };
 

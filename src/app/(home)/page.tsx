@@ -7,6 +7,7 @@ import FAQ from "@/components/home/FAQs";
 import ContactForm from "./_components/ContactForm";
 import { InfiniteMovingCards } from "@/components/home/infinite-moving-cards";
 import { clients } from "@/constants";
+import GuideSection from "@/components/home/Guide";
 
 const Rootpage = async () => {
   return (
@@ -42,8 +43,8 @@ const Rootpage = async () => {
           <h1 className="text-xl sm:text-2xl md:text-4xl font-semibold xl:text-8xl gap-3  flex xl:flex-row flex-col dark:text-white text-slate-900 mx-auto text-center items-center">
             {"Welcome to "}
           </h1>
-          <span className="text-3xl sm:text-4xl xl:text-8xl group/heading font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/70 to-primary/90 hover:to-primary transition-all duration-300">
-            DevnTalk
+          <span className="text-3xl sm:text-4xl xl:text-8xl group/heading font-extrabold bg-clip-text text-transparent bg-gradient-to-b from-primary dark:from-primary via-primary/50 dark:via-primary/75 to-primary/75 dark:to-primary hover:to-primary transition-all duration-300">
+            Collaro
             {/* <span className="absolute -bottom-2 left-0 w-0 group-hover/heading:w-full h-[2px] bg-gradient-to-r from-primary/50 to-primary transition-all duration-500" /> */}
           </span>
           <p className="w-full md:w-4/5 px-2 mt-4 md:mt-6 xl:mt-2 xl:max-w-5xl text-xs xl:text-lg sm:text-sm  xl:text-center text-justify leading-6 text-slate-700 dark:text-gray-300">
@@ -99,6 +100,8 @@ const Rootpage = async () => {
       >
         <Feature />
       </div>
+
+      <GuideSection />
 
       {/* FAQ Section */}
       <div

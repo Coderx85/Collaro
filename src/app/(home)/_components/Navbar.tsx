@@ -10,7 +10,7 @@ import { auth } from "@clerk/nextjs/server";
 const Navbar = async () => {
   const { userId } = await auth();
   return (
-    <div className="sticky top-0 z-50 flex items-center justify-between w-full px-4 sm:px-8 py-2 xl:py-4 bg-gradient-to-r from-gray-900/50 to-gray-700/50 dark:from-gray-800 dark:to-gray-900 backdrop-blur-2xl shadow-md">
+    <div className="sticky top-0 flex items-center justify-between w-full px-4 sm:px-8 py-2 xl:py-4 bg-gradient-to-r from-gray-900/50 to-gray-700/50 dark:from-gray-800 dark:to-gray-900">
       <div className="flex items-center gap-2 sm:gap-4">
         <Link
           href="/"
@@ -24,7 +24,7 @@ const Navbar = async () => {
             className="h-auto w-6 sm:w-7 justify-center xl:size-8"
           />
           <span className="text-lg sm:text-xl xl:text-2xl font-bold text-white shadow-2xl">
-            DevnTalk
+            Collaro
           </span>
         </Link>
       </div>

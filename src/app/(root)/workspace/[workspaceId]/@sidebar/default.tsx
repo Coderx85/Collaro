@@ -20,11 +20,11 @@ const Sidebar = async ({ params }: SidebarProps) => {
           src="/icons/logo.svg"
           width={32}
           height={32}
-          alt="devntalk logo"
+          alt="collaro logo"
           className="max-sm:size-10"
         />
         <p className="group text-[26px] font-extrabold text-white duration-75 hover:text-white max-sm:hidden">
-          Devn<span className="text-primary">Talk</span>
+          Col<span className="text-primary">laro</span>
         </p>
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-3 overflow-y-auto">

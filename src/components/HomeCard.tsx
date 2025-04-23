@@ -4,18 +4,18 @@ import Image from "next/image";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const cardVariants = cva(
-  "bg-gradient-to-br py-2 group w-full xl:max-w-[270px] text-black h-full xl:h-[120px] rounded-lg cursor-pointer border-2 transition-all duration-200 ease-in-out",
+  "relative w-full p-4 rounded-xl cursor-pointer transform transition-all duration-300 animate-fade-in group",
   {
     variants: {
       variant: {
         primary:
-          " border-primary bg-primary/10 hover:from-primary/5 hover:via-primary/20 hover:to-primary/5",
+          "bg-white/75 border-2 border-blue-200 hover:bg-blue-50 dark:bg-blue-500/20 dark:hover:bg-blue-500/30 dark:border-transparent",
         orange:
-          " border-secondary bg-secondary/10 hover:from-secondary/10 hover:via-secondary/20 hover:to-secondary/10",
+          "bg-white/75 border-2 border-orange-200 hover:bg-orange-50 dark:bg-orange-500/20 dark:hover:bg-orange-500/30 dark:border-transparent",
         purple:
-          " border-purple bg-purple/10 hover:from-purple/10 hover:via-purple/20 hover:to-purple/10",
+          "bg-white/75 border-2 border-purple-200 hover:bg-purple-50 dark:bg-purple-500/20 dark:hover:bg-purple-500/30 dark:border-transparent",
         yellow:
-          " border-yellow bg-yellow/10 hover:from-yellow/10 hover:via-yellow/20 hover:to-yellow/10",
+          "bg-white/75 border-2 border-yellow-200 hover:bg-yellow-50 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-transparent",
       },
     },
     defaultVariants: {
@@ -25,35 +25,33 @@ const cardVariants = cva(
 );
 
 const textVariants = cva(
-  "xl:text-xl text-sm text-clip items-end transition-colors duration-200 font-bold dark:group-hover:text-white group-hover:text-black/75",
+  "text-lg font-semibold transition-all duration-300 transform group-hover:scale-105",
   {
     variants: {
       variant: {
-        primary: "dark:text-primary text-black",
-        orange: "dark:text-secondary text-black",
-        purple: "dark:text-purple text-black",
-        yellow: "dark:text-yellow text-black",
+        primary: "text-blue-700 dark:text-blue-400",
+        orange: "text-orange-700 dark:text-orange-400",
+        purple: "text-purple-700 dark:text-purple-400",
+        yellow: "text-yellow-700 dark:text-yellow-400",
       },
-    },
-    defaultVariants: {
-      variant: "primary",
     },
   },
 );
 
 const descVariants = cva(
-  "hidden xl:block text-md pl-4 dark:text-white text-black justify-end font-normal group-hover:dark:text-white group-hover:font-semibold group-hover:text-black/85 transition-colors duration-200",
+  "mt-2 text-sm font-medium transition-all duration-300",
   {
     variants: {
       variant: {
-        primary: "group-hover:dark:text-primary/80",
-        orange: "group-hover:dark:text-secondary/50",
-        purple: "group-hover:dark:text-purple/80",
-        yellow: "group-hover:dark:text-yellow/50",
+        primary:
+          "text-gray-600 group-hover:text-blue-700 dark:text-slate-300 dark:group-hover:text-blue-300",
+        orange:
+          "text-gray-600 group-hover:text-orange-700 dark:text-slate-300 dark:group-hover:text-orange-300",
+        purple:
+          "text-gray-600 group-hover:text-purple-700 dark:text-slate-300 dark:group-hover:text-purple-300",
+        yellow:
+          "text-gray-600 group-hover:text-yellow-700 dark:text-slate-300 dark:group-hover:text-yellow-300",
       },
-    },
-    defaultVariants: {
-      variant: "primary",
     },
   },
 );
@@ -74,15 +72,17 @@ const HomeCard = ({
 }: HomeCardProps) => {
   return (
     <div className={cardVariants({ variant })} onClick={handleClick}>
-      <div className="flex items-center px-2 justify-between">
+      <div className="flex items-start px-2 justify-between h-[120px]">
         <div className="flex items-center">
-          <Image
-            src={img}
-            alt={title}
-            width={40}
-            height={40}
-            className={"object-fill rounded-lg bg-zinc-800 dark:bg-transparent"}
-          />
+          <div className="transform transition-transform duration-300 group-hover:scale-110">
+            <Image
+              src={img}
+              alt={title}
+              width={40}
+              height={40}
+              className="object-fill rounded-lg bg-zinc-500/50 dark:bg-transparent"
+            />
+          </div>
           <div className="ml-4">
             <h2 className={textVariants({ variant })}>{title}</h2>
           </div>

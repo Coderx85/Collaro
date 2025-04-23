@@ -35,9 +35,10 @@ export const homeTabs = [
 
 export const faqs = [
   {
-    question: "What is DevnTalk used for?",
+    id: 1,
+    question: "What is Collaro used for?",
     answer:
-      "DevnTalk helps teams collaborate within workspaces using real-time discussions, task tracking, and community features—all in one place.",
+      "Collaro helps teams collaborate within workspaces using real-time discussions, task tracking, and community features—all in one place.",
   },
   {
     question: "How do I create a workspace?",
@@ -50,9 +51,9 @@ export const faqs = [
       "Workspace admins can manage roles, invite or remove members, and control access to features like settings and integrations.",
   },
   {
-    question: "Can I access DevnTalk on mobile?",
+    question: "Can I access Collaro on mobile?",
     answer:
-      "Yes! DevnTalk is fully responsive and works well on both desktop and mobile browsers.",
+      "Yes! Collaro is fully responsive and works well on both desktop and mobile browsers.",
   },
   {
     question: "How do notifications work?",
@@ -62,12 +63,12 @@ export const faqs = [
   {
     question: "Is there a dark mode available?",
     answer:
-      "Yes, DevnTalk supports dark mode. You can toggle it from the user settings panel.",
+      "Yes, Collaro supports dark mode. You can toggle it from the user settings panel.",
   },
   {
     question: "Do I need to sign up to view a workspace?",
     answer:
-      "Yes, DevnTalk uses authentication to ensure workspaces remain private and secure—only invited members can access them.",
+      "Yes, Collaro uses authentication to ensure workspaces remain private and secure—only invited members can access them.",
   },
 ];
 
@@ -106,7 +107,7 @@ export const featureCard: FeatureCard[] = [
     icon: FaMobileAlt,
     title: "Mobile-Friendly Interface",
     description:
-      "DevnTalk is built to work beautifully on any device—whether you're on a phone, tablet, or desktop.",
+      "Collaro is built to work beautifully on any device—whether you're on a phone, tablet, or desktop.",
   },
   {
     icon: FaMoon,
