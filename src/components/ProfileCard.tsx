@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
 import { useWorkspaceStore } from "@/store/workspace";
@@ -8,6 +8,9 @@ const ProfileCard = () => {
   const { user } = useUser();
   const { workspaceName, members } = useWorkspaceStore();
   const { role } = user?.publicMetadata as UserPublicMetadata;
+  useEffect(() => {
+    if (workspaceName) window.document.title = workspaceName! + " | Collaro";
+  }, [workspaceName]);
 
   return (
     <div className="w-1/2 xl:p-2 px-3 py-4">

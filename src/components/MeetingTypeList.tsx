@@ -23,6 +23,12 @@ const initialValues = {
   link: "",
 };
 
+type meetingStateType =
+  | "isScheduleMeeting"
+  | "isJoiningMeeting"
+  | "isInstantMeeting"
+  | undefined;
+
 const MeetingTypeList = () => {
   const router = useRouter();
   const client = useStreamVideoClient();
@@ -30,9 +36,7 @@ const MeetingTypeList = () => {
   const { toast } = useToast();
   const { workspaceName, members, workspaceId } = useWorkspaceStore();
 
-  const [meetingState, setMeetingState] = useState<
-    "isScheduleMeeting" | "isJoiningMeeting" | "isInstantMeeting" | undefined
-  >(undefined);
+  const [meetingState, setMeetingState] = useState<meetingStateType>(undefined);
   const [values, setValues] = useState(initialValues);
   const [callDetail, setCallDetail] = useState<Call>();
   const [showMemberSelection, setShowMemberSelection] = useState(false);

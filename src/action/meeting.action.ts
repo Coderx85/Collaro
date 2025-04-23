@@ -39,7 +39,8 @@ export async function createMeetingDB(
       .insert(workspaceMeetingTable)
       .values({
         workspaceId,
-        name,
+        workspacName: res[0].name,
+        title: name,
         hostedBy: username || "",
         description,
         startAt: new Date(startAt),
@@ -61,9 +62,11 @@ export async function createMeetingDB(
 
 export async function getMeetingsData() {
   try {
-    const meetingData = await db.select().from(workspaceMeetingTable).execute();
-    if (meetingData.length === 0)
-      return { message: "No meetings found", status: 404 };
+    const [meetingData] = await db
+      .select()
+      .from(workspaceMeetingTable)
+      .execute();
+    if (!meetingData) return { message: "No meetings found", status: 404 };
     console.log(`Meetings found: ${meetingData}`);
     return { meetingData };
   } catch (error: unknown) {
@@ -71,3 +74,14 @@ export async function getMeetingsData() {
     return { message: `Failed to operate function \n`, status: 500 };
   }
 }
+
+// export async function addMemberToMeeting() {
+//   try {
+//     await db.insert(workspaceMeetingTable)
+//     .values(
+//       workspaceMeetingTable.
+//     )
+//   } catch (error: unknown) {
+//     return { message: `Failed to join meeting \n ${error}`, status: 500 }
+//   }
+// }
