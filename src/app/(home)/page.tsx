@@ -26,7 +26,7 @@ const Rootpage = async () => {
 
       {/* Hero Section */}
       <div
-        className="px-4 py-6 md:py-10 grid grid-cols-2 lg:py-0 w-full"
+        className="px-4 py-6 md:py-10 grid grid-cols-1 lg:grid-cols-2 lg:py-0 w-full"
         style={{ scrollSnapAlign: "start" }}
       >
         <div className="hidden lg:flex py-32 px-10">
@@ -39,19 +39,19 @@ const Rootpage = async () => {
           />
         </div>
         <div className="flex flex-col w-full items-center gap-4 py-32 xl:gap-2.5">
-          <h1 className="text-xl sm:text-2xl md:text-4xl font-semibold xl:text-8xl gap-3  flex xl:flex-row flex-col dark:text-white text-slate-900 mx-auto text-center items-center">
+          <h1 className="text-4xl md:text-4xl font-semibold xl:text-8xl gap-3  flex xl:flex-row flex-col dark:text-white text-slate-900 mx-auto text-center items-center">
             {"Welcome to "}
           </h1>
-          <span className="text-3xl sm:text-4xl xl:text-8xl group/heading font-extrabold bg-clip-text text-transparent bg-gradient-to-b from-primary dark:from-primary via-primary/50 dark:via-primary/75 to-primary/75 dark:to-primary hover:to-primary transition-all duration-300">
+          <span className="text-6xl sm:text-4xl xl:text-8xl group/heading font-extrabold bg-clip-text text-transparent bg-gradient-to-b from-primary dark:from-primary via-primary/50 dark:via-primary/75 to-primary/75 dark:to-primary hover:to-primary transition-all duration-300">
             Collaro
             {/* <span className="absolute -bottom-2 left-0 w-0 group-hover/heading:w-full h-[2px] bg-gradient-to-r from-primary/50 to-primary transition-all duration-500" /> */}
           </span>
-          <p className="w-full md:w-4/5 px-2 mt-4 md:mt-6 xl:mt-2 xl:max-w-5xl text-xs xl:text-lg sm:text-sm  xl:text-center text-justify leading-6 text-slate-700 dark:text-gray-300">
+          <p className="w-full md:w-4/5 px-2 mt-4 md:mt-6 xl:mt-2 xl:max-w-5xl text-lg xl:text-lg xl:text-center text-justify leading-6 text-slate-700 dark:text-gray-300">
             A modern platform for seamless developer discussions, video
             conferencing, and collaboration. Join us to connect with developers,
             share ideas, and collaborate on projects.
           </p>
-          <div className="flex justify-center flex-col sm:flex-row mt-5 gap-3 sm:gap-5">
+          <div className="flex justify-center mt-5 gap-3 sm:gap-5">
             <Link href="/workspace">
               <Button className="rounded-lg font-bold bg-gradient-to-br from-primary/85 dark:to-white/5 hover:from-primary/90 hover:to-primary to-black shadow-md text-white text-sm sm:text-base">
                 Get Started

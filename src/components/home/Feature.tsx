@@ -8,8 +8,8 @@ export function Feature() {
   return (
     <>
       <div className="relative">
-        <h2 className="group/heading text-lg sm:text-xl flex items-center md:text-5xl font-bold gap-4 bg-clip-text text-transparent bg-gradient-to-r from-white/80 to-white/70 dark:from-white dark:to-white/50 hover:from-primary hover:to-white/50 dark:hover:from-white dark:hover:to-primary/50 transition-all duration-300">
-          <FaTools className="size-10 dark:text-yellow text-black group-hover/heading:dark:text-white/80 group-hover/heading:text-black/75 group-hover/heading:cursor-pointer transition-all duration-300" />
+        <h2 className="group/heading text-3xl flex items-center md:text-5xl font-bold gap-4 bg-clip-text text-transparent bg-gradient-to-r from-white/80 to-white/70 dark:from-white dark:to-white/50 hover:from-primary hover:to-white/50 dark:hover:from-white dark:hover:to-primary/50 transition-all duration-300">
+          <FaTools className="size-8 lg:size-10 dark:text-yellow text-black group-hover/heading:dark:text-white/80 group-hover/heading:text-black/75 group-hover/heading:cursor-pointer transition-all duration-300" />
           <span className="relative dark:text-white text-black group-hover/heading:dark:text-white/80 group-hover/heading:text-black/75 group-hover/heading:cursor-pointer transition-all duration-300">
             Features
           </span>
