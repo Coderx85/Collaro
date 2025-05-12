@@ -25,11 +25,11 @@ const Sidebarlink = ({ role, workspaceId }: SidebarLinks) => {
             className={cn(
               "flex w-full group items-end p-2.5 rounded-sm cursor-pointer justify-start hover:bg-gradient-to-br from-white/50 via-white to-white/80 hover:text-dark-2 ease-in duration-100 hover:animate-out",
               {
-                "text-teal-300 dark:text-teal-200 hover:text-teal-900 hover:dark:text-teal-900 hover:animate-none":
+                "text-primary/85 dark:text-green-600 hover:text-primary hover:dark:text-primary hover:animate-none":
                   isAdminRoute && isAdmin && !isActive,
                 "bg-gradient-to-br from-white/50 via-white to-white/80 text-dark-2 hover:animate-none":
                   isActive,
-                "text-teal-700 hover:text-teal-900":
+                "text-primary/85 hover:text-primary":
                   isActive && isAdminRoute && isAdmin,
               },
             )}

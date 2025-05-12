@@ -27,7 +27,7 @@ const Sidebar = async ({ params }: SidebarProps) => {
           className="max-sm:size-10"
         />
         <p className="group text-3xl font-extrabold text-white duration-75 hover:text-white max-sm:hidden">
-          Col<span className="text-primary">laro</span>
+          Co<span className="text-primary">llaro</span>
         </p>
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-3 overflow-y-auto">
