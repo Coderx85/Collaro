@@ -1,7 +1,58 @@
+# Ignore development and version control files
+.git
+.github
+.vscode
+.next
+.turbo
+.coverage
+.env
+.env.*
+.editorconfig
+.eslintrc
+.prettierrc
+
+# Ignore dependencies and build files
 node_modules
 npm-debug.log
-Dockerfile
+yarn-error.log
+yarn-debug.log
+.pnp
+.pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+
+# Ignore Docker and CI files
+Dockerfile*
+docker-compose*
+compose.yaml
 .dockerignore
-.git
-.next
-.env
+
+# Ignore test files
+__tests__
+**/*.test.js
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.js
+**/*.spec.ts
+**/*.spec.tsx
+coverage
+
+# Ignore documentation
+docs
+*.md
+LICENSE
+
+# Ignore build artifacts and cache
+build
+dist
+.cache
+.turbo
+
+# Ignore package manager files
+package-lock.json
+# Don't ignore yarn.lock so we can use in build
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
