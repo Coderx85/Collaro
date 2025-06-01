@@ -7,6 +7,7 @@ import FAQ from "@/components/home/FAQs";
 import ContactForm from "./_components/ContactForm";
 import { InfiniteMovingCards } from "@/components/home/infinite-moving-cards";
 import { clients } from "@/constants";
+import PriceTable from "./_components/PriceTable";
 
 const Rootpage = async () => {
   return (
@@ -107,7 +108,16 @@ const Rootpage = async () => {
       >
         <FAQ />
       </div>
-
+      {/* Pricing Section */}
+      <div
+        className="w-full px-8 py-10 md:py-40 flex flex-col items-center justify-center"
+        id="pricing"
+      >
+        <h2 className="text-4xl md:text-5xl font-semibold mb-12 text-center dark:text-white text-slate-900">
+          Choose Your <span className="text-secondary">Plan</span>
+        </h2>
+        <PriceTable />
+      </div>
       <ContactForm />
     </section>
   );
