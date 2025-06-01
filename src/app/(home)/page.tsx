@@ -7,6 +7,7 @@ import FAQ from "@/components/home/FAQs";
 import ContactForm from "./_components/ContactForm";
 import { InfiniteMovingCards } from "@/components/home/infinite-moving-cards";
 import { clients } from "@/constants";
+import Footer from "./_components/Footer";
 
 const Rootpage = async () => {
   return (
@@ -23,7 +24,6 @@ const Rootpage = async () => {
       <div className="absolute inset-x-0 bottom-0 h-px w-full bg-neutral-200/80 dark:bg-neutral-800/80">
         <div className="absolute mx-auto h-px w-40 bg-gradient-to-r from-transparent via-primary to-transparent" />
       </div>
-
       {/* Hero Section */}
       <div
         className="px-4 py-6 md:py-10 grid grid-cols-1 lg:grid-cols-2 lg:py-0 w-full"
@@ -91,7 +91,6 @@ const Rootpage = async () => {
         pauseOnHover
         items={clients}
       />
-
       {/* Features Section */}
       <div
         className="w-full xl:px-4 px-8 py-10 md:py-28 flex flex-col items-center justify-center"
@@ -99,16 +98,29 @@ const Rootpage = async () => {
       >
         <Feature />
       </div>
-
       {/* FAQ Section */}
       <div
         id="faq"
         className="w-full px-8 py-10 md:py-40 flex flex-col min-h-screen items-center"
       >
         <FAQ />
+      </div>{" "}
+      {/* Combined Contact Form and Footer Section */}
+      <div
+        id="contact"
+        className="w-full bg-gray-500/50 dark:bg-gray-700/60 py-4"
+      >
+        <div className="w-full px-8 mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
+            <div className="lg:col-span-1">
+              <ContactForm />
+            </div>
+            <div className="lg:col-span-2">
+              <Footer />
+            </div>
+          </div>
+        </div>
       </div>
-
-      <ContactForm />
     </section>
   );
 };

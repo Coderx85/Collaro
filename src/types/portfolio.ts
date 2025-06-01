@@ -18,3 +18,9 @@ export interface ContactProps {
   description: string;
   icon: IconType;
 }
+
+export interface ContactLinkProps {
+  title: string;
+  href: string;
+  icon: IconType;
+}

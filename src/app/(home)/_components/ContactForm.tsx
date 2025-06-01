@@ -1,12 +1,13 @@
 "use client";
-import React, { FormEvent } from "react";
+import React, { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { FaEnvelope, FaUser, FaPaperPlane } from "react-icons/fa";
 
 const ContactForm = () => {
-  const [formData, setFormData] = React.useState({
+  const [formData, setFormData] = useState({
     name: "",
     email: "",
     company: "",
@@ -14,102 +15,141 @@ const ContactForm = () => {
     message: "",
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    // Send email to the user
-    const res = await fetch("/api/contact", {
-      method: "POST",
-      body: JSON.stringify(formData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    try {
+      // Send email to the user
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    if (!res.ok) {
-      console.error("Failed to send email");
-    }
-
-    if (res.ok) {
-      toast.success("Email sent successfully");
+      if (!res.ok) {
+        console.error("Failed to send email");
+        toast.error("Failed to send message. Please try again.");
+      } else {
+        toast.success(
+          "Message sent successfully! We&apos;ll get back to you soon.",
+        );
+        // Reset the form
+        setFormData({
+          name: "",
+          email: "",
+          company: "",
+          phone: "",
+          message: "",
+        });
+      }
+    } catch (error) {
+      console.error("Error sending email:", error);
+      toast.error("Something went wrong. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div
-      className="order-3 xl:order-none w-full bg-gray-200 dark:bg-gray-800/50 "
-      id="contact"
-    >
+    <div className="w-full h-full" id="contact">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent mb-2">
+          Get In Touch
+        </h2>
+        <p className="text-sm text-gray-600 dark:text-gray-300">
+          Have questions? We&apos;d love to hear from you!
+        </p>
+      </div>
+
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-6 p-5 rounded-xl"
+        className="flex flex-col gap-4 p-4 rounded-xl bg-white dark:bg-gray-800/30 shadow-md"
       >
-        <h2 className="text-6xl text-black dark:text-white font-bold">
-          Contact Us
-        </h2>
-        {/* <p className="text-black dark:text-white/60 xl:text-lg">
-            {" "}
-            I&apos;m currently looking for new opportunities, my inbox is always
-            open. Whether you have a question or just want to say hi, I&apos;ll
-            try my best to get back to you!
-          </p> */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-4">
+          <div className="relative">
+            <FaEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-primary/70" />
+            <Input
+              type="email"
+              id="email"
+              value={formData.email}
+              required
+              placeholder="Your email"
+              className="pl-10 border-gray-300 dark:border-gray-600 focus:border-primary"
+              onChange={(e) => {
+                setFormData({ ...formData, email: e.target.value });
+              }}
+            />
+          </div>
+
+          <div className="relative">
+            <FaUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-primary/70" />
+            <Input
+              type="text"
+              id="name"
+              value={formData.name}
+              placeholder="Your name"
+              required
+              className="pl-10 border-gray-300 dark:border-gray-600 focus:border-primary"
+              onChange={(e) => {
+                setFormData({ ...formData, name: e.target.value });
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Hidden inputs that still collect data if filled */}
+        <div className="hidden">
           <Input
-            variant={"outline"}
-            type="email"
-            id="email"
-            required
-            placeholder="Email address"
-            onChange={(e) => {
-              setFormData({ ...formData, email: e.target.value });
-            }}
-          />
-          <Input
-            variant={"outline"}
-            type="text"
-            id="name"
-            placeholder="Name"
-            required
-            onChange={(e) => {
-              setFormData({ ...formData, name: e.target.value });
-            }}
-          />
-          <Input
-            variant={"outline"}
             type="text"
             id="company"
+            value={formData.company}
             placeholder="Company"
-            required
+            className="border-gray-300 dark:border-gray-600"
             onChange={(e) => {
               setFormData({ ...formData, company: e.target.value });
             }}
           />
+
           <Input
-            variant={"outline"}
             type="text"
             id="phone"
+            value={formData.phone}
             placeholder="Phone"
-            required
+            className="border-gray-300 dark:border-gray-600"
             onChange={(e) => {
               setFormData({ ...formData, phone: e.target.value });
             }}
           />
         </div>
+
         <Textarea
           name="message"
           id="message"
-          className="h-[200px] border-primary dark:border-white/85"
-          placeholder="Let's talk about..."
+          value={formData.message}
+          className="min-h-[100px] border-gray-300 dark:border-gray-600 focus:border-primary resize-none"
+          placeholder="Your message..."
           required
           onChange={(e) => {
             setFormData({ ...formData, message: e.target.value });
           }}
         />
-        <Button variant={"outline"} type="submit" className=" font-medium">
-          Send Message
+
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-md transition-all duration-300 w-full"
+        >
+          <FaPaperPlane className={`${isSubmitting ? "animate-pulse" : ""}`} />
+          {isSubmitting ? "Sending..." : "Send Message"}
         </Button>
       </form>
     </div>
   );
 };
+
 export default ContactForm;
