@@ -1,3 +1,5 @@
+import { IconType } from "react-icons/lib";
+
 // Razorpay API response types (simplified to avoid type conflicts)
 export interface RazorpayBaseEntity {
   id: string;
@@ -188,4 +190,17 @@ export interface ListSubscriptionsResponse {
   entity: string;
   count: number;
   items: RazorpaySubscription[];
+}
+
+// Define the plan types
+export interface Plan {
+  id: string;
+  icon: IconType;
+  name: string;
+  price: number;
+  interval: string;
+  description: string;
+  features: string[];
+  buttonText: string;
+  highlighted?: boolean;
 }
