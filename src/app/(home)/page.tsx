@@ -7,9 +7,12 @@ import FAQ from "@/components/home/FAQs";
 import ContactForm from "./_components/ContactForm";
 import { InfiniteMovingCards } from "@/components/home/infinite-moving-cards";
 import { clients } from "@/constants";
-import PriceTable from "./_components/PriceTable";
+import SubscriptionPlans from "./_components/SubscriptionPlans";
+import SubscriptionStatusBanner from "@/components/SubscriptionStatusBanner";
+import { auth } from "@clerk/nextjs/server";
 
 const Rootpage = async () => {
+  const { userId } = await auth();
   return (
     <section
       className="relative mx-auto flex flex-col items-center justify-center overflow-y-auto scroll-smooth"
@@ -24,7 +27,6 @@ const Rootpage = async () => {
       <div className="absolute inset-x-0 bottom-0 h-px w-full bg-neutral-200/80 dark:bg-neutral-800/80">
         <div className="absolute mx-auto h-px w-40 bg-gradient-to-r from-transparent via-primary to-transparent" />
       </div>
-
       {/* Hero Section */}
       <div
         className="px-4 py-6 md:py-10 grid grid-cols-1 lg:grid-cols-2 lg:py-0 w-full"
@@ -92,7 +94,6 @@ const Rootpage = async () => {
         pauseOnHover
         items={clients}
       />
-
       {/* Features Section */}
       <div
         className="w-full xl:px-4 px-8 py-10 md:py-28 flex flex-col items-center justify-center"
@@ -100,23 +101,26 @@ const Rootpage = async () => {
       >
         <Feature />
       </div>
-
       {/* FAQ Section */}
       <div
         id="faq"
         className="w-full px-8 py-10 md:py-40 flex flex-col min-h-screen items-center"
       >
-        <FAQ />
-      </div>
+        <FAQ />{" "}
+      </div>{" "}
       {/* Pricing Section */}
       <div
         className="w-full px-8 py-10 md:py-40 flex flex-col items-center justify-center"
-        id="pricing"
+        id="subscriptions"
       >
-        <h2 className="text-4xl md:text-5xl font-semibold mb-12 text-center dark:text-white text-slate-900">
-          Choose Your <span className="text-secondary">Plan</span>
-        </h2>
-        <PriceTable />
+        {/* Display subscription status banner for logged-in users */}
+        {userId && (
+          <div className="w-full max-w-7xl mx-auto mb-8">
+            <SubscriptionStatusBanner status="none" />
+          </div>
+        )}
+        {/* Using our custom subscription plans component */}
+        <SubscriptionPlans />
       </div>
       <ContactForm />
     </section>
