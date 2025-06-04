@@ -7,6 +7,9 @@ import {
   pgEnum,
   serial,
   boolean,
+  integer,
+  numeric,
+  jsonb,
   // PgArray,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm/sql";
@@ -106,4 +109,85 @@ export const notificationsTable = pgTable("notifications", {
   isRead: boolean("is_read").default(false),
   type: text("type").notNull().default("meeting"), // 'meeting', 'direct_call', etc.
   createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Subscription plan status enum
+export const subscriptionStatusEnum = pgEnum("subscription_status", [
+  "active",
+  "authenticated",
+  "pending",
+  "halted",
+  "cancelled",
+  "completed",
+  "expired",
+]);
+
+// Subscription plans table
+export const subscriptionPlansTable = pgTable("subscription_plans", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  razorpayPlanId: text("razorpay_plan_id").notNull().unique(),
+  name: text("name").notNull(),
+  description: text("description"),
+  amount: numeric("amount").notNull(), // Amount in INR
+  interval: text("interval").notNull().default("monthly"), // monthly, yearly, etc.
+  intervalCount: integer("interval_count").notNull().default(1),
+  active: boolean("active").notNull().default(true),
+  features: jsonb("features").$type<string[]>().default([]),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").$onUpdate(() => sql`CURRENT_TIMESTAMP`),
+});
+
+// Razorpay customers table
+export const razorpayCustomersTable = pgTable("razorpay_customers", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").references(() => usersTable.id, {
+    onDelete: "cascade",
+  }),
+  razorpayCustomerId: text("razorpay_customer_id").notNull().unique(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  contact: text("contact"),
+  notes: jsonb("notes"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").$onUpdate(() => sql`CURRENT_TIMESTAMP`),
+});
+
+// Subscriptions table
+export const subscriptionsTable = pgTable("subscriptions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").references(() => usersTable.id, {
+    onDelete: "set null",
+  }),
+  planId: uuid("plan_id").references(() => subscriptionPlansTable.id),
+  customerId: uuid("customer_id").references(() => razorpayCustomersTable.id),
+  razorpaySubscriptionId: text("razorpay_subscription_id").notNull().unique(),
+  status: subscriptionStatusEnum("status").notNull(),
+  currentPeriodStart: timestamp("current_period_start"),
+  currentPeriodEnd: timestamp("current_period_end"),
+  cancelAtPeriodEnd: boolean("cancel_at_period_end").default(false),
+  cancelledAt: timestamp("cancelled_at"),
+  endedAt: timestamp("ended_at"),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").$onUpdate(() => sql`CURRENT_TIMESTAMP`),
+});
+
+// Subscription payments table
+export const subscriptionPaymentsTable = pgTable("subscription_payments", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  subscriptionId: uuid("subscription_id").references(
+    () => subscriptionsTable.id,
+    {
+      onDelete: "set null",
+    },
+  ),
+  razorpayPaymentId: text("razorpay_payment_id").notNull(),
+  amount: numeric("amount").notNull(),
+  currency: text("currency").notNull().default("INR"),
+  status: text("status").notNull(), // captured, failed, etc.
+  invoiceId: text("invoice_id"),
+  paymentMethod: text("payment_method"),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").$onUpdate(() => sql`CURRENT_TIMESTAMP`),
 });
