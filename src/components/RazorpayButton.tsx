@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
 
 interface RazorpayButtonProps {
   amount: number;
@@ -157,8 +158,15 @@ const RazorpayButton: React.FC<RazorpayButtonProps> = ({
   };
 
   return (
-    <Button onClick={handlePayment} disabled={loading}>
-      {loading ? "Processing..." : `Pay ₹${amount}`}
+    <Button onClick={handlePayment} disabled={loading} className="w-full">
+      {loading ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Processing...
+        </>
+      ) : (
+        `Pay ₹${amount}`
+      )}
     </Button>
   );
 };
