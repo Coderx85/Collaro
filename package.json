@@ -10,7 +10,11 @@
     "lint": "next lint",
     "format": "prettier --write .",
     "lint-staged": "lint-staged",
-    "prepare": "husky"
+    "prepare": "husky",
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "db:reset": "drizzle-kit reset",
+    "db:migrate": "drizzle-kit migrate"
   },
   "lint-staged": {
     "**/*.{js,ts,tsx}": [
@@ -19,7 +23,7 @@
     ]
   },
   "dependencies": {
-    "@arcjet/next": "^1.0.0-beta.5",
+    "@arcjet/next": "^1.0.0-beta.8",
     "@clerk/elements": "^0.23.6",
     "@clerk/nextjs": "^6.20.2",
     "@clerk/themes": "^2.2.20",
