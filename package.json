@@ -7,7 +7,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "npx oxlint && next lint",
     "format": "prettier --write .",
     "lint-staged": "lint-staged",
     "prepare": "husky"
@@ -64,6 +64,7 @@
     "drizzle-kit": "^0.30.5",
     "drizzle-orm": "^0.40.0",
     "embla-carousel-react": "^8.5.2",
+    "eslint-plugin-oxlint": "^1.1.0",
     "eslint-plugin-react": "^7.37.4",
     "globals": "^16.0.0",
     "input-otp": "^1.4.2",

@@ -1,6 +1,7 @@
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
+import oxlint from "eslint-plugin-oxlint";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -17,6 +18,7 @@ const eslintConfig = [
       "@typescript-eslint/no-explicit-any": "off",
     },
   }),
+  ...oxlint.buildFromOxlintConfigFile("./oxlint.json"),
 ];
 
 export default eslintConfig;
