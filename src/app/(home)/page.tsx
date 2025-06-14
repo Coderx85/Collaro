@@ -7,9 +7,10 @@ import FAQ from "@/components/home/FAQs";
 import ContactForm from "./_components/ContactForm";
 import { InfiniteMovingCards } from "@/components/home/infinite-moving-cards";
 import { clients } from "@/constants";
+import SubscriptionPlans from "./_components/SubscriptionPlans";
 import Footer from "./_components/Footer";
 
-const Rootpage = async () => {
+const Rootpage = () => {
   return (
     <section
       className="relative mx-auto flex flex-col items-center justify-center overflow-y-auto scroll-smooth"
@@ -103,7 +104,15 @@ const Rootpage = async () => {
         id="faq"
         className="w-full px-8 py-10 md:py-40 flex flex-col min-h-screen items-center"
       >
-        <FAQ />
+        <FAQ />{" "}
+      </div>{" "}
+      {/* Pricing Section */}
+      <div
+        className="w-full px-8 py-10 md:py-40 flex flex-col items-center justify-center"
+        id="subscriptions"
+      >
+        {/* Using our custom subscription plans component */}
+        <SubscriptionPlans />
       </div>{" "}
       {/* Combined Contact Form and Footer Section */}
       <div
@@ -121,6 +130,7 @@ const Rootpage = async () => {
           </div>
         </div>
       </div>
+      <ContactForm />
     </section>
   );
 };

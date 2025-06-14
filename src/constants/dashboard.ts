@@ -24,6 +24,10 @@ export const homeTabs = [
     id: "#faq",
   },
   {
+    name: "Subscriptions",
+    id: "#subscriptions",
+  },
+  {
     name: "About",
     id: "/about-me",
   },
