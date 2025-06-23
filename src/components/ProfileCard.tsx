@@ -1,23 +1,19 @@
 "use client";
-import React, { useEffect } from "react";
 import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
-import { useWorkspaceStore } from "@/store/workspace";
+import { useOrganization } from "@clerk/nextjs";
 
 const ProfileCard = () => {
   const { user } = useUser();
-  const { workspaceName, members } = useWorkspaceStore();
-  const { role } = user?.publicMetadata as UserPublicMetadata;
-  useEffect(() => {
-    if (workspaceName) window.document.title = workspaceName! + " | Collaro";
-  }, [workspaceName]);
+  console.log("User:", user);
+  const { organization } = useOrganization();
 
   return (
     <div className="w-1/2 xl:p-2 px-3 py-4">
       <div className="flex flex-col justify-between">
         <div className="flex items-center">
           <Image
-            src={user?.imageUrl || ""}
+            src={user?.imageUrl || "/images/avatar-1.jpeg"}
             width={75}
             height={75}
             alt="Profile-png"
@@ -31,7 +27,7 @@ const ProfileCard = () => {
               @{user?.username}
             </p>
             <p className="text-white/75 mt-2.5 text-xs xl:text-lg">
-              Team: {workspaceName}
+              Team: {organization?.name}
             </p>
           </div>
         </div>
@@ -41,22 +37,7 @@ const ProfileCard = () => {
             <span className="text-white/75 text-xs xl:text-lg">
               {user?.primaryEmailAddress?.emailAddress}
             </span>
-            <br />
-            Role:{" "}
-            <span className="ml-2 text-white/75 text-xs xl:text-lg">
-              {role?.toUpperCase()}
-            </span>
-            <br />
           </p>
-          {/* <p>{workspaceId}</p> */}
-          {role === "admin" && members && (
-            <p>
-              Members: <br />
-              {members.map((m) => (
-                <li key={m.id}>{m.name + " @" + m.userName}</li>
-              ))}
-            </p>
-          )}
         </div>
       </div>
     </div>

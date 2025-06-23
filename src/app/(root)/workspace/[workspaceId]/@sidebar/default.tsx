@@ -5,6 +5,8 @@ import Image from "next/image";
 import Navlink from "./_components/navlink";
 import AlertButton from "../_components/AlertButton";
 import { SidebarProps } from "@/types";
+import { OrganizationSwitcher } from "@clerk/nextjs";
+import { FaDotCircle } from "react-icons/fa";
 
 const Sidebar = async ({ params }: SidebarProps) => {
   const { workspaceId } = await params;
@@ -26,6 +28,15 @@ const Sidebar = async ({ params }: SidebarProps) => {
         <p className="group text-[26px] font-extrabold text-white duration-75 hover:text-white max-sm:hidden">
           Col<span className="text-primary">laro</span>
         </p>
+      </div>
+      <div className="flex items-center justify-center p-2">
+        <OrganizationSwitcher hidePersonal hideSlug>
+          <OrganizationSwitcher.OrganizationProfileLink
+            label="Homepage"
+            url="/"
+            labelIcon={<FaDotCircle />}
+          />
+        </OrganizationSwitcher>
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-3 overflow-y-auto">
         <TooltipProvider>
