@@ -10,8 +10,8 @@ export type clientCall = {
   };
 };
 
-export interface WorkspaceCheckResponse {
-  data?: string;
+export interface Response<T> {
+  data?: T;
   error?: string;
   success: boolean;
   status: number;

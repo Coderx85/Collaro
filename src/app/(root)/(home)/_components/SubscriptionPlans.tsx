@@ -30,16 +30,14 @@ export default function SubscriptionPlans() {
       {/* Billing toggle */}
       <div className="flex justify-center mb-8 gap-2 border-2 w-fit mx-auto p-1 rounded-lg text-black dark:text-white">
         <Button
-          className="rounded-r-none"
-          variant={billingInterval === "monthly" ? "bill" : "default"}
+          className={`rounded-r-none ${billingInterval === "monthly" ? "bg-primary dark:bg-primary hover:bg-primary/90 text-white" : ""}`}
           onClick={() => setBillingInterval("monthly")}
         >
           Monthly
         </Button>
         <Button
-          variant={billingInterval === "yearly" ? "bill" : "default"}
           onClick={() => setBillingInterval("yearly")}
-          className="rounded-l-none"
+          className={`rounded-l-none ${billingInterval === "yearly" ? "bg-primary dark:bg-primary hover:bg-primary/90 text-white" : ""}`}
         >
           Yearly
           {/* <span className="ml-1 text-xs opacity-80">Save 15%</span> */}

@@ -4,7 +4,7 @@ import { Geist } from "next/font/google";
 
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import "react-datepicker/dist/react-datepicker.css";
-import "../styles/globals.css";
+import "@/styles/globals.css";
 import { Toaster } from "sonner";
 import { Metadata } from "next/types";
 import { ThemeProvider } from "@/providers/ThemeProvider";

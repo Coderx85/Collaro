@@ -1,47 +1,28 @@
 import { ReactNode, Suspense } from "react";
-import { getUser, getWorkspace } from "@/action";
-import { WorkspaceInitializer } from "@/components/WorkspaceInitializer";
 import StreamVideoProvider from "@/providers/StreamClientProvider";
 import { Loader } from "lucide-react";
+import { currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import { rootDomain } from "@/lib";
 
 const RootLayout = async ({
   children,
   sidebar,
   navbar,
-  params,
 }: {
   children: ReactNode;
   sidebar: ReactNode;
   navbar: ReactNode;
   params: { workspaceId: string };
 }) => {
-  const user = await getUser();
-  if (!user?.data?.clerkId) {
-    console.error("No user found or missing clerkId");
-    return null;
+  const user = await currentUser();
+  if (!user) {
+    redirect(`${rootDomain}/sign-in`);
   }
-
-  const { workspaceId } = await params;
-  console.log(
-    `Validating access for user ${user.data.clerkId} to workspace ${workspaceId}`,
-  );
-
-  // Get workspace data
-  const workspaceData = await getWorkspace(user.data.clerkId);
-  const workspace = workspaceData.data;
-  const members = workspaceData.data?.member || [];
 
   return (
     <StreamVideoProvider>
       <div className="flex h-screen overflow-hidden">
-        {workspace && (
-          <WorkspaceInitializer
-            workspaceId={workspaceId}
-            workspaceName={workspace.name}
-            members={members}
-          />
-        )}
-
         {sidebar}
         <div className="flex flex-col flex-1 min-h-screen xl:ml-50">
           {navbar}
