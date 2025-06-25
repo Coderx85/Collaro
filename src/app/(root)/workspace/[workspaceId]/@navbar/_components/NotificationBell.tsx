@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
-import { Bell, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -15,29 +14,29 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { NotificationProps } from "@/types";
+import { FaBell } from "react-icons/fa";
 
 const NotificationBell = () => {
   const [notifications, setNotifications] = useState<NotificationProps[]>([]);
-  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const { user } = useUser();
   const router = useRouter();
   const client = useStreamVideoClient();
 
-  const fetchNotifications = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("/api/notifications?limit=20");
-      if (response.ok) {
-        const data = await response.json();
-        setNotifications(data.notifications || []);
-      }
-    } catch (error) {
-      console.error("Failed to fetch notifications:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const fetchNotifications = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await fetch("/api/notifications?limit=20");
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       setNotifications(data.notifications || []);
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to fetch notifications:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // Handle incoming call notifications from Stream
   const handleCallEvent = useCallback((event: any) => {
@@ -91,7 +90,7 @@ const NotificationBell = () => {
 
   useEffect(() => {
     if (user) {
-      fetchNotifications();
+      // fetchNotifications();
     }
   }, [user]);
 
@@ -133,7 +132,8 @@ const NotificationBell = () => {
         ),
       );
     } catch (error) {
-      console.error("Failed to mark notification as read:", error);
+      throw new Error(`Failed to mark notification as read: ${error}`);
+      // console.error("Failed to mark notification as read:", error);
     }
   };
 
@@ -154,7 +154,7 @@ const NotificationBell = () => {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button className="relative rounded-full p-2" size={"icon"}>
-          <Bell className="h-5 w-5" />
+          <FaBell className="h-5 w-5" />
           {unreadCount > 0 && (
             <Badge
               variant="destructive"
@@ -173,18 +173,14 @@ const NotificationBell = () => {
               variant="ghost"
               size="sm"
               className="text-xs"
-              onClick={() => fetchNotifications()}
+              // onClick={() => fetchNotifications()}
             >
               Refresh
             </Button>
           )}
         </div>
 
-        {loading ? (
-          <div className="flex justify-center py-4">
-            <Loader size={10} className="animate-spin" />
-          </div>
-        ) : notifications.length === 0 ? (
+        {notifications.length === 0 ? (
           <p className="text-center py-4 text-sm text-muted-foreground">
             No notifications
           </p>
