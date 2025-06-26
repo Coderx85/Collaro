@@ -127,6 +127,8 @@ export const featureCard: FeatureCard[] = [
   },
 ];
 
-export const clients = [...new Array(10)].map((click, index: number) => ({
-  href: `/home/${index + 1}.png`,
-}));
+export const clients = Array.from({ length: 10 })
+  .fill(null)
+  .map((_, index: number) => ({
+    href: `/home/${index + 1}.png`,
+  }));
