@@ -125,9 +125,19 @@ const MeetingTypeList = () => {
         };
 
         // Only proceed with DB operations if call creation was successful
-        await createMeetingAction(meeting);
+        const meetDB = await createMeetingAction(meeting);
+        if (!meetDB) {
+          throw new Error("Failed to create meeting in database");
+        }
 
-        toast({ title: "Meeting Created" });
+        if (meetDB.error) {
+          throw new Error(meetDB.error);
+        }
+
+        toast({
+          title: "Meeting Created",
+          description: "You can now join the meeting.",
+        });
 
         if (!values.description) {
           router.push(`/meeting/${call.id}`);

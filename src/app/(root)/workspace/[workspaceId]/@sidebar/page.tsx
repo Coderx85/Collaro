@@ -3,7 +3,6 @@ import Image from "next/image";
 import Navlink from "./_components/navlink";
 import { SidebarProps } from "@/types";
 import { OrganizationSwitcher } from "@clerk/nextjs";
-import { FaDotCircle } from "react-icons/fa";
 
 const Sidebar = async ({ params }: SidebarProps) => {
   const { workspaceId } = await params;
@@ -23,13 +22,12 @@ const Sidebar = async ({ params }: SidebarProps) => {
         </p>
       </div>
       <div className="flex items-center justify-center p-2">
-        <OrganizationSwitcher hidePersonal hideSlug>
-          <OrganizationSwitcher.OrganizationProfileLink
-            label="Homepage"
-            url="/"
-            labelIcon={<FaDotCircle />}
-          />
-        </OrganizationSwitcher>
+        <OrganizationSwitcher
+          afterCreateOrganizationUrl={`/workspace/${workspaceId}`}
+          afterSelectOrganizationUrl={`/workspace/${workspaceId}`}
+          hidePersonal
+          hideSlug
+        />
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-3 overflow-y-auto">
         <TooltipProvider>
