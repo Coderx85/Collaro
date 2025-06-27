@@ -1,22 +1,24 @@
-FROM node:slim
+FROM node:24.3.0-alpine AS builder
 
-# Create app directory
 WORKDIR /app
 
-# Install dependencies first (better caching)
 COPY package*.json ./
 
-# Clean install for production
-RUN yarn install --frozen-lockfile
+RUN npm install --force
 
-# Copy the rest of the application code
 COPY . .
 
-# Build the application
 RUN npm run build
 
-# Expose the port the app runs on
+FROM node:24.3.0-alpine AS production
+
+WORKDIR /app
+
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+COPY --from=builder /package.json ./
+
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "start"]
+CMD ["npm","run","dokcer:run" ]

@@ -15,11 +15,11 @@ const Navbar = () => {
             src="/icons/logo.svg"
             width={32}
             height={32}
-            alt="yoom logo"
+            alt="Collaro logo"
             className="max-sm:size-10"
           />
           <p className="group text-[26px] font-extrabold text-white duration-75 hover:text-white max-sm:hidden">
-            Devn<span className="text-primary">Talk</span>
+            Co<span className="text-primary">llaro</span>
           </p>
         </Link>
       </div>

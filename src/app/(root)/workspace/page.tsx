@@ -1,16 +1,16 @@
-import { redirect } from "next/navigation";
-import WorkspaceForm from "./components/WorkspaceForm";
-import { getUserWorkspaceId } from "@/action";
-const WorkspacePage = async () => {
-  const data = await getUserWorkspaceId();
-  if (data.data && data.data?.workspaceId) {
-    const workspaceId = data.data.workspaceId;
-    redirect(`/workspace/${workspaceId}`);
-  }
+import { OrganizationList } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 
+const WorkspacePage = async () => {
+  const user = await currentUser();
   return (
-    <div className='mx-auto flex h-full flex-col items-center justify-center rounded-sm'>
-      <WorkspaceForm />
+    <div className="mx-auto flex h-full flex-col items-center justify-center rounded-sm">
+      {user?.fullName}
+      <OrganizationList
+        afterSelectOrganizationUrl={`/workspace/:id`}
+        afterCreateOrganizationUrl={`/workspace/:id`}
+        hidePersonal
+      />
     </div>
   );
 };

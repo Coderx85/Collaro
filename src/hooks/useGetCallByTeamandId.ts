@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
-import { useWorkspaceStore } from "@/store/workspace";
-import { useUser } from "@clerk/nextjs";
+import { useOrganization, useUser } from "@clerk/nextjs";
 
 export const useGetCallByTeamandId = () => {
   const [calls, setCalls] = useState<Call[]>([]);
   const [isCallsLoading, setIsCallsLoading] = useState(true);
 
   const client = useStreamVideoClient();
-  const { workspaceName } = useWorkspaceStore();
+  const { organization } = useOrganization();
+  const workspaceName = organization?.name;
   const { user } = useUser();
   const id = user?.id;
   useEffect(() => {
@@ -27,8 +27,8 @@ export const useGetCallByTeamandId = () => {
         setCalls(calls);
         setIsCallsLoading(false);
       } catch (error) {
-        console.error(error);
         setIsCallsLoading(false);
+        throw new Error(`Failed to load calls: ${error}`);
       }
     };
 

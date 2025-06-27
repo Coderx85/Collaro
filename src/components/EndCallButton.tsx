@@ -6,13 +6,14 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Phone } from "lucide-react";
 import { toast } from "sonner";
-import { useWorkspaceStore } from "@/store/workspace";
+import { useOrganization } from "@clerk/nextjs";
 
 const EndCallButton = () => {
   const call = useCall();
   const router = useRouter();
   const [isEnding, setIsEnding] = useState(false);
-  const { workspaceId } = useWorkspaceStore();
+  const { organization } = useOrganization();
+  const workspaceId = organization?.id;
 
   if (!call)
     throw new Error(
@@ -54,8 +55,10 @@ const EndCallButton = () => {
       toast.success("Call ended");
       router.push(`/workspace/${workspaceId}`);
     } catch (error: unknown) {
-      toast.error("Failed to end call");
-      console.error("Error ending call:", error);
+      toast.error(
+        `Failed to end call: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
+      // console.error("Error ending call:", error);
     } finally {
       setIsEnding(false);
     }
@@ -71,7 +74,7 @@ const EndCallButton = () => {
       `}
       variant={"destructive"}
     >
-      <Phone className='h-4 w-4' />
+      <Phone className="h-4 w-4" />
       {isEnding ? "Ending call..." : "End call for everyone"}
     </Button>
   );

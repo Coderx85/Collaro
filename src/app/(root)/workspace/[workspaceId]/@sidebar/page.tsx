@@ -1,20 +1,11 @@
 import { TooltipProvider } from "@radix-ui/react-tooltip";
-import { currentUser } from "@clerk/nextjs/server";
-import LeaveTeamButton from "../_components/LeaveButton";
 import Image from "next/image";
 import Navlink from "./_components/navlink";
-import AlertButton from "../_components/AlertButton";
 import { SidebarProps } from "@/types";
+import { OrganizationSwitcher } from "@clerk/nextjs";
 
 const Sidebar = async ({ params }: SidebarProps) => {
   const { workspaceId } = await params;
-  const user = await currentUser();
-
-  const role =
-    user?.publicMetadata?.role === "admin" ||
-    user?.publicMetadata?.role === "owner"
-      ? "admin"
-      : "member";
 
   return (
     <section className="hidden xl:flex xl:flex-col xl:fixed left-0 top-0 h-full w-50 bg-gray-900 dark:bg-gray-600/50 text-white">
@@ -30,14 +21,19 @@ const Sidebar = async ({ params }: SidebarProps) => {
           Co<span className="text-primary">llaro</span>
         </p>
       </div>
+      <div className="flex items-center justify-center p-2">
+        <OrganizationSwitcher
+          afterCreateOrganizationUrl={`/workspace/${workspaceId}`}
+          afterSelectOrganizationUrl={`/workspace/${workspaceId}`}
+          hidePersonal
+          hideSlug
+        />
+      </div>
       <div className="flex flex-1 flex-col gap-1.5 p-3 overflow-y-auto">
         <TooltipProvider>
-          <AlertButton />
-          <Navlink role={role} workspaceId={workspaceId} />
+          <Navlink role={"member"} workspaceId={workspaceId} />
         </TooltipProvider>
       </div>
-
-      <LeaveTeamButton />
     </section>
   );
 };
