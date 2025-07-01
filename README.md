@@ -2,6 +2,8 @@
 
 A modern developer collaboration platform built for remote teams. Collaro seamlessly integrates real-time communication, live streaming, and structured meetings to enhance team productivity.
 
+> 💡 **Want to see how it's built?** Check out my [**Technical Deep Dive**](./learn.md) where I share the challenges, solutions, and lessons learned building this platform with Next.js, Clerk, Stream, and PostgreSQL!
+
 <div align="center">
   <img src="public/images/home.png" alt="Collaro Homepage" width="100%" />
 </div>
