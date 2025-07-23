@@ -1,5 +1,18 @@
 # DevnTalk <img src="public/icons/logo.svg" alt="DevnTalk Logo" width="30" align="center" />
 
+<div align="center">
+
+[![GitHub stars](https://img.shields.io/github/stars/Priyanshux085/DevTalk)](https://github.com/Priyanshux085/DevTalk/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/Priyanshux085/DevTalk)](https://github.com/Priyanshux085/DevTalk/network/members)
+[![GitHub issues](https://img.shields.io/github/issues/Priyanshux085/DevTalk)](https://github.com/Priyanshux085/DevTalk/issues)
+[![GitHub license](https://img.shields.io/github/license/Priyanshux085/DevTalk)](https://github.com/Priyanshux085/DevTalk/blob/main/LICENSE)
+
+[![GitHub last commit](https://img.shields.io/github/last-commit/Priyanshux085/DevTalk?style=for-the-badge&logo=git&logoColor=white)](https://github.com/Priyanshux085/DevTalk/commits/main)
+[![GitHub contributors](https://img.shields.io/github/contributors/Priyanshux085/DevTalk?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Priyanshux085/DevTalk/graphs/contributors)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/Priyanshux085/DevTalk?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Priyanshux085/DevTalk/pulls)
+
+</div>
+
 A modern developer collaboration platform built for remote teams. DevnTalk seamlessly integrates real-time communication, live streaming, and structured meetings to enhance team productivity.
 
 <div align="center">
