@@ -31,19 +31,22 @@ const Rootpage = () => {
         style={{ scrollSnapAlign: "start" }}
       >
         <div className="hidden lg:flex py-32 px-10">
-          <Image
-            src="/images/hero.jpeg"
-            alt="hero"
-            width={600}
-            height={400}
-            className="w-[650px] h-[400px] object-cover"
-          />
+          <picture className="w-[600px] h-[400px] object-cover rounded-lg shadow-lg">
+            <Image
+              src="/home/hero.gif"
+              alt="Hero animation showcasing Collaro"
+              width={650}
+              height={400}
+              className="w-full h-full object-cover rounded-lg shadow-lg"
+              unoptimized={true}
+            />
+          </picture>
         </div>
         <div className="flex flex-col w-full items-center gap-4 py-32 xl:gap-2.5">
-          <h1 className="text-4xl md:text-4xl font-semibold xl:text-8xl gap-3  flex xl:flex-row flex-col dark:text-white text-slate-900 mx-auto text-center items-center">
+          <h1 className="text-4xl md:text-4xl font-semibold xl:text-8xl gap-3  flex xl:flex-row flex-col dark:text-white/75 text-slate-900/75 mx-auto text-center items-center">
             {"Welcome to "}
           </h1>
-          <span className="text-6xl sm:text-4xl xl:text-8xl group/heading font-extrabold bg-clip-text text-transparent bg-gradient-to-b from-primary dark:from-primary via-primary/50 dark:via-primary/75 to-primary/75 dark:to-primary hover:to-primary transition-all duration-300">
+          <span className="text-6xl sm:text-4xl xl:text-8xl group/heading font-extrabold bg-clip-text text-transparent bg-gradient-to-b from-green-600/85 via-green-700 to-teal-800 transition-all duration-300">
             Collaro
             {/* <span className="absolute -bottom-2 left-0 w-0 group-hover/heading:w-full h-[2px] bg-gradient-to-r from-primary/50 to-primary transition-all duration-500" /> */}
           </span>
@@ -78,7 +81,8 @@ const Rootpage = () => {
             </Link>{" "}
             |{" "}
             <Link
-              href={"/about-me"}
+              target="_blank"
+              href={"https://coderx85.vercel.app/"}
               className="underline text-black dark:text-white/85 hover:text-primary xl:text-2xl py-2"
             >
               About Me
@@ -130,7 +134,6 @@ const Rootpage = () => {
           </div>
         </div>
       </div>
-      <ContactForm />
     </section>
   );
 };
