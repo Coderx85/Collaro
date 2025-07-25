@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   description:
     "A modern developer collaboration platform built for remote teams. Collaro seamlessly integrates real-time communication, live streaming, and structured meetings to enhance team productivity.",
   icons: {
-    icon: "/icons/logo.svg",
+    icon: "/icons/logo.png",
   },
 };
 
@@ -32,7 +32,7 @@ export default function RootLayout({
           animations: true,
           logoPlacement: "inside",
           socialButtonsVariant: "iconButton",
-          logoImageUrl: "/icons/logo.svg",
+          logoImageUrl: "/icons/logo.png",
         },
       }}
     >

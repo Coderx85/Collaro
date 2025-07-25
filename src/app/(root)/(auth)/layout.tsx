@@ -12,7 +12,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
           className="flex items-end gap-1 sm:gap-2 align-bottom justify-end cursor-pointer"
         >
           <Image
-            src="/icons/logo.svg"
+            src="/icons/logo.png"
             alt="logo"
             width={30}
             height={30}

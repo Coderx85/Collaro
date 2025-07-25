@@ -1,10 +1,8 @@
-# Collaro <img src="public/icons/logo.svg" alt="Collaro Logo" width="30" align="center" />
+# Collaro <img src="public/icons/logo.png" alt="Collaro Logo" width="30" align="center" />
 
-<<<<<<< HEAD
 A modern developer collaboration platform built for remote teams. Collaro seamlessly integrates real-time communication, live streaming, and structured meetings to enhance team productivity.
 
 > 💡 **Want to see how it's built?** Check out my [**Technical Deep Dive**](./learn.md) where I share the challenges, solutions, and lessons learned building this platform with Next.js, Clerk, Stream, and PostgreSQL!
-=======
 <div align="center">
 
 [![GitHub stars](https://img.shields.io/github/stars/Priyanshux085/DevTalk)](https://github.com/Priyanshux085/DevTalk/stargazers)
@@ -12,14 +10,9 @@ A modern developer collaboration platform built for remote teams. Collaro seamle
 [![GitHub issues](https://img.shields.io/github/issues/Priyanshux085/DevTalk)](https://github.com/Priyanshux085/DevTalk/issues)
 [![GitHub license](https://img.shields.io/github/license/Priyanshux085/DevTalk)](https://github.com/Priyanshux085/DevTalk/blob/main/LICENSE)
 
-[![GitHub last commit](https://img.shields.io/github/last-commit/Priyanshux085/DevTalk?style=for-the-badge&logo=git&logoColor=white)](https://github.com/Priyanshux085/DevTalk/commits/main)
-[![GitHub contributors](https://img.shields.io/github/contributors/Priyanshux085/DevTalk?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Priyanshux085/DevTalk/graphs/contributors)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/Priyanshux085/DevTalk?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Priyanshux085/DevTalk/pulls)
-
 </div>
 
 A modern developer collaboration platform built for remote teams. DevnTalk seamlessly integrates real-time communication, live streaming, and structured meetings to enhance team productivity.
->>>>>>> docker/docs
 
 <div align="center">
   <img src="public/images/home.png" alt="Collaro Homepage" width="100%" />
@@ -27,47 +20,14 @@ A modern developer collaboration platform built for remote teams. DevnTalk seaml
 
 ## ✨ Key Features
 
-<table>
-  <tr>
-    <td style="text-align: center;">
-      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAACrElEQVR4nO2YyWsUQRTGO+McEg96cMPESxRREFzOxuUgxrgHL4J/hEYTPJkQ4nJ0O3rwTzBED5rx4HJRwRUvZoIenUOIyRwV5ycVvoGaYaa7uukmRewPCpru723Vr169qiDIkSNHjhxpAzgETAHzLD/m5csBV+evAjX8Qw0YiXL+qIh/gOvAVqAjWCYAHfLhhnwyvh0JE3iuaEcDzwCMyrdSGKkqUnfgGYBu+VYNIy0h8BRE+ZcHsBL+ANAFXAbeaU2Z8RYYAjq9DgDYCcyG1PIZYIeXAQA9QEUqPgKngDUap4FP+lZJWuXIOIAnEn/WKlWUWtPiTHkVALBPor+AdSG8DcCidtQ9PgUwLtE7Dtx74o75FMCkRAcduOfEfeRTAC8letCxVTd4kcBO/gei1sBdB+59H9fAXokuAOtDeButKrTbt33gscRNre9qsw+UxJlMaGMJyQnR/fpPqfgMnAHWapwFvuib4Wz2LgAD0+eo32mHb8D2ICHIOgDp6AQuAW+U7wt6vuh9N5o1+B8CqIrTk/AKpE+3B6Yj/arWuaLnp8A1cWJf1QBb5NtiGKkU91rFOoGVccdM3BMaMCbZadeLrZtRF1vAsaYT2HfgtsrmLmCThnke1DfDqaMM9Ef81W3ALaeLLQmNtLhafN1C8bjFMyew40DBYSYLwEnrhFZT2jVMlLHZ5MNfYDhKf124Ty3ynIRfNTn/UO/NrAwDRSfFjTaKmiyjw+CBHYQVwJx82R/XRjvDE/XFZFIuBX39VvGI3eDFNTYgQ7/TcL5pLdVzPDW9DQBWAz8UwJUM9I9I92yrZjANAybXDd4DqzLQXwQ+yMZQ2soLVvkbSFW5BeCE9RciK5ozrHNsOVXFrSeqvq8cDtIC0KvUOZ+a0va2LiiVerO2lSNHsALwD+497NBxRU+9AAAAAElFTkSuQmCC" alt="under-computer">
-    </td>
-    <td>
-      <h3>Smart Workspaces</h3>
-      <ul>
-        <li>Create & join dedicated team spaces</li>
-        <li>Role-Based Access Control (RBAC)</li>
-        <li>Customizable workspace settings</li>
-      </ul>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAADBklEQVR4nO2YS2sUQRDHJyzJMRtB8RCMGx94MWIOovFiLrnoB1BQIyoxihB0L3tQ84AIejAIQkxy9TtoJAcVEXwc9LCCXsQHknyAHDws/KSwZtM79s5jpye6MH9oMumq6n/9p4ue6vW8HDly5MiR4z8FsAu4pKPfa0cA54FVYFGHPJ/z2nAnVoGSZa6/bcqDP74LlnnZmbGseJ2Xh5IvWuaX4gjBZVmmKQ+bH7A7uJ5r3kzKQ96gki/pkOfRzShLp+WhviXx1VHaLF5n5aG+HcAxoKxDnjuy5nVdHkL8DngP3APmgA/AW7Flxeu0PIBtwFdgHOgFTuv8FuCK2rZmUZahAAaA6zoOxPCf0104AkwC23X+ps7dF7tr3lAAd4Efxnn+E3gQESNvfK/EWmyHgX3AF9e8TQFcBF4DPcZcD/AGuBASVwMKwJTFdlVtNde8TQF8BoYs80eBTyFx6N/pKB+XvH8BOGO82S59rhj2rog3mlZIzec1uU1eP8dQGInUyYBDCRLBFpM03oe5ji23pELqO2KxyfFYMQaB/20j6DMWIqTiUkhDmQRsE8CdlGMiRMi0SyFylnc3I3MJGnmLwLWw3CIXCizYp2d70bcFSuMU0NlC0p0a21B23oYI4dzhTIghptykNJaBl0nEqIhXGmtbs2yKaEWI/0H7ZZZTjLinwMkE/rITywn8i5pT6AfVDPiu3esLv+GLSTQjvVUCf+nDZhL4nwWeAXukDYoTsADcAgaBNfn4xNkZOV3CPoKt+gPdKkJyOSitDzDvxWyf17RTHdSdkS21QeZ70wrRdj+M47mKGNLc+uKSjGjApJZZoYmfEAw7EDIsa3l2v4KW05TmNBKXw19gJ/AQ+KYHgI+q4fPIv7mlFDIqa3kbtqrBV9Mc5mPvRFIAt4EbDoTIpWs2kyRjJnPZ/+kmpRC5PI1nmWtUMieAx8HEWhDyBDieZa5x7tVVB0I+AvuzzDUqGbmCrmuPtNKCkBWNXTevtv8Egf5rIOFu1vuqbLPMkSNHjhw5vFD8Bgqw4P8khZweAAAAAElFTkSuQmCC" alt="meeting-room">
-    </td>
-    <td>
-      <h3>Real-Time Communication</h3>
-      <ul>
-        <li>HD video meetings with screen sharing</li>
-        <li>Live streaming for announcements</li>
-        <li>Integrated chat during calls</li>
-      </ul>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <img src="public/icons/github.svg" alt="GitHub Integration" width="80" height="80" />
-    </td>
-    <td>
-      <h3>GitHub Integration</h3>
-      <ul>
-        <li>Link discussions to repositories</li>
-        <li>Review pull requests together</li>
-        <li>Track issues in context</li>
-      </ul>
-    </td>
-  </tr>
-</table>
+- **Smart Workspaces**: Create and join dedicated team spaces with role-based access control.
+
+![Smart Workspaces](/public/home/hero.gif)
+
+- **Real-time Communication**: Engage in live discussions with integrated video and audio calls.
+
+
+- **Live Streaming**: Stream your coding sessions or presentations directly to your team.
 
 ## 🛠️ Tech Stack
 

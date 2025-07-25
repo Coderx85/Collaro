@@ -6,14 +6,14 @@ export const metadata: Metadata = {
   title: "Collaro - Home",
   description:
     "Collaro is a platform for developers to connect and share knowledge.",
-  icons: "/logo.svg",
+  icons: "/logo.png",
 };
 
 const layout = async ({ children }: { children: ReactNode }) => {
   return (
     <>
       <Navbar />
-      <div className="pattern-bg bg-gradient-to-br  from-gray-900/50 via-gray-800/20 to-gray-700/50">
+      <div className="pattern-bg bg-gradient-to-br  from-black/50 via-gray-800/20 to-gray-700/50">
         {children}
       </div>
     </>
