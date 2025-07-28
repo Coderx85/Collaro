@@ -43,7 +43,7 @@ jobs:
             NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=${{ secrets.NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL }}
             NEXT_PUBLIC_BASE_URL=${{ secrets.NEXT_PUBLIC_BASE_URL }}
             NEXT_PUBLIC_RESEND_API_KEY=${{ secrets.NEXT_PUBLIC_RESEND_API_KEY }}
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name.toLowerCase() }}:${{ github.sha }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/collaro:${{ github.sha }}
 
       - name: Deploy to Docker Hub
         run: |
