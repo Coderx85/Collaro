@@ -1,23 +1,56 @@
 #DOcker compose file
 # Use NextJS for main app and add postgre as database.
 
-version: '3.8'
-
 services:
   web:
-    build: .
+    image: docker.io/coderx85/collaro:latest
+    container_name: collaro
+    build: 
+      context: .
+      args:
+        - NEXT_PUBLIC_STREAM_API_KEY=${NEXT_PUBLIC_STREAM_API_KEY}
+        - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+        - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+        - NEXT_PUBLIC_RESEND_API_KEY=${NEXT_PUBLIC_RESEND_API_KEY}
+        - RESEND_API_KEY=${RESEND_API_KEY}
+        - HOSTNAME=localhost
     env_file: 
-        - .env
+      - .env
+    environment:
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - NEXT_PUBLIC_RESEND_API_KEY=${NEXT_PUBLIC_RESEND_API_KEY}
+    networks:
+      - web_network
+      - bridge_network
     ports:
       - "3000:3000"
     depends_on:
       - db
 
   db:
+    container_name: collaro_db
     image: postgres:latest
+    networks:
+      - db_network
+      - bridge_network
     ports:
       - "5432:5432"
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=mydatabase
+
+volumes:
+  db_data:
+    driver: local
+
+networks:
+  web_network:
+    driver: bridge
+    name: collaro_web_network
+  db_network:
+    driver: bridge
+    name: collaro_db_network
+  bridge_network:
+    driver: bridge
+    name: collaro_bridge_network
