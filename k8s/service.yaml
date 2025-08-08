@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata: 
+  name: collaro-service
+  namespace: collaro
+spec: 
+  type: ClusterIP
+  selector:
+    app: collaro
+  ports:
+    - port: 80
+      targetPort: 3000
+      protocol: TCP
+      name: http
