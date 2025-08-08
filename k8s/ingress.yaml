@@ -4,9 +4,13 @@ metadata:
   name: collaro-ingress
   namespace: collaro
   annotations:
-    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt
 spec:
-  ingressClassName: nginx
+  tls:
+    - hosts:
+        - collaro.local
+      secretName: collaro-tls
   rules:
     - host: collaro.local
       http:
@@ -15,6 +19,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: collaro-service
+                name: collaro-web
                 port:
                   number: 80
