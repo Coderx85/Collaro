@@ -12,7 +12,7 @@ A modern developer collaboration platform built for remote teams. Collaro seamle
 
 </div>
 
-A modern developer collaboration platform built for remote teams. DevnTalk seamlessly integrates real-time communication, live streaming, and structured meetings to enhance team productivity.
+A modern developer collaboration platform built for remote teams. collaro seamlessly integrates real-time communication, live streaming, and structured meetings to enhance team productivity.
 
 <div align="center">
   <img src="public/images/home.png" alt="Collaro Homepage" width="100%" />
