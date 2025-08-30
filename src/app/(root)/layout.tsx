@@ -35,6 +35,7 @@ export default function RootLayout({
           logoImageUrl: "/icons/logo.png",
         },
       }}
+      signInFallbackRedirectUrl={process.env.NEXT_PUBLIC_CLERK_SIGNIN_REDIRECT_URL}
     >
       <html lang="en">
         <body className={`${geist.className}`}>

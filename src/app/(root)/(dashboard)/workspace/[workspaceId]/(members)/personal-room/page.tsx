@@ -18,7 +18,7 @@ const Table = ({
 }) => {
   return (
     <div className="flex flex-col items-start gap-2 xl:flex-row">
-      <h1 className="text-base font-medium text-sky-1 lg:text-xl xl:min-w-32">
+      <h1 className="text-base font-medium text-black dark:text-sky-1 lg:text-xl xl:min-w-32">
         {title}:
       </h1>
       <h1 className="truncate text-sm font-bold max-sm:max-w-[320px] lg:text-xl">
@@ -33,7 +33,6 @@ const PersonalRoom = () => {
   const { user } = useUser();
   const client = useStreamVideoClient();
   const { toast } = useToast();
-
   const meetingId = user?.id;
 
   const { call } = useGetCallById(meetingId!);
@@ -58,18 +57,18 @@ const PersonalRoom = () => {
 
   return (
     <section className="flex size-full flex-col gap-10 text-white">
-      <h1 className="text-xl font-bold lg:text-3xl">Personal Meeting Room</h1>
+      <h1 className="text-xl font-bold text-black dark:text-white lg:text-3xl">Personal Meeting Room</h1>
       <div className="flex w-full flex-col gap-8 xl:max-w-[900px]">
         <Table title="Topic" description={`${user?.username}'s Meeting Room`} />
         <Table title="Meeting ID" description={meetingId!} />
         <Table title="Invite Link" description={meetingLink} />
       </div>
       <div className="flex gap-5">
-        <Button className="bg-blue" onClick={startRoom}>
+        <Button className="bg-primary dark:bg-primary/75" onClick={startRoom}>
           Start Meeting
         </Button>
         <Button
-          className="bg-dark-3"
+          className="bg-dark-3 dark:bg-white/85 hover:dark:bg-white dark:text-primary"
           onClick={() => {
             navigator.clipboard.writeText(meetingLink);
             toast({

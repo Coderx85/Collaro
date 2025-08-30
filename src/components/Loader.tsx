@@ -1,13 +1,11 @@
-import Image from "next/image";
+import { LoaderCircleIcon } from "lucide-react";
 
 const Loader = () => {
   return (
-    <div className='flex-center h-screen w-full'>
-      <Image
-        src='/icons/loading-circle.svg'
-        alt='Loading...'
-        width={50}
-        height={50}
+    <div className='flex-center h-screen mx-auto w-full'>
+      <LoaderCircleIcon 
+        className='animate-spin'
+        size={50}
       />
     </div>
   );
