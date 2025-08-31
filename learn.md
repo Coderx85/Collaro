@@ -20,6 +20,11 @@ These priorities led me to pick managed services for complex stuff while keeping
 
 ### 2. Challenges Faced & Solutions Implemented
 
+**Challenges Shortcuts:**
+- [Implementing Granular RBAC with Clerk and Drizzle](#challenge-implementing-granular-rbac-with-clerk-and-drizzle)
+- [Managing Real-Time State with Stream SDK in a Server Component World](#challenge-managing-real-time-state-with-stream-sdk-in-a-server-component-world)
+- [Efficient Database Connection Pooling in a Serverless Environment](#challenge-efficient-database-connection-pooling-in-a-serverless-environment)
+
 Here are the three biggest technical puzzles I solved while building Collaro.
 
 #### **Challenge: Implementing Granular RBAC with Clerk and Drizzle**

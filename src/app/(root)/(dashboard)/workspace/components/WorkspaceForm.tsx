@@ -50,7 +50,7 @@ const WorkspaceForm = () => {
         return toast.error(data.error);
       }
 
-      const workspaceData: CreateWorkspaceResponse = data.success;
+      const workspaceData: CreateWorkspaceResponse = data.data;
       toast.success("Workspace joined successfully");
       console.log("Joining workspace:", workspaceData);
       const members = Array.isArray(workspaceData.members)
@@ -99,7 +99,7 @@ const WorkspaceForm = () => {
 
       console.log("Response:", data);
 
-      if (data.success) {
+      if (!data.success) {
         setError(data.error || "Failed to create workspace");
         console.error("Cannot create workspace with Name:", workspaceName);
         return toast.error(
@@ -107,7 +107,7 @@ const WorkspaceForm = () => {
         );
       }
 
-      const workspaceData = data.success;
+      const workspaceData = data.data;
       toast.success("Workspace created successfully");
       console.log("Joining workspace:", workspaceData);
 

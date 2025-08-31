@@ -4,14 +4,9 @@ import {
   timestamp,
   uuid,
   varchar,
-  pgEnum,
-  // serial,
-  // boolean,
-  // PgArray,
+  pgEnum
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm/sql";
-
-// export const members = PgArray()
 
 // Define role enum first
 export const roleEnum = pgEnum("role", ["admin", "member"]);
@@ -23,21 +18,20 @@ export const usersTable = pgTable("users", {
   userName: text("user_name").notNull().unique(),
   clerkId: varchar("clerkId", { length: 256 }).notNull().unique(),
   email: text("email").notNull().unique(),
+  workspaceId: uuid("workspace_id").references(
+    (): any => workspacesTable.id
+  ),
   role: roleEnum("role").notNull().default("member"),
-  workspaceId: uuid("workspace_id").references(() => workspacesTable.id, {
-    onDelete: "set null",
-  }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at"),
+  updatedAt: timestamp("updated_at").$onUpdate(() => sql`CURRENT_TIMESTAMP`),
 });
 
 // Workspaces table definition
 export const workspacesTable = pgTable("workspaces", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull().unique(),
-  createdBy: uuid("created_by")
-    .notNull()
-    .references((): any => usersTable.id, {
+  createdBy: text("created_by")
+    .references(() => usersTable.userName, {
       onDelete: "set null",
     }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -46,21 +40,14 @@ export const workspacesTable = pgTable("workspaces", {
 
 // Workspace users junction table
 export const workspaceUsersTable = pgTable("workspace_users", {
-  userId: uuid("user_id")
+  userName: text("user_name")
     .notNull()
-    .primaryKey()
-    .references(() => usersTable.id, {
+    .references(() => usersTable.userName, {
       onDelete: "cascade",
     }),
-  name: text("name").notNull(),
   workspaceName: text("workspace_name")
     .notNull()
     .references(() => workspacesTable.name, {
-      onDelete: "cascade",
-    }),
-  workspaceId: uuid("workspace_id")
-    .notNull()
-    .references(() => workspacesTable.id, {
       onDelete: "cascade",
     }),
   role: roleEnum("role").notNull().default("member"),
@@ -70,35 +57,21 @@ export const workspaceUsersTable = pgTable("workspace_users", {
 
 // Workspace meetings table
 export const workspaceMeetingTable = pgTable("workspace_meetings", {
-  meetingId: uuid("meeting_id").notNull().unique(),
+  meetingId: uuid("meeting_id").defaultRandom().primaryKey(),
   workspaceId: uuid("workspace_id")
     .notNull()
     .references(() => workspacesTable.id, {
       onDelete: "cascade",
     }),
-  hostedBy: uuid("hosted_by")
-    .notNull()
-    .references(() => usersTable.id, {
+  hostedBy: text("hosted_by")
+  .notNull()
+    .references(() => usersTable.userName, {
       onDelete: "set null",
     }),
   description: text("description").default("Instant Meeting"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   endAt: timestamp("end_at"),
 });
-
-// // Notifications table
-// export const notificationsTable = pgTable("notifications", {
-//   id: serial("id").primaryKey(),
-//   userId: text("user_id").notNull(),
-//   title: text("title").notNull(),
-//   message: text("message").notNull(),
-//   meetingId: text("meeting_id"),
-//   workspaceId: text("workspace_id"),
-//   scheduledFor: timestamp("scheduled_for"),
-//   isRead: boolean("is_read").default(false),
-//   type: text("type").notNull().default("meeting"), // 'meeting', 'direct_call', etc.
-//   createdAt: timestamp("created_at").defaultNow(),
-// });
 
 export type CreateMeetingType = typeof workspaceMeetingTable.$inferInsert;
 export type CreateWorkspaceType = typeof workspacesTable.$inferInsert;

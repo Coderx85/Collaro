@@ -13,7 +13,7 @@
     "prepare": "husky",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
-    "db:reset": "drizzle-kit reset",
+    "db:reset": "drizzle-kit drop",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "docker:run": "node server.js"
@@ -98,20 +98,24 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@faker-js/faker": "^10.0.0",
     "@tailwindcss/postcss": "^4.0.17",
     "@types/node": "^20",
-    "@types/react": "^19",
+    "@types/react": "^19.1.10",
     "@types/react-datepicker": "^6.2.0",
     "@types/react-dom": "^19",
     "@types/uuid": "^10.0.0",
+    "@vitest/ui": "^3.2.4",
     "eslint": "^9.23.0",
     "eslint-config-next": "15.2.2",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.4",
     "husky": "^9.1.7",
+    "jsdom": "^26.1.0",
     "lint-staged": "^15.5.0",
     "prettier": "^3.5.3",
     "tailwindcss": "^4.0.17",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   }
 }
