@@ -49,7 +49,6 @@ export async function POST(
           error: "Failed to create user",
         });
       }
-      
       dbUser = newUser;
     }
 

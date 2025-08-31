@@ -1,12 +1,12 @@
 "use client";
 import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
-import { useOrganization } from "@clerk/nextjs";
+import { useWorkspaceStore } from "@/store/workspace";
 
 const ProfileCard = () => {
   const { user } = useUser();
   console.log("User:", user);
-  const { organization } = useOrganization();
+  const { workspaceName } = useWorkspaceStore();    
 
   return (
     <div className="w-1/2 xl:p-2 px-3 py-4">
@@ -27,7 +27,7 @@ const ProfileCard = () => {
               @{user?.username}
             </p>
             <p className="text-white/75 mt-2.5 text-xs xl:text-lg">
-              Team: {organization?.name}
+              Team: {workspaceName}
             </p>
           </div>
         </div>

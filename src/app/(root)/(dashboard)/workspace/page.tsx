@@ -6,16 +6,11 @@ import { getUserWorkspaceId, setUser } from "@/action";
 const WorkspacePage = async () => {
   // First try to get workspace id from user data
   const data = await getUserWorkspaceId();
+  console.log("User workspace data:", data.success);
   if (data.data && data.data.workspaceId) {
     const workspaceId = data.data.workspaceId;
     redirect(`/workspace/${workspaceId}`);
   }
-
-  // // New: Attempt to fetch workspace details directly from DB
-  // const workspaceData = await setWorkspaceFromDB();
-  // if (workspaceData && workspaceData.data) {
-  //   redirect(`/workspace/${workspaceData.data?.id}`);
-  // }
 
   const user = await setUser();       
   if (!user.success) {
