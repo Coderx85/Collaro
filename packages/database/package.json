@@ -1,0 +1,23 @@
+{
+  "name": "@repo/database",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.1",
+    "@t3-oss/env-nextjs": "^0.13.8",
+    "dotenv": "^16.4.7",
+    "drizzle-kit": "^0.31.4",
+    "drizzle-orm": "^0.40.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.15.21",
+    "typescript": "^5.8.3"
+  }
+}
