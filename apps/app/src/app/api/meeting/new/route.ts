@@ -1,4 +1,4 @@
-import { db, SelectMeetingType, usersTable, workspaceMeetingTable } from "@/db";
+import { db, SelectMeetingType, usersTable, workspaceMeetingTable } from "@repo/database";
 import { currentUser } from "@clerk/nextjs/server"
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";

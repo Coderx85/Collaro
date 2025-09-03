@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@repo/design/components/ui/button";
+import { useToast } from "@repo/design/components/ui/use-toast";
 import {
   Card,
   CardContent,
@@ -8,7 +8,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@repo/design/components/ui/card";
 import { Loader2 } from "lucide-react";
 import {
   SubscriptionPlanDetails,

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@repo/design/components/ui/button";
+import { useToast } from "@repo/design/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
 
 interface RazorpayButtonProps {

@@ -5,7 +5,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from "@repo/design/components/ui/accordion";
 import { faqs } from "@/constants";
 import { FaQuestionCircle } from "react-icons/fa";
 

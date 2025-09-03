@@ -6,9 +6,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+} from "@repo/design/components/ui/card";
+import { Badge } from "@repo/design/components/ui/badge";
+import { Button } from "@repo/design/components/ui/button";
 import { Loader2 } from "lucide-react";
 
 interface SubscriptionCardProps {

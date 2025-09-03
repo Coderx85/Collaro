@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useToast } from './ui/use-toast';
+import { useToast } from '@repo/design/components/ui/use-toast';
 import { useUser } from '@clerk/nextjs';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
+import { Input } from '@repo/design/components/ui/input';
+import { Textarea } from '@repo/design/components/ui/textarea';
 import HomeCard from './HomeCard';
 import MeetingModal from './MeetingModal';
 import Loader from './Loader';

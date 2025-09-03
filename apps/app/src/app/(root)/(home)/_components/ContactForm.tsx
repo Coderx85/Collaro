@@ -1,8 +1,8 @@
 "use client";
 import React, { FormEvent, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@repo/design/components/ui/button";
+import { Input } from "@repo/design/components/ui/input";
+import { Textarea } from "@repo/design/components/ui/textarea";
 import { toast } from "sonner";
 import { FaEnvelope, FaUser, FaPaperPlane } from "react-icons/fa";
 

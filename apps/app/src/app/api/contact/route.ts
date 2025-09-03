@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import React from "react";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.NEXT_PUBLIC_RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const POST = async (req: NextRequest) => {
   try {

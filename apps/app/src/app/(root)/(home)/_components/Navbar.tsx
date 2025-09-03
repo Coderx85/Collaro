@@ -4,7 +4,7 @@ import { ThemeToggle } from "@/components/home/ThemeToggle";
 import { homeTabs } from "@/constants";
 import Logo from "@/components/Logo";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/design/components/ui/button";
 import { auth } from "@clerk/nextjs/server";
 
 const Navbar = async () => {

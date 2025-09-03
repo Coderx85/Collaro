@@ -1,7 +1,7 @@
 "use client";
 import * as Clerk from "@clerk/elements/common";
 import * as SignUp from "@clerk/elements/sign-up";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/design/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,10 +9,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Icons } from "@/components/ui/icons";
+} from "@repo/design/components/ui/card";
+import { Input } from "@repo/design/components/ui/input";
+import { Label } from "@repo/design/components/ui/label";
+import { Icons } from "@repo/design/components/ui/icons";
 
 export default function SignUpPage() {
   return (

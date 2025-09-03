@@ -2,16 +2,16 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/design/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@repo/design/components/ui/popover";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@repo/design/components/ui/scroll-area";
+import { Badge } from "@repo/design/components/ui/badge";
 import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { NotificationProps } from "@/types";
 import { FaBell } from "react-icons/fa";
@@ -56,9 +56,6 @@ const NotificationBell = () => {
       };
 
       setNotifications((prev) => [newNotification, ...prev]);
-
-      // Refresh notifications to get the persisted version
-      setTimeout(fetchNotifications, 2000);
     }
   }, []);
 
@@ -82,9 +79,6 @@ const NotificationBell = () => {
       };
 
       setNotifications((prev) => [newNotification, ...prev]);
-
-      // Refresh notifications to get the persisted version
-      setTimeout(fetchNotifications, 2000);
     }
   }, []);
 

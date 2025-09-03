@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
-import { useToast } from "./ui/use-toast";
+import { Button } from "@repo/design/components/ui/button";
+import { useToast } from "@repo/design/components/ui/use-toast";
 import { MeetingCardProps } from "@/types";
 
 const MeetingCard = ({

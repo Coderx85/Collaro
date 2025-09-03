@@ -1,7 +1,7 @@
 "use client";
 
 import { useClerk } from "@clerk/nextjs";
-import { Button } from "./ui/button";
+import { Button } from "@repo/design/components/ui/button";
 import { deleteCookie } from "cookies-next";
 import { useEffect } from "react";
 

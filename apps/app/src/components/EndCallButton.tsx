@@ -1,7 +1,7 @@
 "use client";
 
 import { useCall, useCallStateHooks } from "@stream-io/video-react-sdk";
-import { Button } from "./ui/button";
+import { Button } from "@repo/design/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Phone } from "lucide-react";

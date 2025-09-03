@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/design/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,7 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@repo/design/components/ui/card";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FaCheck, FaRupeeSign } from "react-icons/fa";

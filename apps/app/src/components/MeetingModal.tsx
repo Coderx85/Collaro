@@ -1,8 +1,8 @@
 "use client";
 import { ReactNode } from "react";
-import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
-import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogTitle } from "@repo/design/components/ui/dialog";
+import { cn } from "@repo/design/lib/utils";
+import { Button } from "@repo/design/components/ui/button";
 import Image from "next/image";
 
 interface MeetingModalProps {

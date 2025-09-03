@@ -1,4 +1,4 @@
-import { Card, CardContent } from "./ui/card";
+import { Card, CardContent } from "@repo/design/components/ui/card";
 import React from "react";
 
 interface FeatureCardProps {

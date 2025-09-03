@@ -3,8 +3,8 @@
 
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
+import { Separator } from "@repo/design/components/ui/separator";
+import { Button } from "@repo/design/components/ui/button";
 import {
   Form,
   FormControl,
@@ -12,14 +12,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@repo/design/components/ui/form";
+import { Input } from "@repo/design/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@repo/design/components/ui/use-toast";
 import { Loader2, Save } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@repo/design/components/ui/avatar";
 import { FaTools } from "react-icons/fa";
 import { profileFormSchema } from "@/types/form";
 

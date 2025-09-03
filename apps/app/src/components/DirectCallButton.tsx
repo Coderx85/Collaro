@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "@repo/design/components/ui/use-toast";
 import { useOrganization, useUser } from "@clerk/nextjs";
-import { Button } from "./ui/button";
+import { Button } from "@repo/design/components/ui/button";
 import { PhoneCall } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@repo/design/components/ui/dialog";
 import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 import Loader from "./Loader";
 

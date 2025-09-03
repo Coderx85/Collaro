@@ -9,9 +9,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@repo/design/components/ui/card";
+import { Badge } from "@repo/design/components/ui/badge";
+import { Skeleton } from "@repo/design/components/ui/skeleton";
 import {
   CalendarIcon,
   Users,
@@ -28,8 +28,8 @@ import {
   ClipboardList,
   Hourglass,
 } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@repo/design/components/ui/scroll-area";
+import { Button } from "@repo/design/components/ui/button";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import {

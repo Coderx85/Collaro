@@ -6,7 +6,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@repo/design/components/ui/table";
 import { useGetCallsByTeam } from "@/hooks/useGetCallsbyTeam";
 import { useOrganization } from "@clerk/nextjs";
 import { Call } from "@stream-io/video-react-sdk";

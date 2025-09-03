@@ -8,7 +8,7 @@ import {
   SheetClose,
   SheetContent,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from "@repo/design/components/ui/sheet";
 import { sidebarLinks } from "@/constants";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";

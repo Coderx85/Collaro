@@ -2,9 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@repo/design/components/ui/button";
+import { Input } from "@repo/design/components/ui/input";
+import { Label } from "@repo/design/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -14,8 +14,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "@repo/design/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/design/components/ui/tabs";
 import { useWorkspaceStore } from "@/store/workspace";
 import { CreateWorkspaceResponse } from "@/types";
 import Link from "next/link";
