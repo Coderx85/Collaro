@@ -11,6 +11,7 @@ import MeetingModal from './MeetingModal';
 import Loader from './Loader';
 import ReactDatePicker from 'react-datepicker';
 import { Call, useStreamVideoClient } from '@stream-io/video-react-sdk';
+import { CalendarExport } from './CalendarExport';
 
 const initialValues = {
   dateTime: new Date(),
@@ -35,7 +36,7 @@ const MeetingTypeList = () => {
   const workspaceId = pathname.split('/')[2];                       
 
   async function createMeetingDB(meetingId: string) {
-    const res = await fetch(`/api/meeting/new`, {
+    const res = await fetch(`/api/meeting/new`, { 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -178,7 +179,38 @@ const MeetingTypeList = () => {
           buttonIcon="/icons/copy.svg"
           className="text-center"
           buttonText="Copy Meeting Link"
-        />
+        >
+          <div className="flex flex-col gap-4 items-center">
+            <p className="text-sm text-sky-2">
+              Meeting scheduled for {values.dateTime.toLocaleString()}
+            </p>
+            <div className="flex gap-2 flex-wrap justify-center w-full">
+              <div className="w-full max-w-md rounded-lg border border-gray-700 bg-gradient-to-b from-slate-900/40 to-slate-900/30 p-4 text-sky-2 shadow-sm">
+                <div className="flex items-center justify-center mb-3 w-full">
+                  <CalendarExport
+                    meetingId={callDetail?.id || ''}
+                    meetingTitle={values.description || 'Collaro Meeting'}
+                    startTime={values.dateTime}
+                    endTime={new Date(values.dateTime.getTime() + 60 * 60 * 1000)}
+                    description={values.description || 'Meeting scheduled via Collaro'}
+                    location="Online Meeting"
+                    meetingLink={meetingLink}
+                    workspaceId={workspaceId}
+                    hostedBy={user?.fullName || 'Collaro User'}
+                    hostEmail={user?.emailAddresses?.[0]?.emailAddress || 'user@collaro.com'}
+                    attendees={[]}
+                    variant="outline"
+                    size="sm"
+                    className="bg-transparent border border-slate-700 w-full text-sky-2 hover:bg-slate-800/40 hover:border-sky-400"
+                    />
+                </div>
+                <p className="text-xs text-slate-400 text-center break-words">
+                  Link: <span className="font-mono text-sm text-sky-2">{meetingLink}</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </MeetingModal>
       )}
 
       <MeetingModal

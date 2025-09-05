@@ -21,7 +21,7 @@ import {
 } from "@repo/design/components/ui/dropdown-menu";
 import Loader from "./Loader";
 import EndCallButton from "./EndCallButton";
-import { cn } from "@/lib/utils";
+import { cn } from "@repo/design/lib/utils";
 
 type CallLayoutType = "grid" | "speaker-left" | "speaker-right";
 

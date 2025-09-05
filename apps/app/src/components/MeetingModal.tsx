@@ -47,7 +47,7 @@ const MeetingModal = ({
           {children}
           <Button
             className={
-              "bg-primary focus-visible:ring-0 focus-visible:ring-offset-0"
+              "bg-primary dark:bg-blue/25 hover:dark:bg-blue/55 focus-visible:ring-0 focus-visible:ring-offset-0"
             }
             onClick={handleClick}
           >
@@ -55,8 +55,8 @@ const MeetingModal = ({
               <Image
                 src={buttonIcon}
                 alt="button icon"
-                width={13}
-                height={13}
+                width={21}
+                height={21}
               />
             )}{" "}
             &nbsp;
