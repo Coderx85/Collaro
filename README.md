@@ -1,145 +1,105 @@
-# Collaro - Turborepo Monorepo
+# Collaro <img src="public/icons/logo.png" alt="Collaro Logo" width="30" align="center" />
 
-This is the monorepo for Collaro, a video conferencing application built with Next.js, Clerk for authentication, and Drizzle ORM for database management. It uses Turborepo for efficient task orchestration and caching.
+A modern developer collaboration platform built for remote teams. Collaro seamlessly integrates real-time communication, live streaming, and structured meetings to enhance team productivity.
 
-## Using this example
+> 💡 **Want to see how it's built?** Check out my [**Technical Deep Dive**](./learn.md) where I share the challenges, solutions, and lessons learned building this platform with Next.js, Clerk, Stream, and PostgreSQL!
+<div align="center">
 
-Run the following command to set up the monorepo:
+[![GitHub stars](https://img.shields.io/github/stars/Priyanshux085/DevTalk)](https://github.com/Priyanshux085/DevTalk/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/Priyanshux085/DevTalk)](https://github.com/Priyanshux085/DevTalk/network/members)
+[![GitHub issues](https://img.shields.io/github/issues/Priyanshux085/DevTalk)](https://github.com/Priyanshux085/DevTalk/issues)
+[![GitHub license](https://img.shields.io/github/license/Priyanshux085/DevTalk)](https://github.com/Priyanshux085/DevTalk/blob/main/LICENSE)
 
-```sh
-pnpm install
+</div>
+
+A modern developer collaboration platform built for remote teams. collaro seamlessly integrates real-time communication, live streaming, and structured meetings to enhance team productivity.
+
+<div align="center">
+  <img src="public/images/home.png" alt="Collaro Homepage" width="100%" />
+</div>
+
+## ✨ Key Features
+
+- **Smart Workspaces**: Create and join dedicated team spaces with role-based access control.
+
+![Smart Workspaces](/public/home/hero.gif)
+
+- **Real-time Communication**: Engage in live discussions with integrated video and audio calls.
+
+
+- **Live Streaming**: Stream your coding sessions or presentations directly to your team.
+
+## 🛠️ Tech Stack
+
+### Frontend Core
+[![React 19](https://img.shields.io/badge/React-19.0.0-white?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Next.js 15](https://img.shields.io/badge/Next.js-15.2.2-white?style=for-the-badge&logo=nextdotjs&logoColor=black)](https://nextjs.org/)
+[![TypeScript 5](https://img.shields.io/badge/TypeScript-5.0.0-white?style=for-the-badge&logo=typescript&logoColor=black)](https://www.typescriptlang.org/)
+
+### UI & Design
+[![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-4.0.17-white?style=for-the-badge&logo=tailwind-css&logoColor=black)](https://tailwindcss.com/)
+[![Radix UI](https://img.shields.io/badge/Radix_UI-latest-white?style=for-the-badge&logo=radix-ui&logoColor=black)](https://www.radix-ui.com/)
+[![Lucide React](https://img.shields.io/badge/Lucide_React-0.479.0-white?style=for-the-badge&logo=lucide&logoColor=black)](https://lucide.dev/)
+
+### State & Forms
+[![Zustand](https://img.shields.io/badge/Zustand-5.0.3-white?style=for-the-badge&logo=npm&logoColor=black)](https://zustand-demo.pmnd.rs/)
+[![React Hook Form](https://img.shields.io/badge/React_Hook_Form-7.54.2-white?style=for-the-badge&logo=react-hook-form&logoColor=black)](https://react-hook-form.com/)
+[![Zod](https://img.shields.io/badge/Zod-3.24.2-white?style=for-the-badge&logo=zod&logoColor=black)](https://zod.dev/)
+
+### Communication
+[![Stream Video SDK](https://img.shields.io/badge/Stream_Video-1.12.7-white?style=for-the-badge&logo=stream&logoColor=black)](https://getstream.io/video/)
+
+### Security
+[![Clerk](https://img.shields.io/badge/Clerk-6.12.4-white?style=for-the-badge&logo=clerk&logoColor=black)](https://clerk.com/)
+
+### Database
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-latest-white?style=for-the-badge&logo=postgresql&logoColor=black)](https://www.postgresql.org/)
+[![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-0.40.0-white?style=for-the-badge&logo=drizzle&logoColor=black)](https://orm.drizzle.team/)
+
+### DevOps & Tools
+[![ESLint 9](https://img.shields.io/badge/ESLint-9.23.0-white?style=for-the-badge&logo=eslint&logoColor=black)](https://eslint.org/)
+[![Prettier](https://img.shields.io/badge/Prettier-3.5.3-white?style=for-the-badge&logo=prettier&logoColor=black)](https://prettier.io/)
+[![Husky](https://img.shields.io/badge/Husky-9.1.7-white?style=for-the-badge&logo=git&logoColor=black)](https://typicode.github.io/husky/)
+[![Docker](https://img.shields.io/badge/Docker-latest-white?style=for-the-badge&logo=docker&logoColor=black)](https://www.docker.com/)
+
+## 🏁 Getting Started
+
+### Prerequisites
+- Node.js 18+ 
+- Docker (optional)
+- Git
+
+### Quick Start 🚀
+
+1. **Clone & Install**
+```bash
+git clone https://github.com/Coderx85/Collaro.git
+cd Collaro
+npm install
 ```
 
-Then, to start development:
+2. **Environment Setup 🔐**
 
-```sh
-pnpm dev
+1. Copy the example environment file:
+```bash
+cp .env.example .env.local
 ```
 
-## What's inside?
+2. Update the following variables in `.env.local`:
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`: Your Clerk public key
+- `CLERK_SECRET_KEY`: Your Clerk secret key
+- `STREAM_API_KEY`: Your Stream API key
+- `STREAM_API_SECRET`: Your Stream secret key
+- `DATABASE_URL`: Your PostgreSQL connection string
+- `RESEND_API_KEY`: Your Resend API key
 
-This Turborepo includes the following packages/apps:
+> **Note:** Never commit `.env` or `.env.local` files to the repository
 
-### Apps and Packages
-
-- `apps/app`: The main [Next.js](https://nextjs.org/) application for Collaro, a video conferencing platform with Clerk authentication and Drizzle ORM.
-- `apps/docs`: Documentation site built with [Next.js](https://nextjs.org/).
-- `@repo/database`: Shared database package using Drizzle ORM and Neon for database management.
-- `@repo/design`: Design system package with Radix UI components for consistent UI.
-- `@repo/eslint-config`: Shared ESLint configurations for code linting.
-- `@repo/typescript-config`: Shared TypeScript configurations used throughout the monorepo.
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-- [Drizzle ORM](https://orm.drizzle.team/) for database management
-- [Clerk](https://clerk.com/) for authentication
-- [Radix UI](https://www.radix-ui.com/) for UI components
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd collaro-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-pnpm build
+3. **Development**
+```bash
+npm run dev     # Start with Turbopack
+# or
+docker compose up --build   # Start with Docker
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=app
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-pnpm build --filter=app
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd collaro-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-pnpm dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=app
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-pnpm dev --filter=app
-```
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
-
-Learn more about the technologies used:
-
-- [Next.js](https://nextjs.org/)
-- [Clerk](https://clerk.com/)
-- [Drizzle ORM](https://orm.drizzle.team/)
-- [Radix UI](https://www.radix-ui.com/)
+Visit [http://localhost:3000](http://localhost:3000)
