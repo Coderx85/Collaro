@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ThemeToggle } from "@/components";
+import { ThemeToggle } from "@repo/design/components/navigation/theme-toggle";
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (

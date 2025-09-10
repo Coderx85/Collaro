@@ -1,4 +1,4 @@
-import { TooltipProvider } from "@radix-ui/react-tooltip";
+import { TooltipProvider } from "@repo/design/components/ui/tooltip";
 import Navlink from "./_components/navlink";
 import { SidebarProps } from "@/types";
 import Logo from "@/components/Logo";

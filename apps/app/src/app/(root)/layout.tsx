@@ -7,7 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "@/styles/globals.css";
 import { Toaster } from "sonner";
 import { Metadata } from "next/types";
-import { ThemeProvider } from "@/providers/ThemeProvider";
+import { ThemeProvider } from "@repo/design/providers/theme";
 import { dark } from "@clerk/themes";
 
 const geist = Geist({ subsets: ["latin"] });

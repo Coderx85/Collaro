@@ -2,7 +2,7 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import { UserButton } from "@clerk/nextjs";
 import { SignOutButton } from "@/components/SignOutButton";
-import { ThemeToggle } from "@/components/home/ThemeToggle";
+import { ThemeToggle } from "@repo/design/components/navigation/theme-toggle";
 import MobileNav from "./_components/MobileNav";
 import NotificationBell from "./_components/NotificationBell";
 

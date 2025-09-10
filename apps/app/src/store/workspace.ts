@@ -17,3 +17,6 @@ export const useWorkspaceStore = create<WorkspaceState>((set) => ({
   
   setInitialized: (value) => set({ isInitialized: value }),
 }));
+
+// Re-export user store for convenience
+export { useUserStore } from "./user";

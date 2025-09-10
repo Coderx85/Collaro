@@ -1,10 +1,30 @@
 "use server";
 
-import { db, usersTable, workspaceUsersTable, workspacesTable } from "@/database";
+import { db, usersTable, workspaceUsersTable, workspacesTable } from "@repo/database";
 import { APIResponse, UserResponse } from "@/types";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
+
+export async function checkUserWorkspaceId() {
+  // Get the current user first
+  const clerkUser = await currentUser();
+  console.log("clerkUser exist: \n", clerkUser);
+
+  if (!clerkUser) throw redirect("/sign-in");
+
+  const [user] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.clerkId, clerkUser.id))
+    .execute();
+
+  if (!user) throw redirect("/sign-in");
+
+  if(user.workspaceId) redirect(`/workspace/${user.workspaceId}`);
+
+  return null;
+}
 
 export async function getUserWorkspaceId() {
   // Get the current user first

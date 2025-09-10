@@ -18,18 +18,18 @@
     "db:studio": "cd ../../packages/database && drizzle-kit studio",
     "docker:run": "node server.js"
   },
-  "lint-staged": {                      
+  "lint-staged": {
     "**/*.{js,ts,tsx}": [
       "eslint --fix",
       "prettier --write"
     ]
   },
   "dependencies": {
-    "@repo/design": "workspace:*",
-    "@repo/database": "workspace:*",
     "@clerk/elements": "^0.23.6",
     "@clerk/nextjs": "^6.23.3",
     "@clerk/themes": "^2.2.20",
+    "@repo/database": "workspace:*",
+    "@repo/design": "workspace:*",
     "@stream-io/node-sdk": "^0.4.18",
     "@stream-io/video-react-sdk": "^1.12.7",
     "@t3-oss/env-nextjs": "^0.13.8",
@@ -38,7 +38,9 @@
     "cmdk": "^1.0.0",
     "cookies-next": "^5.1.0",
     "date-fns": "^3.6.0",
+    "drizzle-orm": "^0.40.0",
     "globals": "^16.0.0",
+    "ical-generator": "^9.0.0",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.479.0",
     "motion": "^12.5.0",
@@ -46,10 +48,10 @@
     "next-themes": "^0.4.5",
     "postcss": "^8.5.3",
     "razorpay": "^2.9.6",
-    "react": "^19.0.0",
+    "react": "^19.1.0",
     "react-datepicker": "^6.8.0",
     "react-day-picker": "^8.10.1",
-    "react-dom": "^19.0.0",
+    "react-dom": "^19.1.0",
     "react-hook-form": "^7.54.2",
     "react-icons": "^5.5.0",
     "react-resizable-panels": "^2.1.7",
@@ -57,19 +59,19 @@
     "resend": "^4.1.2",
     "sonner": "^2.0.1",
     "tailwind-merge": "^3.0.2",
-    "tailwindcss-animate": "^1.0.7",
+    "tailwindcss-animate": "1.0.7",
     "typescript-eslint": "^8.28.0",
     "vaul": "^1.1.2",
     "zod": "^3.25.76",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
     "@eslint/eslintrc": "^3",
     "@faker-js/faker": "^10.0.0",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.0.17",
-    "@types/node": "^20",
+    "@types/node": "^22.15.3",
     "@types/react": "^19.1.10",
     "@types/react-datepicker": "^6.2.0",
     "@types/react-dom": "^19",

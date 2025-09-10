@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@repo/design/components/ui/button";
 import { useToast } from "@repo/design/components/ui/use-toast";
 import { MeetingCardProps } from "@/types";
+import { CalendarExport } from "./CalendarExport";
 
 const MeetingCard = ({
   icon,
@@ -15,6 +16,11 @@ const MeetingCard = ({
   handleClick,
   link,
   buttonText,
+  meetingId,
+  startTime,
+  endTime,
+  description,
+  location,
 }: MeetingCardProps) => {
   const { toast } = useToast();
 
@@ -31,7 +37,7 @@ const MeetingCard = ({
       </article>
       <article className={cn("flex justify-center relative", {})}>
         {!isPreviousMeeting && (
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button onClick={handleClick} className="rounded bg-blue px-6">
               {buttonIcon1 && (
                 <Image src={buttonIcon1} alt="feature" width={20} height={20} />
@@ -55,6 +61,20 @@ const MeetingCard = ({
               />
               &nbsp; Copy Link
             </Button>
+            {meetingId && startTime && (
+              <CalendarExport
+                meetingId={meetingId}
+                meetingTitle={title}
+                startTime={startTime}
+                endTime={endTime}
+                description={description}
+                location={location}
+                meetingLink={link}
+                variant="outline"
+                size="default"
+                className="bg-dark-4 border-dark-3 hover:bg-dark-3"
+              />
+            )}
           </div>
         )}
       </article>

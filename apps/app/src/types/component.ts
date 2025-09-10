@@ -1,5 +1,22 @@
 import { IconType } from "react-icons/lib";
 
+export interface CalendarExportProps {
+  meetingId: string;
+  meetingTitle: string;
+  startTime: Date;
+  endTime?: Date;
+  description?: string;
+  location?: string;
+  meetingLink?: string;
+  workspaceId?: string;
+  hostedBy?: string;
+  hostEmail?: string;
+  attendees?: string[];
+  variant?: 'default' | 'outline' | 'ghost' | 'destructive' | 'secondary';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  className?: string;
+}
+
 export interface MeetingCardProps {
   title: string;
   date: string;
@@ -9,6 +26,12 @@ export interface MeetingCardProps {
   buttonText?: string;
   handleClick: () => void;
   link: string;
+  // Optional calendar export properties
+  meetingId?: string;
+  startTime?: Date;
+  endTime?: Date;
+  description?: string;
+  location?: string;
 }
 
 export interface MeetingDetailsProps {

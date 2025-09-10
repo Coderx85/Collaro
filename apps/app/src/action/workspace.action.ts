@@ -1,5 +1,5 @@
 "use server";
-import { db, usersTable, workspacesTable, workspaceUsersTable } from "@/database";
+import { db, usersTable, workspacesTable, workspaceUsersTable } from "@repo/database";
 import { currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
@@ -27,8 +27,8 @@ export async function getWorkspaceUsers(workspaceId: string) {
     .from(workspaceUsersTable)
     .where(
       and(
-        eq(workspaceUsersTable.workspaceId, workspaceId),
-        eq(workspaceUsersTable.userId, user.id),
+        eq(workspaceUsersTable.workspaceName, user.userName),
+        eq(workspaceUsersTable.userName, user.userName),
       ),
     )
     .execute();

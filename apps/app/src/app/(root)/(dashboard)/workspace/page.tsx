@@ -1,17 +1,31 @@
-import { redirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 import WorkspaceForm from "./components/WorkspaceForm";
-import { getUserWorkspaceId } from "@/action";
+import { currentUser } from "@clerk/nextjs/server";
+import { db, usersTable } from "@repo/database";
+import { eq } from "drizzle-orm";
+
+async function fetchUserWorkspace(userId: string) {
+  const [user] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.clerkId, userId))
+    .execute();
+
+  return user?.workspaceId || null;
+}
 
 const WorkspacePage = async () => {
 
-  const user = await getUserWorkspaceId();
-  if (!user.success) {
+  const user = await currentUser();
+
+  if (!user) {
     redirect("/sign-in");
-  } else if (user.success && user.data) {
-    console.log("Workspace ID exists: \n", user?.data.workspaceId);
-    redirect(`workspace/${user.data.workspaceId}`);
-  } else {
-    console.log("Workspace ID is null");
+  }
+
+  const workspaceId = await fetchUserWorkspace(user.id);
+
+  if (workspaceId) {
+    redirect(`/workspace/${workspaceId}`, RedirectType.replace);
   }
 
   return (

@@ -2,25 +2,9 @@
 
 import { downloadMeetingICS, type Meeting } from '../lib/calendar-client';
 import { useToast } from '@repo/design/components/ui/use-toast';
-import { Calendar } from 'lucide-react';
 import { Button } from '@repo/design/components/ui/button';
-
-interface CalendarExportProps {
-  meetingId: string;
-  meetingTitle: string;
-  startTime: Date;
-  endTime?: Date;
-  description?: string;
-  location?: string;
-  meetingLink?: string;
-  workspaceId?: string;
-  hostedBy?: string;
-  hostEmail?: string;
-  attendees?: string[];
-  variant?: 'default' | 'outline' | 'ghost' | 'destructive' | 'secondary';
-  size?: 'default' | 'sm' | 'lg' | 'icon';
-  className?: string;
-}
+import { FaFileDownload } from 'react-icons/fa';
+import { CalendarExportProps } from '@/types';
 
 export function CalendarExport({
   meetingId,
@@ -41,7 +25,6 @@ export function CalendarExport({
 
   const handleCalendarExport = () => {
     try {
-      // Validate required fields
       if (!meetingId || !meetingTitle || !startTime) {
         toast({ 
           title: 'Error', 
@@ -93,10 +76,10 @@ export function CalendarExport({
       size={size}
       className={`bg-transparent border !w-full border-slate-700 text-sky-2 hover:bg-slate-800/40 hover:border-sky-400 ${className || ''}`}
       onClick={handleCalendarExport}
-      title="Add to Calendar"
+      title="Download .ics File"
     >
-      <Calendar className="mr-2 h-4 w-4" />
-      Add to Calendar
+      <FaFileDownload />
+      Download .ics File  
     </Button>
   );
 }

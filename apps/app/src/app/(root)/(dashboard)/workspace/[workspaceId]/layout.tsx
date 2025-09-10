@@ -1,9 +1,6 @@
 import { ReactNode, Suspense } from "react";
 import StreamVideoProvider from "@/providers/StreamClientProvider";
 import { Loader } from "lucide-react";
-import { currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-import { rootDomain } from "@/lib";
 
 const RootLayout = async ({
   children,
@@ -15,11 +12,6 @@ const RootLayout = async ({
   navbar: ReactNode;
   params: { workspaceId: string };
 }) => {
-  const user = await currentUser();
-  if (!user) {
-    redirect(`${rootDomain}/sign-in`);
-  }
-
   return (
     <StreamVideoProvider>
       <div className="flex h-screen overflow-hidden">

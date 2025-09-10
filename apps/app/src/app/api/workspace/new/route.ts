@@ -1,4 +1,4 @@
-import { db, usersTable, workspacesTable, workspaceUsersTable } from "@/database";
+import { db, usersTable, workspacesTable, workspaceUsersTable } from "@repo/database";
 import { APIResponse, CreateWorkspaceResponse } from "@/types";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
@@ -35,7 +35,7 @@ export async function POST(
         .values({
           clerkId: userId,
           name: user.firstName + " " + user.lastName,
-          email: user.emailAddresses[0].emailAddress,
+          email: user.emailAddresses[0]?.emailAddress || "",
           role: "member",
           workspaceId: null,
           userName: user.username!,

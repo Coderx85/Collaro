@@ -1,6 +1,6 @@
 import React from "react";
 import { UserButton } from "@clerk/nextjs";
-import { ThemeToggle } from "@/components/home/ThemeToggle";
+import { ThemeToggle } from "@repo/design/components/navigation/theme-toggle";
 import { homeTabs } from "@/constants";
 import Logo from "@/components/Logo";
 import Link from "next/link";
