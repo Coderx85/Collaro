@@ -278,5 +278,15 @@ Contributors will be:
 - Listed in the repository contributors
 - Mentioned in release notes
 - Recognized in the project's acknowledgments
+ 
+## 📈 Open Source Metrics & Guidelines
+
+- **Track these metrics:** `contributors`, `active_contributors_90d`, `stargazers`, `forks`, `open_issues`, `prs_merged_per_month`, `avg_response_time`. Keep a short `METRICS.md` or use GitHub Insights to store targets.
+- **Issue labeling:** Use `good first issue`, `help wanted`, `security`, `bug`, `docs`, `enhancement` consistently. Triage new issues within 48 hours.
+- **Onboarding:** Mark at least 3 `good first issue` items at any time. Include reproduction steps, expected output, and which files to look at.
+- **Recognition:** Add a `CONTRIBUTORS.md` entry for first-time contributors and include top contributors in each release note.
+- **Funding:** If seeking support, create `FUNDING.yml` and link to GitHub Sponsors / Open Collective.
+
+If you want, I can add a `METRICS.md` and `CONTRIBUTORS.md` file now with templates.
 
 Thank you for contributing to Collaro! 🚀

@@ -1,8 +1,7 @@
 # Collaro <img src="public/icons/logo.png" alt="Collaro Logo" width="30" align="center" />
 
-A modern developer collaboration platform built for remote teams. Collaro seamlessly integrates real-time communication, live streaming, and structured meetings to enhance team productivity.
+![Smart Workspaces](/public/home/hero.gif)
 
-> 💡 **Want to see how it's built?** Check out my [**Technical Deep Dive**](./learn.md) where I share the challenges, solutions, and lessons learned building this platform with Next.js, Clerk, Stream, and PostgreSQL!
 <div align="center">
 
 [![GitHub stars](https://img.shields.io/github/stars/Priyanshux085/DevTalk)](https://github.com/Priyanshux085/DevTalk/stargazers)
@@ -12,17 +11,84 @@ A modern developer collaboration platform built for remote teams. Collaro seamle
 
 </div>
 
-A modern developer collaboration platform built for remote teams. collaro seamlessly integrates real-time communication, live streaming, and structured meetings to enhance team productivity.
 
-<div align="center">
-  <img src="public/images/home.png" alt="Collaro Homepage" width="100%" />
-</div>
+A modern developer collaboration platform built for remote teams. Collaro seamlessly integrates real-time communication, live streaming, and structured meetings to enhance team productivity.
+
+> 💡 **Want to see how it's built?** Check out my [**Technical Deep Dive**](./learn.md) where I share the challenges, solutions, and lessons learned building this platform with Next.js, Clerk, Stream, and PostgreSQL!
+
+
+## Problem Statement
+
+Collaro provides Team Leads a workspace-centric template to manage teams within a single organisation: create isolated workspaces for Sales, Development, Management, or Accounting; assign roles and permissions per workspace; schedule and host meetings with recordings; and share resources selectively across one or multiple workspaces — all with simple RBAC controls to keep cross-team access safe and auditable.
+
+## Architecture (Mermaid)
+
+Below is a high-level data-model diagram showing the main entities used by Collaro (Users, Workspaces, Memberships, Meetings, Participants, Recordings). This visualization maps directly to the database schema in `packages/database/drizzle/schema.ts`.
+
+```mermaid
+erDiagram
+    USERS ||--o{ WORKSPACE_USERS : belongs_to
+    WORKSPACES ||--o{ WORKSPACE_USERS : has
+    WORKSPACES ||--o{ WORKSPACE_MEETINGS : hosts
+    WORKSPACE_MEETINGS ||--o{ PARTICIPANTS : includes
+    WORKSPACE_MEETINGS ||--o{ RECORDINGS : records
+    USERS ||--o{ PARTICIPANTS : attends
+    USERS ||--o{ RECORDINGS : creates
+
+    USERS {
+      uuid id
+      string name
+      string userName
+      string clerkId
+      string email
+      enum role
+    }
+    WORKSPACES {
+      uuid id
+      string name
+      string createdBy
+    }
+    WORKSPACE_USERS {
+      string userName
+      string workspaceName
+      enum role
+    }
+    WORKSPACE_MEETINGS {
+      uuid meetingId
+      uuid workspaceId
+      string hostedBy
+      timestamp createdAt
+      timestamp endAt
+    }
+    PARTICIPANTS {
+      uuid id
+      uuid meetingId
+      uuid userId
+      timestamp joinedAt
+      timestamp leftAt
+    }
+    RECORDINGS {
+      uuid id
+      uuid meetingId
+      string url
+      string visibility
+      timestamp createdAt
+    }
+```
+
+## Open Source Metrics & Guidelines
+
+- **Primary metrics to track:** contributors, active contributors (last 90 days), stargazers, forks, open issues, PRs merged per month, and community response time. Aim targets (example): 10 active contributors in 6 months, <48h average initial response time to issues/PRs.
+- **Labels & triage:** use `good first issue`, `help wanted`, `roadmap`, `security`, and `bug`. Tag newcomer-friendly issues to lower onboarding friction.
+- **Maintainer SLA:** triage new issues within 48 hours, respond to PRs within 72 hours where possible.
+- **Contribution recognition:** list active contributors in release notes and CONTRIBUTORS.md; highlight first-time contributors.
+- **Sponsorship / Funding:** add a `FUNDING.yml` and GitHub Sponsors link when ready; consider GitHub Sponsors, Open Collective, or donation links.
+
+If you'd like, I can add a small `metrics/` dashboard example or a `badges` snippet for the README.
 
 ## ✨ Key Features
 
 - **Smart Workspaces**: Create and join dedicated team spaces with role-based access control.
-
-![Smart Workspaces](/public/home/hero.gif)
 
 - **Real-time Communication**: Engage in live discussions with integrated video and audio calls.
 
