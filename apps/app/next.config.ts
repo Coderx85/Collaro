@@ -1,22 +1,9 @@
 import type { NextConfig } from "next";
+import config, { withAnalyzer } from "@repo/next-config";
 
-const nextConfig: NextConfig = {
-  /* config options here */
-  output: "standalone", // Optimize for Docker
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "img.clerk.com",
-      },
-    ],
-  },
-};
+let nextConfig: NextConfig = config;
+
+if (process.env.ANALYZE === "true") 
+  nextConfig = withAnalyzer(nextConfig);
 
 export default nextConfig;
