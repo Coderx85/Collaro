@@ -3,6 +3,9 @@
   "version": "2.0.0",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "app/*"
+  ],
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -123,6 +126,7 @@
     "@types/react-dom": "^19",
     "@types/uuid": "^10.0.0",
     "@vitest/ui": "^3.2.4",
+    "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9.23.0",
     "eslint-config-next": "15.2.2",
     "eslint-config-prettier": "^10.1.1",

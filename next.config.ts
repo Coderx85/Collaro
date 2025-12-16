@@ -13,7 +13,9 @@ const nextConfig: NextConfig = {
     ],
   },
   reactCompiler: true,
-  turbopack: {},
+  turbopack: {
+    root: __dirname,
+  },
 };
 
 export default nextConfig;
