@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 const protectedRoute = createRouteMatcher(["/workspace/:path*", "/meeting"]);
 
 export default clerkMiddleware(async (auth, req) => {
-  if (protectedRoute(req)) await auth.protect();
+  // if (protectedRoute(req)) await auth.protect();
 
   return NextResponse.next();
 });
