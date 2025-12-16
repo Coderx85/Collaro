@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
     ],
   },
   reactCompiler: true,
+  turbopack: {},
 };
 
 export default nextConfig;
