@@ -251,7 +251,7 @@ const TeamCall = () => {
         const memberName = member.user.name || member.user.id.slice(0, 8);
         memberParticipation.set(
           memberName,
-          (memberParticipation.get(memberName) || 0) + 1
+          (memberParticipation.get(memberName) || 0) + 1,
         );
       });
 
@@ -267,14 +267,14 @@ const TeamCall = () => {
         const dayOfWeek = dayNames[callDate.getDay()];
         weeklyDistribution.set(
           dayOfWeek,
-          (weeklyDistribution.get(dayOfWeek) || 0) + 1
+          (weeklyDistribution.get(dayOfWeek) || 0) + 1,
         );
 
         // Monthly distribution - group by month
         const monthYear = `${monthNames[callDate.getMonth()]} ${callDate.getFullYear()}`;
         monthlyDistribution.set(
           monthYear,
-          (monthlyDistribution.get(monthYear) || 0) + 1
+          (monthlyDistribution.get(monthYear) || 0) + 1,
         );
       }
     }
@@ -299,7 +299,7 @@ const TeamCall = () => {
         name,
         value,
         color: name === "Scheduled" ? "#3b82f6" : "#8b5cf6",
-      })
+      }),
     );
 
     // Duration categories pie chart data
@@ -317,7 +317,7 @@ const TeamCall = () => {
                 : name === "> 60 mins"
                   ? "#f59e0b"
                   : "#9ca3af", // In Progress
-      })
+      }),
     );
 
     // Time of day pie chart data
@@ -333,7 +333,7 @@ const TeamCall = () => {
               : name === "Evening (17-22)"
                 ? "#8b5cf6" // Purple for evening
                 : "#1e293b", // Dark blue for night
-      })
+      }),
     );
 
     const memberData = Array.from(memberParticipation.entries())
@@ -500,7 +500,7 @@ const TeamCall = () => {
                                       COLORS[index % COLORS.length]
                                     }
                                   />
-                                )
+                                ),
                               )}
                             </Pie>
                             <Legend />
@@ -531,7 +531,7 @@ const TeamCall = () => {
                           {visualizationData &&
                           visualizationData.meetingTypeData &&
                           visualizationData.meetingTypeData.some(
-                            (d) => d.value > 0
+                            (d) => d.value > 0,
                           ) ? (
                             <ResponsiveContainer width="100%" height="100%">
                               <RPieChart>
@@ -553,7 +553,7 @@ const TeamCall = () => {
                                         key={`cell-${index}`}
                                         fill={entry.color}
                                       />
-                                    )
+                                    ),
                                   )}
                                 </Pie>
                                 <Legend />
@@ -591,7 +591,7 @@ const TeamCall = () => {
                         {visualizationData &&
                         visualizationData.durationCategoryData &&
                         visualizationData.durationCategoryData.some(
-                          (d) => d.value > 0
+                          (d) => d.value > 0,
                         ) ? (
                           <>
                             <ResponsiveContainer width="100%" height="100%">
@@ -614,7 +614,7 @@ const TeamCall = () => {
                                         key={`cell-${index}`}
                                         fill={entry.color}
                                       />
-                                    )
+                                    ),
                                   )}
                                 </Pie>
                                 <Legend />
@@ -731,7 +731,7 @@ const TeamCall = () => {
             {calls.map((call) => {
               const status = getCallStatus(call);
               const isMember = call.state.members.some(
-                (member) => member.user.id === (user?.id || "")
+                (member) => member.user.id === (user?.id || ""),
               );
               const hasRecording = call.state.custom?.hasRecording || false;
               const meetingType = call.state.custom?.scheduled
@@ -799,7 +799,7 @@ const TeamCall = () => {
                           Duration:{" "}
                           {formatDuration(
                             call.state.startedAt.toLocaleDateString(),
-                            call.state.endedAt?.toLocaleDateString() || ""
+                            call.state.endedAt?.toLocaleDateString() || "",
                           )}
                         </span>
                       </div>

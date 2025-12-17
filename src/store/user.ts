@@ -9,18 +9,18 @@ export const useUserStore = create<UserState>()(
       clerkId: null,
       email: null,
       name: null,
-      
+
       // Database Data
       userId: null,
       userName: null,
       currentWorkspaceId: null,
       currentWorkspaceName: null,
       role: null,
-      
+
       // State Management
       isAuthenticated: false,
       isDataLoaded: false,
-      
+
       // Actions
       setUserData: (userData) =>
         set({
@@ -34,7 +34,7 @@ export const useUserStore = create<UserState>()(
           role: userData.role,
           isAuthenticated: true,
         }),
-        
+
       clearUserData: () =>
         set({
           clerkId: null,
@@ -48,9 +48,9 @@ export const useUserStore = create<UserState>()(
           isAuthenticated: false,
           isDataLoaded: false,
         }),
-        
+
       setDataLoaded: (loaded) => set({ isDataLoaded: loaded }),
-      
+
       updateWorkspace: (workspaceId, workspaceName) =>
         set({
           currentWorkspaceId: workspaceId,
@@ -71,6 +71,6 @@ export const useUserStore = create<UserState>()(
         role: state.role,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+    },
+  ),
 );

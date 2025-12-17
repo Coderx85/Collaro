@@ -5,7 +5,7 @@ import { useWorkspaceStore } from "@/store/workspace";
 
 /**
  * Custom hook to access user signin and workspace data
- * 
+ *
  * Usage:
  * const { userInfo, workspaceInfo, isReady } = useAuthData();
  */
@@ -23,8 +23,8 @@ export const useAuthData = () => {
       userName: userStore.userName,
       role: userStore.role,
     },
-    
-    // Workspace Information  
+
+    // Workspace Information
     workspaceInfo: {
       currentWorkspaceId: userStore.currentWorkspaceId,
       currentWorkspaceName: userStore.currentWorkspaceName,
@@ -33,12 +33,12 @@ export const useAuthData = () => {
       workspaceName: workspaceStore.workspaceName,
       members: workspaceStore.members,
     },
-    
+
     // State
     isAuthenticated: userStore.isAuthenticated,
     isDataLoaded: userStore.isDataLoaded,
     isReady: userStore.isAuthenticated && userStore.isDataLoaded,
-    
+
     // Actions
     actions: {
       updateWorkspace: userStore.updateWorkspace,

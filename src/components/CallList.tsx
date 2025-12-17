@@ -63,7 +63,7 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
   useEffect(() => {
     const fetchRecordings = async (): Promise<void> => {
       const callData = await Promise.all(
-        callRecordings?.map((meeting) => meeting.queryRecordings()) ?? []
+        callRecordings?.map((meeting) => meeting.queryRecordings()) ?? [],
       );
 
       const recordings = callData

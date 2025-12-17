@@ -17,7 +17,7 @@ const EndCallButton = () => {
 
   if (!call)
     throw new Error(
-      "useStreamCall must be used within a StreamCall component."
+      "useStreamCall must be used within a StreamCall component.",
     );
 
   // https://getstream.io/video/docs/react/guides/call-and-participant-state/#participant-state-3
@@ -56,7 +56,7 @@ const EndCallButton = () => {
       router.push(`/workspace/${workspaceId}`);
     } catch (error: unknown) {
       toast.error(
-        `Failed to end call: ${error instanceof Error ? error.message : "Unknown error"}`
+        `Failed to end call: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
       // console.error("Error ending call:", error);
     } finally {

@@ -99,7 +99,7 @@ const RazorpayButton: React.FC<RazorpayButtonProps> = ({
 
             if (!verifyData.success) {
               throw new Error(
-                verifyData.error || "Payment verification failed"
+                verifyData.error || "Payment verification failed",
               );
             }
 

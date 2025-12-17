@@ -23,19 +23,19 @@ type EmailProps = {
 
 export function Email({ email, name, company, phone, message }: EmailProps) {
   return (
-    <Html lang='en'>
+    <Html lang="en">
       <Head></Head>
-      <Preview className='bg-red-400/10'>
+      <Preview className="bg-red-400/10">
         Got a New message from {name} at {company}
       </Preview>
       <Tailwind>
-        <Body className='text-white bg-black'>
+        <Body className="text-white bg-black">
           <Container>
             <Section>
-              <Heading className='text-2xl font-bold text-gray-800'>
+              <Heading className="text-2xl font-bold text-gray-800">
                 New message from {name} at {company}
               </Heading>
-              <Text className='text-white/50 font-primary'>
+              <Text className="text-white/50 font-primary">
                 Sender&aposs Info -
                 <Row>
                   <Column>Name: {name}</Column>
@@ -50,7 +50,7 @@ export function Email({ email, name, company, phone, message }: EmailProps) {
                   <Column>Company: {company}</Column>
                 </Row>
               </Text>
-              <Text className='text-red-700'>
+              <Text className="text-red-700">
                 <strong>Message:</strong> {message}
               </Text>
             </Section>

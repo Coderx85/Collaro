@@ -42,7 +42,7 @@ const MeetingModal = ({
           <DialogTitle
             className={cn(
               "text-3xl font-bold leading-[42px] text-black/75 dark:text-white",
-              className
+              className,
             )}
           >
             {title}

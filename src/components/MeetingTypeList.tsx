@@ -10,7 +10,7 @@ import HomeCard from "./HomeCard";
 import MeetingModal from "./MeetingModal";
 import Loader from "./Loader";
 import ReactDatePicker from "react-datepicker";
-import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
+import { type Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { CalendarExport } from "./CalendarExport";
 import { Label } from "./ui/label";
 
