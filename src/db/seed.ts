@@ -195,13 +195,13 @@ async function seed() {
         const workspaceId = workspaceMap.get(workspaceSlug);
         if (!workspaceId) {
           console.warn(
-            `Workspace ${workspaceSlug} missing while updating ${userName}`
+            `Workspace ${workspaceSlug} missing while updating ${userName}`,
           );
           continue;
         }
 
         await tx.execute(
-          sql`UPDATE users SET workspace_id = ${workspaceId} WHERE id = ${userId}`
+          sql`UPDATE users SET workspace_id = ${workspaceId} WHERE id = ${userId}`,
         );
       }
 
