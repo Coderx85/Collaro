@@ -26,14 +26,12 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/onyx:latest
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/collaro:latest
           build-args: |
-            BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
-            BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }}
             NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL }}
             DATABASE_URL=${{ secrets.DATABASE_URL }}
 
       - name: Deployed to Docker Hub
         run: |
           echo "Docker image built and pushed successfully."
-          echo "Image: https://hub.docker.com/r/${{ vars.DOCKERHUB_USERNAME }}/onyx"
+          echo "Image: https://hub.docker.com/r/${{ vars.DOCKERHUB_USERNAME }}/collaro"
