@@ -1,14 +1,18 @@
 import { db } from "@/db/client";
-import { usersTable, workspacesTable, workspaceUsersTable } from "@/db/schema";
-import { APIResponse, CreateWorkspaceResponse } from "@/types";
+import {
+  usersTable,
+  workspacesTable,
+  workspaceUsersTable,
+} from "@/db/schema/schema";
+import type { APIResponse, CreateWorkspaceResponse } from "@/types";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 type Response<T> = Promise<NextResponse<APIResponse<T>>>;
 
 export async function POST(
-  req: NextRequest
+  req: NextRequest,
 ): Response<CreateWorkspaceResponse> {
   try {
     const { name } = await req.json();

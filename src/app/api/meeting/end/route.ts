@@ -1,13 +1,13 @@
 import { db } from "@/db/client";
 import {
-  SelectMeetingType,
+  type SelectMeetingType,
   usersTable,
   workspaceMeetingTable,
-} from "@/db/schema";
+} from "@/db/schema/schema";
 import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server";
-import { APIResponse } from "@/types";
+import { type NextRequest, NextResponse } from "next/server";
+import type { APIResponse } from "@/types";
 
 type Response<T> = Promise<NextResponse<APIResponse<T>>>;
 
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest): Response<SelectMeetingType> {
     console.log("Error creating meeting:", error);
     return NextResponse.json(
       { success: false, error: (error as Error).message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,9 +1,318 @@
 {
-  "id": "53758446-b43f-4d4d-9e78-f7922cadab89",
+  "id": "11e88a26-5dc2-43df-812e-1d2adbafbfbd",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.workspace_meeting_attendees": {
+      "name": "workspace_meeting_attendees",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "meeting_id": {
+          "name": "meeting_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "workspace_id": {
+          "name": "workspace_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'member'"
+        },
+        "joined_at": {
+          "name": "joined_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "wma_meeting_user_unique_idx": {
+          "name": "wma_meeting_user_unique_idx",
+          "columns": [
+            {
+              "expression": "meeting_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "wma_workspace_idx": {
+          "name": "wma_workspace_idx",
+          "columns": [
+            {
+              "expression": "workspace_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "wma_user_idx": {
+          "name": "wma_user_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "workspace_meeting_attendees_meeting_id_workspace_meetings_meeting_id_fk": {
+          "name": "workspace_meeting_attendees_meeting_id_workspace_meetings_meeting_id_fk",
+          "tableFrom": "workspace_meeting_attendees",
+          "tableTo": "workspace_meetings",
+          "columnsFrom": ["meeting_id"],
+          "columnsTo": ["meeting_id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "workspace_meeting_attendees_workspace_id_workspaces_id_fk": {
+          "name": "workspace_meeting_attendees_workspace_id_workspaces_id_fk",
+          "tableFrom": "workspace_meeting_attendees",
+          "tableTo": "workspaces",
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "workspace_meeting_attendees_user_id_users_id_fk": {
+          "name": "workspace_meeting_attendees_user_id_users_id_fk",
+          "tableFrom": "workspace_meeting_attendees",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.workspace_users": {
+      "name": "workspace_users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "workspace_id": {
+          "name": "workspace_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'member'"
+        },
+        "joined_at": {
+          "name": "joined_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "workspace_users_workspace_user_unique_idx": {
+          "name": "workspace_users_workspace_user_unique_idx",
+          "columns": [
+            {
+              "expression": "workspace_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "workspace_users_workspace_id_workspaces_id_fk": {
+          "name": "workspace_users_workspace_id_workspaces_id_fk",
+          "tableFrom": "workspace_users",
+          "tableTo": "workspaces",
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "workspace_users_user_id_users_id_fk": {
+          "name": "workspace_users_user_id_users_id_fk",
+          "tableFrom": "workspace_users",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.members": {
+      "name": "members",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "workspace_id": {
+          "name": "workspace_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'member'"
+        },
+        "joined_at": {
+          "name": "joined_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "members_user_workspace_unique_idx": {
+          "name": "members_user_workspace_unique_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "workspace_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "members_user_id_users_id_fk": {
+          "name": "members_user_id_users_id_fk",
+          "tableFrom": "members",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "members_workspace_id_workspaces_id_fk": {
+          "name": "members_workspace_id_workspaces_id_fk",
+          "tableFrom": "members",
+          "tableTo": "workspaces",
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.users": {
       "name": "users",
       "schema": "",
@@ -35,7 +344,7 @@
         },
         "email": {
           "name": "email",
-          "type": "text",
+          "type": "varchar(256)",
           "primaryKey": false,
           "notNull": true
         },
@@ -67,18 +376,45 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "users_email_unique_idx": {
+          "name": "users_email_unique_idx",
+          "columns": [
+            {
+              "expression": "email",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "users_user_name_unique_idx": {
+          "name": "users_user_name_unique_idx",
+          "columns": [
+            {
+              "expression": "user_name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "users_workspace_id_workspaces_id_fk": {
           "name": "users_workspace_id_workspaces_id_fk",
           "tableFrom": "users",
           "tableTo": "workspaces",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -88,23 +424,17 @@
         "users_user_name_unique": {
           "name": "users_user_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_name"
-          ]
+          "columns": ["user_name"]
         },
         "users_clerkId_unique": {
           "name": "users_clerkId_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "clerkId"
-          ]
+          "columns": ["clerkId"]
         },
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -155,18 +485,45 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "workspace_meetings_workspace_id_idx": {
+          "name": "workspace_meetings_workspace_id_idx",
+          "columns": [
+            {
+              "expression": "workspace_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "workspace_meetings_hosted_by_idx": {
+          "name": "workspace_meetings_hosted_by_idx",
+          "columns": [
+            {
+              "expression": "hosted_by",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "workspace_meetings_workspace_id_workspaces_id_fk": {
           "name": "workspace_meetings_workspace_id_workspaces_id_fk",
           "tableFrom": "workspace_meetings",
           "tableTo": "workspaces",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -174,86 +531,9 @@
           "name": "workspace_meetings_hosted_by_users_user_name_fk",
           "tableFrom": "workspace_meetings",
           "tableTo": "users",
-          "columnsFrom": [
-            "hosted_by"
-          ],
-          "columnsTo": [
-            "user_name"
-          ],
+          "columnsFrom": ["hosted_by"],
+          "columnsTo": ["user_name"],
           "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.workspace_users": {
-      "name": "workspace_users",
-      "schema": "",
-      "columns": {
-        "user_name": {
-          "name": "user_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "workspace_name": {
-          "name": "workspace_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "role": {
-          "name": "role",
-          "type": "role",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'member'"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "workspace_users_user_name_users_user_name_fk": {
-          "name": "workspace_users_user_name_users_user_name_fk",
-          "tableFrom": "workspace_users",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_name"
-          ],
-          "columnsTo": [
-            "user_name"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "workspace_users_workspace_name_workspaces_name_fk": {
-          "name": "workspace_users_workspace_name_workspaces_name_fk",
-          "tableFrom": "workspace_users",
-          "tableTo": "workspaces",
-          "columnsFrom": [
-            "workspace_name"
-          ],
-          "columnsTo": [
-            "name"
-          ],
-          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -280,6 +560,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "created_by": {
           "name": "created_by",
           "type": "text",
@@ -300,18 +586,45 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "workspaces_name_unique_idx": {
+          "name": "workspaces_name_unique_idx",
+          "columns": [
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "workspaces_slug_unique_idx": {
+          "name": "workspaces_slug_unique_idx",
+          "columns": [
+            {
+              "expression": "slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "workspaces_created_by_users_user_name_fk": {
           "name": "workspaces_created_by_users_user_name_fk",
           "tableFrom": "workspaces",
           "tableTo": "users",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "user_name"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["user_name"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -321,9 +634,12 @@
         "workspaces_name_unique": {
           "name": "workspaces_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
+        },
+        "workspaces_slug_unique": {
+          "name": "workspaces_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": ["slug"]
         }
       },
       "policies": {},
@@ -335,10 +651,7 @@
     "public.role": {
       "name": "role",
       "schema": "public",
-      "values": [
-        "admin",
-        "member"
-      ]
+      "values": ["admin", "member"]
     }
   },
   "schemas": {},

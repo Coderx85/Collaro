@@ -3,7 +3,7 @@ import { getWorkspaceById } from "@/action/workspace.action";
 
 export async function GET(
   _: Request,
-  { params }: { params: Promise<{ workspaceId: string }> }
+  { params }: { params: Promise<{ workspaceId: string }> },
 ) {
   const { workspaceId } = await params;
   const res = await getWorkspaceById(workspaceId);
