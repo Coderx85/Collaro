@@ -6,13 +6,13 @@ import {
   membersTable,
   type CreateUserType,
   type CreateWorkspaceType,
+  CreateMemberType,
 } from "@/db/schema/schema";
-import { workspaceUserTable } from "@/db/schema/relations";
 import { sql } from "drizzle-orm/sql";
 
 type WorkspaceUserRole = "admin" | "member";
 
-type SeedUser = CreateUserType & { workspaceSlug?: string };
+type SeedUser = CreateUserType;
 type SeedWorkspace = Omit<CreateWorkspaceType, "id">;
 
 type WorkspaceAssignment = {
@@ -25,80 +25,62 @@ const users: SeedUser[] = [
   {
     name: "Admin User",
     userName: "admin",
-    clerkId: "clerk_admin",
     email: "admin@example.com",
-    workspaceSlug: "avengers-workspace",
-    role: "admin",
+    password: "password",
   },
   {
     name: "Member User",
     userName: "member",
-    clerkId: "clerk_member",
     email: "member@example.com",
-    workspaceSlug: "avengers-workspace",
-    role: "member",
+    password: "password",
   },
   {
     name: "Guest User",
     userName: "guest",
-    clerkId: "clerk_guest",
     email: "guest@example.com",
-    workspaceSlug: "avengers-workspace",
-    role: "member",
+    password: "gueest-password",
   },
   {
     name: "Test User",
     userName: "testuser",
-    clerkId: "clerk_testuser",
     email: "testuser@example.com",
-    workspaceSlug: "avengers-workspace",
-    role: "member",
+    password: "test-password",
   },
   {
     name: "Demo User",
     userName: "demouser",
-    clerkId: "clerk_demouser",
     email: "demouser@example.com",
-    workspaceSlug: "avengers-workspace",
-    role: "member",
+    password: "demo-password",
   },
   {
     name: "Sample User",
     userName: "sampleuser",
-    clerkId: "clerk_sampleuser",
     email: "sampleuser@example.com",
-    workspaceSlug: "avengers-workspace",
-    role: "member",
+    password: "sample-password",
   },
   {
     name: "Example User",
     userName: "exampleuser",
-    clerkId: "clerk_exampleuser",
     email: "exampleuser@example.com",
-    workspaceSlug: "avengers-workspace",
-    role: "member",
+    password: "example-password",
   },
   {
     name: "Outsider User",
     userName: "outsider",
-    clerkId: "clerk_outsider",
     email: "outsider@example.com",
+    password: "outsider-password",
   },
   {
     name: "New Avenger",
     userName: "newavenger",
-    clerkId: "clerk_newavenger",
     email: "newavenger@example.com",
-    workspaceSlug: "new-avenger-workspace",
-    role: "member",
+    password: "avenger-password",
   },
   {
     name: "Multi Workspace User",
     userName: "multiworkspace",
-    clerkId: "clerk_multiworkspace",
     email: "multiworkspace@example.com",
-    workspaceSlug: "multi-workspace-one",
-    role: "admin",
+    password: "multi-password",
   },
 ];
 
@@ -144,11 +126,20 @@ const workspaceAssignments: WorkspaceAssignment[] = [
   },
 ];
 
+const assignWorkspaceUsers: CreateMemberType[] = [
+  ...workspaceAssignments.map((assignment) => ({
+    userId:
+      sql`(SELECT id FROM users WHERE user_name = ${assignment.userName})` as unknown as string,
+    workspaceId:
+      sql`(SELECT id FROM workspaces WHERE slug = ${assignment.workspaceSlug}) ` as unknown as string,
+    role: assignment.role,
+  })),
+];
+
 const tablesToReset = {
   users: usersTable,
   workspaces: workspacesTable,
   members: membersTable,
-  workspaceUsers: workspaceUserTable,
 };
 
 async function seed() {
@@ -166,10 +157,9 @@ async function seed() {
       }> = [];
 
       for (const seedUser of users) {
-        const { workspaceSlug, ...payload } = seedUser;
         const [inserted] = await tx
           .insert(usersTable)
-          .values(payload)
+          .values(seedUser)
           .returning();
 
         if (!inserted || !inserted.id || !inserted.userName) {
@@ -179,7 +169,6 @@ async function seed() {
         userMap.set(inserted.userName, inserted.id);
         userWorkspaceTargets.push({
           userId: inserted.id,
-          workspaceSlug,
           userName: inserted.userName,
         });
       }
@@ -206,32 +195,18 @@ async function seed() {
         const workspaceId = workspaceMap.get(workspaceSlug);
         if (!workspaceId) {
           console.warn(
-            `Workspace ${workspaceSlug} missing while updating ${userName}`,
+            `Workspace ${workspaceSlug} missing while updating ${userName}`
           );
           continue;
         }
 
         await tx.execute(
-          sql`UPDATE users SET workspace_id = ${workspaceId} WHERE id = ${userId}`,
+          sql`UPDATE users SET workspace_id = ${workspaceId} WHERE id = ${userId}`
         );
       }
 
-      for (const assignment of workspaceAssignments) {
-        const workspaceId = workspaceMap.get(assignment.workspaceSlug);
-        const userId = userMap.get(assignment.userName);
-
-        if (!workspaceId || !userId) {
-          console.warn(
-            `Skipping assignment for ${assignment.userName} -> ${assignment.workspaceSlug}`,
-          );
-          continue;
-        }
-
-        await tx.insert(workspaceUserTable).values({
-          workspaceId,
-          userId,
-          role: assignment.role,
-        });
+      if (assignWorkspaceUsers.length > 0) {
+        await tx.insert(membersTable).values(assignWorkspaceUsers);
       }
     });
 

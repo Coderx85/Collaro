@@ -1,6 +1,7 @@
 import {
   pgTable,
   text,
+  boolean,
   timestamp,
   uuid,
   varchar,
@@ -9,9 +10,10 @@ import {
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm/sql";
 import * as t from "drizzle-orm/pg-core";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
-// Define role enum first
-export const pgRoles = pgEnum("role", ["admin", "member"]);
+// Define user_role enum first
+export const pgUserRole = pgEnum("user_role", ["admin", "member"]);
 
 // Users table definition
 export const usersTable = pgTable(
@@ -20,19 +22,16 @@ export const usersTable = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(),
     userName: text("user_name").notNull().unique(),
-    clerkId: varchar("clerkId", { length: 256 }).notNull().unique(),
+    password: text("password").notNull(),
+    emailVerified: boolean("email_verified").default(false),
     email: varchar("email", { length: 256 }).notNull().unique(),
-    workspaceId: uuid("workspace_id").references(
-      (): AnyPgColumn => workspacesTable.id,
-    ),
-    role: pgRoles("role").notNull().default("member"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").$onUpdate(() => sql`CURRENT_TIMESTAMP`),
   },
   (table) => [
     t.uniqueIndex("users_email_unique_idx").on(table.email),
     t.uniqueIndex("users_user_name_unique_idx").on(table.userName),
-  ],
+  ]
 );
 
 // Workspaces table definition
@@ -51,7 +50,7 @@ export const workspacesTable = pgTable(
   (table) => [
     t.uniqueIndex("workspaces_name_unique_idx").on(table.name),
     t.uniqueIndex("workspaces_slug_unique_idx").on(table.slug),
-  ],
+  ]
 );
 
 // Members Table
@@ -70,14 +69,16 @@ export const membersTable = pgTable(
       .references(() => workspacesTable.id, {
         onDelete: "cascade",
       }),
-    role: pgRoles("role").notNull().default("member"),
+    role: pgUserRole().notNull().default("member"),
     joinedAt: timestamp("joined_at").notNull().defaultNow(),
   },
   (table) => [
     t
       .uniqueIndex("members_user_workspace_unique_idx")
       .on(table.userId, table.workspaceId),
-  ],
+    t.index("members_workspace_id_idx").on(table.workspaceId),
+    t.index("members_role_idx").on(table.role),
+  ]
 );
 
 // Workspace meetings table
@@ -102,12 +103,18 @@ export const workspaceMeetingTable = pgTable(
   (table) => [
     t.index("workspace_meetings_workspace_id_idx").on(table.workspaceId),
     t.index("workspace_meetings_hosted_by_idx").on(table.hostedBy),
-  ],
+  ]
 );
+
+export const CreateUserSchema = createInsertSchema(usersTable);
+export const CreateWorkspaceSchema = createInsertSchema(workspacesTable);
+export const SelectUserSchema = createSelectSchema(usersTable);
 
 export type CreateMeetingType = typeof workspaceMeetingTable.$inferInsert;
 export type CreateWorkspaceType = typeof workspacesTable.$inferInsert;
+export type CreateMemberType = typeof membersTable.$inferInsert;
 export type CreateUserType = typeof usersTable.$inferInsert;
+export type SelectMemberType = typeof membersTable.$inferSelect;
 export type SelectMeetingType = typeof workspaceMeetingTable.$inferSelect;
 export type SelectWorkspaceType = typeof workspacesTable.$inferSelect;
 export type SelectUserType = typeof usersTable.$inferSelect;
