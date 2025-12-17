@@ -1,9 +1,6 @@
 import { db } from "@/db/client";
-import {
-  usersTable,
-  workspacesTable,
-  workspaceUsersTable,
-} from "@/db/schema/schema";
+import { usersTable, workspacesTable } from "@/db/schema/schema";
+import { workspaceUserTable } from "@/db/schema/relations";
 import type { APIResponse, CreateWorkspaceResponse } from "@/types";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
@@ -43,7 +40,7 @@ export async function POST(
           email: user.emailAddresses[0]?.emailAddress || "",
           role: "member",
           workspaceId: null,
-          userName: user.username!,
+          userName: user.username ?? "anonymous",
           updatedAt: new Date(),
         })
         .returning();
@@ -85,10 +82,17 @@ export async function POST(
       });
     }
 
+    // Generate slug from name
+    const slug = name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
+
     const [workspace] = await db
       .insert(workspacesTable)
       .values({
         name,
+        slug,
         createdBy: dbUser.userName,
       })
       .returning();
@@ -107,28 +111,28 @@ export async function POST(
       },
     });
 
-    // Update the worksapceUSersTable
-    const [workspaceUsers] = await db
-      .insert(workspaceUsersTable)
+    // Add user to workspaceUserTable as admin
+    const [workspaceUser] = await db
+      .insert(workspaceUserTable)
       .values({
-        userName: dbUser.userName,
-        workspaceName: workspace.name,
+        userId: dbUser.id,
+        workspaceId: workspace.id,
         role: "admin",
-        updatedAt: new Date(),
+        joinedAt: new Date(),
       })
       .returning();
 
-    if (!workspaceUsers) {
+    if (!workspaceUser) {
       return NextResponse.json({
         success: false,
-        error: `Cannot update workspaceUsersTable with workspaceId: ${workspace.id} and userId: ${dbUser.id}`,
+        error: `Cannot update workspaceUserTable with workspaceId: ${workspace.id} and userId: ${dbUser.id}`,
       });
     }
 
     const responseData: CreateWorkspaceResponse = {
       ...workspace,
       createdBy: dbUser.userName,
-      members: [workspaceUsers.userName],
+      members: [dbUser.id],
     };
     return NextResponse.json({ success: true, data: responseData });
   } catch (error: unknown) {

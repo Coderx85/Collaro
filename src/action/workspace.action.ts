@@ -1,10 +1,10 @@
 "use server";
 import { db } from "@/db/client";
-import { usersTable, workspacesTable, workspaceUsersTable } from "@/db/schema";
+import { usersTable, workspacesTable, membersTable } from "@/db/schema/schema";
 import { currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { APIResponse } from "@/types/api";
+import type { APIResponse } from "@/types/api";
 
 // This function is used to get the users of a workspace
 export async function getWorkspaceUsers(workspaceId: string) {
@@ -25,12 +25,12 @@ export async function getWorkspaceUsers(workspaceId: string) {
   // Check if workspace exists and user belongs to it
   const [workspaceUsers] = await db
     .select()
-    .from(workspaceUsersTable)
+    .from(membersTable)
     .where(
       and(
-        eq(workspaceUsersTable.workspaceName, user.userName),
-        eq(workspaceUsersTable.userName, user.userName)
-      )
+        eq(membersTable.id, user.id),
+        eq(membersTable.workspaceId, workspaceId),
+      ),
     )
     .execute();
 
@@ -156,7 +156,7 @@ export async function getWorkspaceUsers(workspaceId: string) {
 // This function is used to validate if a user belongs to a workspace
 export async function validateWorkspaceAccess(
   // userId: string,
-  workspaceId: string
+  workspaceId: string,
 ) {
   const checkUser = await getWorkspace(workspaceId);
 
@@ -214,7 +214,7 @@ export async function getWorkspace(userId: string) {
 export async function getAllWorkspaces() {
   try {
     const data = await db.select().from(workspacesTable).execute();
-    const [member] = [await db.select().from(workspaceUsersTable).execute()];
+    const [member] = [await db.select().from(membersTable).execute()];
     // const member = memberArray[0];
     return {
       ...data,
@@ -229,14 +229,14 @@ export async function getAllWorkspaces() {
 export async function updateUserRole(
   userId: string,
   workspaceId: string,
-  role: "admin" | "member"
+  role: "admin" | "member",
 ): Promise<APIResponse<{ role: string }>> {
   try {
     const updatedUser = await db
       .update(usersTable)
       .set({ role })
       .where(
-        and(eq(usersTable.id, userId), eq(usersTable.workspaceId, workspaceId))
+        and(eq(usersTable.id, userId), eq(usersTable.workspaceId, workspaceId)),
       )
       .returning();
 
@@ -245,9 +245,11 @@ export async function updateUserRole(
     } else {
       return { error: "User not found", success: false };
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "An unknown error occurred";
     return {
-      error: `Failed to update user role: ${error.message}`,
+      error: `Failed to update user role: ${message}`,
       success: false,
     };
   }
