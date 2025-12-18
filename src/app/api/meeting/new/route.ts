@@ -1,13 +1,13 @@
 import { db } from "@/db/client";
 import {
-  SelectMeetingType,
+  type SelectMeetingType,
   usersTable,
   workspaceMeetingTable,
-} from "@/db/schema";
+} from "@/db/schema/schema";
 import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { APIResponse } from "@/types";
+import type { APIResponse } from "@/types";
 
 type Response<T> = Promise<NextResponse<APIResponse<T>>>;
 
@@ -52,7 +52,7 @@ export async function POST(): Response<SelectMeetingType> {
     // Removed console.log to satisfy lint rules
     return NextResponse.json(
       { success: false, error: (error as Error).message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -73,7 +73,7 @@ const MobileNav = () => {
                               isActive,
                             "text-primary/85 hover:text-primary":
                               isActive && isAdminRoute && isAdmin,
-                          }
+                          },
                         )}
                       >
                         <item.component

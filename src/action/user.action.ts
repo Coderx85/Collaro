@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/db/client";
-import { usersTable, workspaceUsersTable, workspacesTable } from "@/db/schema";
-import { APIResponse, UserResponse } from "@/types";
+import { usersTable, workspacesTable, membersTable } from "@/db/schema/schema";
+import type { APIResponse, UserResponse } from "@/types";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
@@ -76,8 +76,8 @@ export async function getWorkspaceMembers(workspaceId: string) {
 
     const members = await db
       .select()
-      .from(workspaceUsersTable)
-      .where(eq(workspaceUsersTable.workspaceName, workspace.name))
+      .from(membersTable)
+      .where(eq(membersTable.workspaceId, workspace.id))
       .execute();
 
     return { data: members };

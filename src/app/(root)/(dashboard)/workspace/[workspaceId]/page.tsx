@@ -8,11 +8,11 @@ const Home = async () => {
     minute: "2-digit",
   });
   const date = new Intl.DateTimeFormat("en-IN", { dateStyle: "full" }).format(
-    now
+    now,
   );
 
   return (
-    <section className="flex size-full flex-col gap-5 text-white py-4 px-2 xl:p-2 h-full">
+    <section className="flex size-full flex-col gap-5 justify-between text-white py-4 px-2 xl:p-2 h-full">
       <div className="h-[300px] w-full bg-cover xl:p-0 py-5 px-3">
         <div className="flex h-full flex-col-reverse xl:flex-row sm:gap-4 justify-center xl:justify-between rounded-lg border-4 w-full bg-[url('/images/hero-background.png')] card dark:bg-gray-600/50 dark:border-white border-black max-md:p-5 lg:p-4">
           <ProfileCard />

@@ -12,18 +12,18 @@ export type UserState = {
   clerkId: string | null;
   email: string | null;
   name: string | null;
-  
+
   // Database Data
   userId: string | null; // Database user ID
   userName: string | null;
   currentWorkspaceId: string | null;
   currentWorkspaceName: string | null;
   role: string | null;
-  
+
   // State Management
   isAuthenticated: boolean;
   isDataLoaded: boolean;
-  
+
   // Actions
   setUserData: (userData: {
     clerkId: string;

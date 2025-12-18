@@ -1,22 +1,24 @@
-import { ReactNode, Suspense } from "react";
+import { type ReactNode, Suspense } from "react";
 import StreamVideoProvider from "@/providers/StreamClientProvider";
 import { Loader } from "lucide-react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import Navbar from "./@navbar/page";
 import { AppSidebar } from "@/components/app-sidebar";
 
-const RootLayout = async ({ children }: { children: ReactNode }) => {
-  const workspaceId = "workspaceId-placeholder"; // Replace with actual workspaceId retrieval logic
+const RootLayout = async ({
+  children,
+  params,
+}: {
+  children: ReactNode;
+  params: Promise<{ workspaceId: string }>;
+}) => {
+  const workspaceId = (await params).workspaceId;
   return (
     <StreamVideoProvider>
       <SidebarProvider>
         <AppSidebar workspaceId={workspaceId} variant="inset" />
         <SidebarInset>
-          {/* <SiteHeader /> */}
           <Navbar />
-          {/* <div className="flex h-screen overflow-hidden">
-            <div className="flex flex-col flex-1 min-h-screen xl:ml-50">
-              {navbar} */}
           <Suspense
             fallback={
               <Loader className="size-14 animate-spin justify-center items-center" />
@@ -26,8 +28,6 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
               {children}
             </main>
           </Suspense>
-          {/* </div> */}
-          {/* </div> */}
         </SidebarInset>
       </SidebarProvider>
     </StreamVideoProvider>

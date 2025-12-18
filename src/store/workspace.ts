@@ -12,9 +12,8 @@ export const useWorkspaceStore = create<WorkspaceState>((set) => ({
       workspaceName: name,
     }),
 
-  clearWorkspace: () =>
-    set({ workspaceId: null, workspaceName: null }),
-  
+  clearWorkspace: () => set({ workspaceId: null, workspaceName: null }),
+
   setInitialized: (value) => set({ isInitialized: value }),
 }));
 

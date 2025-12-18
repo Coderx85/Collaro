@@ -1,7 +1,7 @@
 import { redirect, RedirectType } from "next/navigation";
 import WorkspaceForm from "./components/WorkspaceForm";
 import { currentUser } from "@clerk/nextjs/server";
-import { usersTable } from "@/db/schema";
+import { usersTable } from "@/db/schema/schema";
 import { db } from "@/db/client";
 import { eq } from "drizzle-orm";
 

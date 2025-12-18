@@ -31,7 +31,7 @@ const Sidebarlink = ({ role, workspaceId }: SidebarLinks) => {
                   isActive,
                 "text-primary/85 hover:text-primary":
                   isActive && isAdminRoute && isAdmin,
-              }
+              },
             )}
           >
             <div

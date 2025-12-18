@@ -17,7 +17,7 @@ const cardVariants = cva(
     defaultVariants: {
       variant: "primary",
     },
-  }
+  },
 );
 
 const textVariants = cva(
@@ -31,7 +31,7 @@ const textVariants = cva(
         yellow: "text-yellow-700 dark:text-yellow-400",
       },
     },
-  }
+  },
 );
 
 const descVariants = cva(
@@ -49,7 +49,7 @@ const descVariants = cva(
           "text-muted-foreground group-hover:text-yellow-700 dark:group-hover:text-yellow-400",
       },
     },
-  }
+  },
 );
 
 interface HomeCardProps extends VariantProps<typeof cardVariants> {

@@ -62,7 +62,7 @@ export default function Navbar() {
     const pathSegment = afterWorkspace.split("/").filter(Boolean)[0] || "";
     const normalizedRoute = pathSegment ? `/${pathSegment}` : "";
     const activeLink = sidebarLinks.find(
-      (link) => link.route === normalizedRoute
+      (link) => link.route === normalizedRoute,
     );
 
     if (activeLink) return activeLink.label;

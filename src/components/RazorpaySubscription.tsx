@@ -161,14 +161,14 @@ const RazorpaySubscription: React.FC<RazorpaySubscriptionProps> = ({
                   razorpay_subscription_id: response.razorpay_subscription_id,
                   razorpay_signature: response.razorpay_signature,
                 }),
-              }
+              },
             );
 
             const verifyData = await verifyResponse.json();
 
             if (!verifyData.success) {
               throw new Error(
-                verifyData.error || "Payment verification failed"
+                verifyData.error || "Payment verification failed",
               );
             }
 

@@ -18,7 +18,7 @@ import { plans } from "@/constants/subscription";
 export default function SubscriptionPlans() {
   const router = useRouter();
   const [billingInterval, setBillingInterval] = useState<"monthly" | "yearly">(
-    "monthly"
+    "monthly",
   );
 
   return (

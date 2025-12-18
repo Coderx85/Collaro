@@ -7,20 +7,20 @@ import { useEffect, useCallback } from "react";
 
 /**
  * AuthStateManager - Handles post-signin data fetching
- * 
+ *
  * WHY: This component runs immediately after Clerk authentication
  * WHEN: Triggered when user.isSignedIn becomes true
  * HOW: Fetches user data from database and updates stores
  */
 export const AuthStateManager = () => {
   const { user, isSignedIn, isLoaded } = useUser();
-  const { 
-    setUserData, 
-    clearUserData, 
+  const {
+    setUserData,
+    clearUserData,
     setDataLoaded,
     isAuthenticated,
     isDataLoaded,
-    clerkId 
+    clerkId,
   } = useUserStore();
   const { setWorkspace, clearWorkspace } = useWorkspaceStore();
 
@@ -33,7 +33,7 @@ export const AuthStateManager = () => {
 
       if (result.success && result.data) {
         const userData = result.data;
-        
+
         // Update user store with all data including workspaceName
         setUserData({
           clerkId: userData.clerkId,
@@ -48,7 +48,10 @@ export const AuthStateManager = () => {
 
         // Also update workspace store if user has a workspace
         if (userData.currentWorkspaceId && userData.currentWorkspaceName) {
-          setWorkspace(userData.currentWorkspaceId, userData.currentWorkspaceName);
+          setWorkspace(
+            userData.currentWorkspaceId,
+            userData.currentWorkspaceName,
+          );
         }
 
         setDataLoaded(true);
@@ -62,7 +65,14 @@ export const AuthStateManager = () => {
     } catch (error) {
       console.error("❌ Error fetching user data:", error);
     }
-  }, [user?.id, user?.primaryEmailAddress?.emailAddress, user?.fullName, setUserData, setWorkspace, setDataLoaded]);
+  }, [
+    user?.id,
+    user?.primaryEmailAddress?.emailAddress,
+    user?.fullName,
+    setUserData,
+    setWorkspace,
+    setDataLoaded,
+  ]);
 
   const handleSignOut = useCallback(() => {
     clearUserData();
@@ -86,7 +96,16 @@ export const AuthStateManager = () => {
         handleSignOut();
       }
     }
-  }, [isLoaded, isSignedIn, user, isAuthenticated, clerkId, isDataLoaded, fetchUserData, handleSignOut]);
+  }, [
+    isLoaded,
+    isSignedIn,
+    user,
+    isAuthenticated,
+    clerkId,
+    isDataLoaded,
+    fetchUserData,
+    handleSignOut,
+  ]);
 
   // This component doesn't render anything
   return null;

@@ -9,7 +9,10 @@ const SearchBar = () => {
   };
 
   return (
-    <form onSubmit={handleSearch} className="flex items-center bg-gray-800 p-2 rounded">
+    <form
+      onSubmit={handleSearch}
+      className="flex items-center bg-gray-800 p-2 rounded"
+    >
       <input
         type="text"
         value={query}

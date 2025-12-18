@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/db/client";
-import { workspacesTable, workspaceMeetingTable } from "@/db/schema";
+import { workspacesTable, workspaceMeetingTable } from "@/db/schema/schema";
 
 export async function getMeetingsData() {
   try {

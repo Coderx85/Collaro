@@ -36,7 +36,7 @@ const ContactForm = () => {
         toast.error("Failed to send message. Please try again.");
       } else {
         toast.success(
-          "Message sent successfully! We&apos;ll get back to you soon."
+          "Message sent successfully! We&apos;ll get back to you soon.",
         );
         // Reset the form
         setFormData({

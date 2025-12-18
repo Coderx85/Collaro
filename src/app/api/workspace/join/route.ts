@@ -1,14 +1,15 @@
 import { db } from "@/db/client";
-import { usersTable, workspacesTable, workspaceUsersTable } from "@/db/schema";
-import { APIResponse, CreateWorkspaceResponse } from "@/types";
+import { usersTable, workspacesTable } from "@/db/schema/schema";
+import { workspaceUserTable } from "@/db/schema/relations";
+import type { APIResponse, CreateWorkspaceResponse } from "@/types";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 type Response<T> = Promise<NextResponse<APIResponse<T>>>;
 
 export async function POST(
-  req: NextRequest
+  req: NextRequest,
 ): Response<CreateWorkspaceResponse> {
   try {
     const { name } = await req.json();
@@ -39,7 +40,7 @@ export async function POST(
           email: user.emailAddresses[0].emailAddress,
           role: "member",
           workspaceId: null,
-          userName: user.username!,
+          userName: user.username ?? "anonymous",
           updatedAt: new Date(),
         })
         .returning();
@@ -69,14 +70,15 @@ export async function POST(
     }
 
     // Check if user is already a member
+    // Check if user is already a member
     const [existingMember] = await db
       .select()
-      .from(workspaceUsersTable)
+      .from(workspaceUserTable)
       .where(
         and(
-          eq(workspaceUsersTable.userName, dbUser.userName),
-          eq(workspaceUsersTable.workspaceName, workspace.name)
-        )
+          eq(workspaceUserTable.userId, dbUser.id),
+          eq(workspaceUserTable.workspaceId, workspace.id),
+        ),
       )
       .execute();
 
@@ -110,17 +112,18 @@ export async function POST(
     });
 
     // Add user to workspace
-    const [workspaceUsers] = await db
-      .insert(workspaceUsersTable)
+    // Add user to workspace
+    const [workspaceUser] = await db
+      .insert(workspaceUserTable)
       .values({
-        userName: dbUser.userName,
-        workspaceName: workspace.name,
+        userId: dbUser.id,
+        workspaceId: workspace.id,
         role: "member",
-        updatedAt: new Date(),
+        joinedAt: new Date(),
       })
       .returning();
 
-    if (!workspaceUsers) {
+    if (!workspaceUser) {
       return NextResponse.json({
         success: false,
         error: `Cannot join workspace: ${workspace.name}`,
@@ -128,16 +131,17 @@ export async function POST(
     }
 
     // Get all workspace members
+    // Get all workspace members
     const allMembers = await db
       .select()
-      .from(workspaceUsersTable)
-      .where(eq(workspaceUsersTable.workspaceName, workspace.name))
+      .from(workspaceUserTable)
+      .where(eq(workspaceUserTable.workspaceId, workspace.id))
       .execute();
 
     const responseData: CreateWorkspaceResponse = {
       ...workspace,
       createdBy: workspace.createdBy || "",
-      members: allMembers.map((member) => member.userName),
+      members: allMembers.map((member) => member.userId),
     };
     return NextResponse.json({ success: true, data: responseData });
   } catch (error: unknown) {

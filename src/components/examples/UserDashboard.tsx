@@ -27,11 +27,20 @@ export const UserDashboard = () => {
     <div className="p-6">
       <h1>Welcome, {userInfo.name}!</h1>
       <div className="mt-4 space-y-2">
-        <p><strong>Username:</strong> {userInfo.userName}</p>
-        <p><strong>Email:</strong> {userInfo.email}</p>
-        <p><strong>Role:</strong> {userInfo.role}</p>
+        <p>
+          <strong>Username:</strong> {userInfo.userName}
+        </p>
+        <p>
+          <strong>Email:</strong> {userInfo.email}
+        </p>
+        <p>
+          <strong>Role:</strong> {userInfo.role}
+        </p>
         {workspaceInfo.currentWorkspaceName && (
-          <p><strong>Current Workspace:</strong> {workspaceInfo.currentWorkspaceName}</p>
+          <p>
+            <strong>Current Workspace:</strong>{" "}
+            {workspaceInfo.currentWorkspaceName}
+          </p>
         )}
       </div>
     </div>

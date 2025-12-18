@@ -96,7 +96,7 @@ const NotificationBell = () => {
     const callCreatedUnsubscribe = client.on("call.created", handleCallEvent);
     const callUpdatedUnsubscribe = client.on(
       "call.updated",
-      handleMeetingEvent
+      handleMeetingEvent,
     );
     const callRingUnsubscribe = client.on("call.ring", handleCallEvent);
 
@@ -122,8 +122,8 @@ const NotificationBell = () => {
         prev.map((notification) =>
           notification.id === id
             ? { ...notification, isRead: true }
-            : notification
-        )
+            : notification,
+        ),
       );
     } catch (error) {
       throw new Error(`Failed to mark notification as read: ${error}`);
@@ -210,7 +210,7 @@ const NotificationBell = () => {
                       <span>
                         {format(
                           new Date(notification.scheduledFor),
-                          "MMM d, yyyy h:mm a"
+                          "MMM d, yyyy h:mm a",
                         )}
                       </span>
                     </div>
