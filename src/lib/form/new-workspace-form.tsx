@@ -59,7 +59,7 @@ const NewWorkspaceForm = () => {
         e.preventDefault();
         form.handleSubmit();
       }}
-      className="space-y-4"
+      className="space-y-4 min-w-lg mx-auto"
     >
       <FieldGroup>
         <form.Field name="name">
@@ -127,7 +127,8 @@ const NewWorkspaceForm = () => {
       <Button
         type="submit"
         disabled={isPending}
-        className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white font-semibold py-5 shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30"
+        className="w-full mt-5"
+        variant={"secondary"}
       >
         {isPending ? (
           <>

@@ -12,7 +12,7 @@ export const SignOutButton = () => {
     await signOut();
 
     // Redirect to home page
-    router.push("/");
+    router.push("/auth/sign-in");
     router.refresh();
   };
 

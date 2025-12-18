@@ -2,23 +2,30 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth-config";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Link } from "lucide-react";
+import Link from "next/link";
 
 const WorkspacePage = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  console.log(session);
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
 
   const org = await auth.api.listOrganizations({
     headers: await headers(),
   });
 
-  console.log(org);
-
-  if (!session?.user) {
-    redirect("/sign-in");
+  if (org.length === 0) {
+    return (
+      <div className="mx-auto flex h-full flex-col py-15 items-center justify-center rounded-sm">
+        <h1 className="text-xl font-bold">Your Workspace</h1>
+        <Link href="/workspace/new" className="mt-5">
+          Create Workspace
+        </Link>
+      </div>
+    );
   }
 
   return (

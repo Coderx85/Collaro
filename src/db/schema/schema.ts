@@ -135,7 +135,25 @@ export const workspaceMeetingTable = pgTable(
   ],
 );
 
-export const CreateUserSchema = createInsertSchema(usersTable);
+export const CreateUserSchema = createInsertSchema(usersTable, {
+  password: z.string().min(6),
+  userName: z.string().min(6, "User Name is required"),
+  name: z.string().min(6, "Name is required"),
+  email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email is required"),
+})
+  .extend({
+    confirmPassword: z.string().min(6, "Must be at least 6 characters long"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  })
+  .omit({
+    createdAt: true,
+    updatedAt: true,
+    emailVerified: true,
+    id: true,
+  });
 export const CreateWorkspaceSchema = createInsertSchema(workspacesTable);
 export const SelectUserSchema = createSelectSchema(usersTable, {
   password: z.string().min(6),
