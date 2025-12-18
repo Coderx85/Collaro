@@ -1,6 +1,6 @@
 {
-  "id": "bae5b3ce-4967-4a2f-98ec-bd5da5d404d0",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "6243dc51-a813-4a51-9793-18692ad04897",
+  "prevId": "bae5b3ce-4967-4a2f-98ec-bd5da5d404d0",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -582,6 +582,12 @@
         },
         "slug": {
           "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "logo": {
+          "name": "logo",
           "type": "text",
           "primaryKey": false,
           "notNull": true
