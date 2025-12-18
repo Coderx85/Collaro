@@ -11,17 +11,13 @@ import {
 } from "@/components/ui/sheet";
 import { sidebarLinks } from "@/constants";
 import { cn } from "@/lib/utils";
-import { useUser } from "@clerk/nextjs";
+import { useUserStore } from "@/store/user";
 
 const MobileNav = () => {
   const pathname = usePathname();
   const params = useParams();
-  const { user } = useUser();
-  const role =
-    user?.publicMetadata?.role === "admin" ||
-    user?.publicMetadata?.role === "owner"
-      ? "admin"
-      : "member";
+  const { role: userRole } = useUserStore();
+  const role = userRole === "admin" ? "admin" : "member";
   const workspaceId = params?.workspaceId as string;
 
   return (

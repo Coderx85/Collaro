@@ -8,15 +8,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGetCallsByTeam } from "@/hooks/useGetCallsbyTeam";
-import { useOrganization } from "@clerk/nextjs";
+import { useWorkspaceStore } from "@/store/workspace";
 import { Call } from "@stream-io/video-react-sdk";
 
 const Usercall = () => {
-  const { isLoaded, organization } = useOrganization();
-  const workspaceName = organization?.name;
-  const { calls: TeamCall } = useGetCallsByTeam(workspaceName!);
+  const { workspaceName } = useWorkspaceStore();
+  const { calls: TeamCall, isCallsLoading } = useGetCallsByTeam(
+    workspaceName as string,
+  );
 
-  if (!isLoaded || !organization) {
+  if (isCallsLoading || !workspaceName) {
     return <div>Loading...</div>;
   }
 
@@ -32,7 +33,6 @@ const Usercall = () => {
             <TableRow className="bg-gray-800">
               <TableHead className="text-left">Description</TableHead>
               <TableHead className="text-left">Call ID</TableHead>
-              {/* <TableHead className='text-left'>Created At</TableHead> */}
               <TableHead className="text-left">Updated At</TableHead>
               <TableHead className="text-left">Ended At</TableHead>
             </TableRow>

@@ -1,7 +1,11 @@
 import MeetingTypeList from "@/components/MeetingTypeList";
 import ProfileCard from "@/components/ProfileCard";
+import { checkWorkspaceAccess } from "@/lib/workspace-auth";
 
-const Home = async () => {
+const Home = async ({ params }: { params: Promise<{ slug: string }> }) => {
+  const { slug } = await params;
+  await checkWorkspaceAccess(slug);
+
   const now = new Date();
   const time = now.toLocaleTimeString("en-IN", {
     hour: "2-digit",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "@/lib/auth-client";
 import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { useRouter } from "next/navigation";
 
@@ -30,7 +30,8 @@ const Table = ({
 
 const PersonalRoom = () => {
   const router = useRouter();
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const user = session?.user;
   const client = useStreamVideoClient();
   const { toast } = useToast();
   const meetingId = user?.id;
@@ -61,8 +62,11 @@ const PersonalRoom = () => {
         Personal Meeting Room
       </h1>
       <div className="flex w-full flex-col gap-8 xl:max-w-[900px]">
-        <Table title="Topic" description={`${user?.username}'s Meeting Room`} />
-        <Table title="Meeting ID" description={meetingId!} />
+        <Table
+          title="Topic"
+          description={`${user?.userName || user?.name}'s Meeting Room`}
+        />
+        <Table title="Meeting ID" description={meetingId || ""} />
         <Table title="Invite Link" description={meetingLink} />
       </div>
       <div className="flex gap-5">

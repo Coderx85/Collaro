@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "@/lib/auth-client";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,16 +24,17 @@ import { FaTools } from "react-icons/fa";
 import { profileFormSchema } from "@/types/form";
 
 export default function SettingsPage() {
-  const { user, isLoaded } = useUser();
+  const { data: session, isPending } = useSession();
+  const user = session?.user;
   const [isSaving, setIsSaving] = useState(false);
 
   const profileForm = useForm({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      name: user?.fullName || "",
-      username: user?.username || "",
-      bio: (user?.publicMetadata.bio as string) || "",
-      url: (user?.publicMetadata.website as string) || "",
+      name: user?.name || "",
+      username: user?.userName || "",
+      bio: "",
+      url: "",
     },
   });
 
@@ -50,7 +51,7 @@ export default function SettingsPage() {
     }, 1000);
   }
 
-  if (!isLoaded) {
+  if (isPending) {
     return (
       <div className="flex h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -76,12 +77,11 @@ export default function SettingsPage() {
           <div className="flex items-center gap-4">
             <Avatar className="h-20 w-20">
               <AvatarImage
-                src={user?.imageUrl}
-                alt={user?.fullName || "User"}
+                src={user?.image || undefined}
+                alt={user?.name || "User"}
               />
               <AvatarFallback>
-                {user?.firstName?.charAt(0)}
-                {user?.lastName?.charAt(0)}
+                {user?.name?.charAt(0).toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
             <Button variant="outline">Change avatar</Button>

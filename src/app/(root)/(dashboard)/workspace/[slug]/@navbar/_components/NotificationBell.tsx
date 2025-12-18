@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -19,24 +19,10 @@ import { FaBell } from "react-icons/fa";
 const NotificationBell = () => {
   const [notifications, setNotifications] = useState<NotificationProps[]>([]);
   const [open, setOpen] = useState(false);
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const user = session?.user;
   const router = useRouter();
   const client = useStreamVideoClient();
-
-  // const fetchNotifications = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const response = await fetch("/api/notifications?limit=20");
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       setNotifications(data.notifications || []);
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to fetch notifications:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   // Handle incoming call notifications from Stream
   const handleCallEvent = useCallback((event: any) => {
@@ -127,7 +113,6 @@ const NotificationBell = () => {
       );
     } catch (error) {
       throw new Error(`Failed to mark notification as read: ${error}`);
-      // console.error("Failed to mark notification as read:", error);
     }
   };
 
@@ -147,12 +132,16 @@ const NotificationBell = () => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button className="relative rounded-full p-2" size={"icon"}>
-          <FaBell className="h-5 w-5" />
+        <Button
+          className="relative rounded-full"
+          size={"icon"}
+          aria-label="Notifications"
+        >
+          <FaBell />
           {unreadCount > 0 && (
             <Badge
               variant="destructive"
-              className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full p-0"
+              className="absolute -top-1 -right-1 flex items-center justify-center rounded-full p-0"
             >
               {unreadCount}
             </Badge>
@@ -163,12 +152,7 @@ const NotificationBell = () => {
         <div className="flex items-center justify-between mb-2">
           <h3 className="font-medium">Notifications</h3>
           {unreadCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs"
-              // onClick={() => fetchNotifications()}
-            >
+            <Button variant="ghost" size="sm" className="text-xs">
               Refresh
             </Button>
           )}
