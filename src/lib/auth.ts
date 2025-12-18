@@ -45,7 +45,7 @@ export async function checkEmailAvailability(email: string): Promise<boolean> {
  * Check if username is available
  */
 export async function checkUsernameAvailability(
-  userName: string
+  userName: string,
 ): Promise<boolean> {
   // This would need to be implemented via the database directly
   // or through a custom API endpoint

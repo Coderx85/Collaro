@@ -8,8 +8,6 @@ export type memberstore = {
 
 // New User/Auth Store Type
 export type UserState = {
-  // Clerk Data
-  clerkId: string | null;
   email: string | null;
   name: string | null;
 
@@ -26,7 +24,6 @@ export type UserState = {
 
   // Actions
   setUserData: (userData: {
-    clerkId: string;
     email: string;
     name: string;
     userId: string;

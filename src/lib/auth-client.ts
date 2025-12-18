@@ -21,7 +21,15 @@ export const authClient = createAuthClient({
 });
 
 // Export individual methods for convenience
-export const { signIn, signUp, signOut, useSession, getSession } = authClient;
+export const {
+  signIn,
+  signUp,
+  signOut,
+  useSession,
+  getSession,
+  useListOrganizations,
+  useActiveOrganization,
+} = authClient;
 
 // Type exports
 export type AuthSession = typeof authClient.$Infer.Session;
