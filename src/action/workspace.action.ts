@@ -6,14 +6,13 @@ import { auth } from "@/lib/auth-config";
 import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import type { APIResponse } from "@/types/api";
-import { CreateWorkspaceSchema } from "@/db/schema/schema";
-import { NewWorkspaceFormSchema } from "@/lib/form/new-workspace-form";
-import { z } from "zod";
+import type { NewWorkspaceFormSchema } from "@/lib/form/new-workspace-form";
+import type { z } from "zod";
 
 type NewWorkspaceFormSchemaType = z.infer<typeof NewWorkspaceFormSchema>;
 
 export async function createWorkspace(
-  workspaceData: NewWorkspaceFormSchemaType,
+  workspaceData: NewWorkspaceFormSchemaType
 ) {
   try {
     const response = await auth.api.createOrganization({
@@ -64,8 +63,8 @@ export async function getWorkspaceUsers(workspaceId: string) {
     .where(
       and(
         eq(membersTable.userId, authUser.id),
-        eq(membersTable.workspaceId, workspaceId),
-      ),
+        eq(membersTable.workspaceId, workspaceId)
+      )
     )
     .execute();
 
@@ -107,8 +106,8 @@ export async function validateWorkspaceAccess(workspaceId: string) {
     .where(
       and(
         eq(membersTable.userId, authUser.id),
-        eq(membersTable.workspaceId, workspaceId),
-      ),
+        eq(membersTable.workspaceId, workspaceId)
+      )
     )
     .execute();
 
@@ -178,7 +177,7 @@ export async function getAllWorkspaces() {
 export async function updateUserRole(
   userId: string,
   workspaceId: string,
-  role: "admin" | "member",
+  role: "admin" | "member"
 ): Promise<APIResponse<{ role: string }>> {
   try {
     const updatedMember = await db
@@ -187,8 +186,8 @@ export async function updateUserRole(
       .where(
         and(
           eq(membersTable.userId, userId),
-          eq(membersTable.workspaceId, workspaceId),
-        ),
+          eq(membersTable.workspaceId, workspaceId)
+        )
       )
       .returning();
 

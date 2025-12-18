@@ -1,10 +1,10 @@
-import { UserState } from "@/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { UserState } from "@/types";
 
 export const useUserStore = create<UserState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       email: null,
       name: null,
 
@@ -64,6 +64,6 @@ export const useUserStore = create<UserState>()(
         role: state.role,
         isAuthenticated: state.isAuthenticated,
       }),
-    },
-  ),
+    }
+  )
 );

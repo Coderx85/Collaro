@@ -9,7 +9,7 @@ import { type NextRequest, NextResponse } from "next/server";
 type Response<T> = Promise<NextResponse<APIResponse<T>>>;
 
 export async function POST(
-  req: NextRequest,
+  req: NextRequest
 ): Response<CreateWorkspaceResponse> {
   try {
     const { name } = await req.json();

@@ -6,7 +6,7 @@ import { useWorkspaceStore } from "@/store/workspace";
 import { useEffect, useCallback } from "react";
 
 /**
- * AuthStateManager - Handles post-signin data fetching
+ * AuthStateManager - Handles post-signin data fetchings
  *
  * WHY: This component runs immediately after better-auth authentication
  * WHEN: Triggered when session becomes available
@@ -48,7 +48,7 @@ export const AuthStateManager = () => {
         if (userData.currentWorkspaceId && userData.currentWorkspaceName) {
           setWorkspace(
             userData.currentWorkspaceId,
-            userData.currentWorkspaceName,
+            userData.currentWorkspaceName
           );
         }
 

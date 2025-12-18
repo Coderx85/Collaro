@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth-config";
 import { db } from "@/db/client";
@@ -6,7 +6,7 @@ import { membersTable, workspacesTable } from "@/db/schema/schema";
 import { usersTable } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     if (!userData) {
       return NextResponse.json(
         { error: "User not found in database" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching user data:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

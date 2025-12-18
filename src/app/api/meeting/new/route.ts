@@ -65,7 +65,7 @@ export async function POST(): Response<SelectMeetingType> {
   } catch (error: unknown) {
     return NextResponse.json(
       { success: false, error: (error as Error).message },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

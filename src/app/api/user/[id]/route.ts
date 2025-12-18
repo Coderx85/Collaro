@@ -1,16 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db/client";
 import { membersTable, usersTable } from "@/db/schema/schema";
-import { APIResponse } from "@/types";
 import { eq } from "drizzle-orm";
-
-type CheckWorkspaceId = {
-  workspaceId: string;
-};
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
 

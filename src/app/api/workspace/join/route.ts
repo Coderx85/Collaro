@@ -10,7 +10,7 @@ import { type NextRequest, NextResponse } from "next/server";
 type Response<T> = Promise<NextResponse<APIResponse<T>>>;
 
 export async function POST(
-  req: NextRequest,
+  req: NextRequest
 ): Response<CreateWorkspaceResponse> {
   try {
     const { name } = await req.json();
@@ -56,14 +56,15 @@ export async function POST(
     }
 
     // Check if user is already a member
+    // Check if user is already a member
     const [existingMember] = await db
       .select()
       .from(membersTable)
       .where(
         and(
           eq(membersTable.userId, userId),
-          eq(membersTable.workspaceId, workspace.id),
-        ),
+          eq(membersTable.workspaceId, workspace.id)
+        )
       )
       .execute();
 
@@ -98,6 +99,7 @@ export async function POST(
       });
     }
 
+    // Get all workspace members
     // Get all workspace members
     const allMembers = await db
       .select()
