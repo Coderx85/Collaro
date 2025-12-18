@@ -7,7 +7,9 @@ This document provides comprehensive instructions for implementing and extending
 ## Architecture & Design Patterns
 
 ### High-Level Goal
+
 Create a responsive, accessible sidebar navigation system that:
+
 - Adapts to mobile and desktop viewports
 - Supports collapsible/expandable states
 - Maintains state persistence across sessions
@@ -15,6 +17,7 @@ Create a responsive, accessible sidebar navigation system that:
 - Provides role-based navigation items
 
 ### Key Design Principles
+
 1. **Component Composition**: Use small, focused components that can be composed together
 2. **State Management**: Use React Context for sidebar state (open/closed, mobile)
 3. **Accessibility**: Include ARIA labels, keyboard shortcuts, and semantic HTML
@@ -24,9 +27,11 @@ Create a responsive, accessible sidebar navigation system that:
 ## File Structure & Dependencies
 
 ### Core UI Components (components/ui/sidebar.tsx)
+
 The foundation of the sidebar system. This is a **727-line file** with the following exports and functions:
 
 #### **Types & Context**
+
 - `SidebarContextProps`: Type definition for sidebar context containing:
   - `state`: "expanded" | "collapsed"
   - `open`: boolean (desktop state)
@@ -39,6 +44,7 @@ The foundation of the sidebar system. This is a **727-line file** with the follo
 - `SidebarContext`: React Context created via `React.createContext<SidebarContextProps | null>(null)`
 
 #### **Constants**
+
 ```
 SIDEBAR_COOKIE_NAME = "sidebar_state"
 SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7 (7 days)
@@ -171,6 +177,7 @@ SIDEBAR_KEYBOARD_SHORTCUT = "b" (Cmd+B or Ctrl+B)
     - Props: `asChild`, `size` ("sm" | "md"), `isActive`, `className`, standard link props
 
 #### **Exported Items**
+
 All components and utilities are exported as a named export object including the `useSidebar` hook.
 
 ---
@@ -178,7 +185,9 @@ All components and utilities are exported as a named export object including the
 ### Navigation Components
 
 #### **components/app-sidebar.tsx** (Client Component)
+
 Main application sidebar wrapper. Structure:
+
 - `AppSidebar()` - Functional component that accepts `Sidebar` component props
 - Renders:
   - `SidebarHeader`: Contains logo/branding
@@ -194,7 +203,9 @@ Main application sidebar wrapper. Structure:
     - `NavUser`: User account management component
 
 #### **components/nav-main.tsx** (Client Component)
+
 Primary navigation items component. Contains:
+
 - `NavMain()` - Accepts `items` prop with array of navigation items
 - Item type: `{ title: string; url: string; icon: LucideIcon; }`
 - Features:
@@ -208,7 +219,9 @@ Primary navigation items component. Contains:
   - Size set to "lg" with px-3 padding
 
 #### **components/nav-secondary.tsx** (Client Component)
+
 Secondary/utility navigation items. Contains:
+
 - `NavSecondary()` - Accepts `items` prop array and spreads `SidebarGroup` props
 - Item type: `{ title: string; url: string; icon: LucideIcon; }`
 - Renders items similar to `NavMain` but:
@@ -217,7 +230,9 @@ Secondary/utility navigation items. Contains:
   - Typically positioned at bottom with `mt-auto`
 
 #### **components/nav-user.tsx** (Client Component)
+
 User account dropdown menu. Complex component with:
+
 - `NavUser()` - No props, uses session and context
 - Features:
   - Uses `useSession()` hook from auth library to get user data
@@ -235,7 +250,9 @@ User account dropdown menu. Complex component with:
   - DropdownMenu component with trigger, content, items, separators, labels
 
 #### **components/nav-documents.tsx** (Client Component)
+
 Documents/resources navigation (currently commented out). Contains:
+
 - `NavDocuments()` - Accepts `items` prop with array
 - Item type: `{ name: string; url: string; icon: LucideIcon; }`
 - Features:
@@ -249,6 +266,7 @@ Documents/resources navigation (currently commented out). Contains:
 ### Data & Configuration
 
 #### **constant/sidebar-items.ts**
+
 Centralized navigation data. Exports `data` object with:
 
 ```typescript
@@ -280,6 +298,7 @@ Centralized navigation data. Exports `data` object with:
 ```
 
 **Current items:**
+
 - `navMain`: Dashboard, Analytics, Projects
 - `navSecondary`: Settings, Get Help, Search
 - `documents`: Data Library, Reports, Word Assistant
@@ -289,7 +308,9 @@ Centralized navigation data. Exports `data` object with:
 ### Layout Integration
 
 #### **app/(dashboard)/layout.tsx**
+
 Integration point for sidebar in dashboard routes. Structure:
+
 - Imports: `SidebarProvider`, `SidebarInset`, `AppSidebar`, `SiteHeader`
 - Renders:
   - `SidebarProvider` (context wrapper)
@@ -299,7 +320,9 @@ Integration point for sidebar in dashboard routes. Structure:
     - Main content wrapped in `<main>` with padding
 
 #### **app/layout.tsx**
+
 Root layout. Contains:
+
 - Theme provider setup
 - Font configuration (Geist Sans and Mono)
 - Tailwind CSS integration
@@ -361,6 +384,7 @@ When adding a new navigation group to the sidebar:
 ## Dependencies & Imports
 
 ### Key Packages
+
 - `react`: Hooks (useState, useContext, useCallback, useEffect, useMemo)
 - `next`: useRouter, usePathname from next/navigation
 - `next-themes`: Theme provider integration
@@ -370,6 +394,7 @@ When adding a new navigation group to the sidebar:
 - `clsx`: Class name utilities
 
 ### Import Paths
+
 ```typescript
 // Sidebar components
 import {
@@ -423,26 +448,31 @@ import { cn } from "@/lib/utils";
 Based on GitHub Copilot best practices, when working with sidebar implementation:
 
 ### Set the Stage
+
 - Clearly specify: "Add a new navigation item to the sidebar for..."
 - Provide the complete context about where the item should appear
 - Include the data structure and types
 
 ### Be Specific and Simple
+
 - Break requests into discrete steps
 - Example: "First, update the data in sidebar-items.ts. Then, update the NavMain component to handle the new item."
 - Avoid asking for multiple features in one prompt
 
 ### Provide Examples
+
 - Show existing similar items in the codebase
 - Include the expected data structure
 - Provide markup examples for new components
 
 ### Keep Relevant Tabs Open
+
 - Have `components/ui/sidebar.tsx` open for reference
 - Keep `components/app-sidebar.tsx` visible
 - Have `constant/sidebar-items.ts` accessible
 
 ### Use Good Naming
+
 - Components: PascalCase (e.g., `NavTeams`, `NavProjects`)
 - Functions: camelCase (e.g., `toggleSidebar`, `handleNavClick`)
 - Constants: UPPER_SNAKE_CASE (e.g., `SIDEBAR_WIDTH`)
@@ -452,23 +482,27 @@ Based on GitHub Copilot best practices, when working with sidebar implementation
 ## Common Tasks & Patterns
 
 ### Task: Add a new main navigation item
+
 1. Add item to `data.navMain` array in `sidebar-items.ts`
 2. Ensure icon is imported from lucide-react
 3. NavMain component will automatically render it
 4. Verify routing URL matches actual routes in app directory
 
 ### Task: Add a collapsible menu group with subitems
+
 1. Create new component following `NavMain` pattern
 2. Use `SidebarMenuSub` and `SidebarMenuSubItem` for nested items
 3. Manage expand/collapse state with `useState`
 4. Add to `AppSidebar` component
 
 ### Task: Modify sidebar width or spacing
+
 1. Update CSS variables in `Sidebar` component
 2. Modify `SIDEBAR_WIDTH` or `SIDEBAR_WIDTH_ICON` constants
 3. Tailwind breakpoints already configured for responsive behavior
 
 ### Task: Add active state styling
+
 1. Use `usePathname()` hook to get current route
 2. Compare against item's `url` prop
 3. Pass `isActive={pathname === item.url}` to `SidebarMenuButton`

@@ -48,7 +48,7 @@ export const AuthStateManager = () => {
         if (userData.currentWorkspaceId && userData.currentWorkspaceName) {
           setWorkspace(
             userData.currentWorkspaceId,
-            userData.currentWorkspaceName
+            userData.currentWorkspaceName,
           );
         }
 

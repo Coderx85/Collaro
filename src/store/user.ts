@@ -64,6 +64,6 @@ export const useUserStore = create<UserState>()(
         role: state.role,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+    },
+  ),
 );

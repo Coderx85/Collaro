@@ -10,7 +10,7 @@ import { type NextRequest, NextResponse } from "next/server";
 type Response<T> = Promise<NextResponse<APIResponse<T>>>;
 
 export async function POST(
-  req: NextRequest
+  req: NextRequest,
 ): Response<CreateWorkspaceResponse> {
   try {
     const { name } = await req.json();
@@ -63,8 +63,8 @@ export async function POST(
       .where(
         and(
           eq(membersTable.userId, userId),
-          eq(membersTable.workspaceId, workspace.id)
-        )
+          eq(membersTable.workspaceId, workspace.id),
+        ),
       )
       .execute();
 

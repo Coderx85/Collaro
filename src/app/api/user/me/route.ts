@@ -33,7 +33,7 @@ export async function GET() {
     if (!userData) {
       return NextResponse.json(
         { error: "User not found in database" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -86,7 +86,7 @@ export async function GET() {
     console.error("Error fetching user data:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
