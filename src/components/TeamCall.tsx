@@ -31,7 +31,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "@/lib/auth-client";
 import {
   Tooltip,
   TooltipContent,
@@ -55,7 +55,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
 const TeamCall = () => {
-  const { user } = useUser();
+  const { data: session } = useSession();
   const { workspaceName } = useWorkspaceStore();
   const { calls, isCallsLoading } = useGetCallsByTeam(workspaceName as string);
 
@@ -731,7 +731,7 @@ const TeamCall = () => {
             {calls.map((call) => {
               const status = getCallStatus(call);
               const isMember = call.state.members.some(
-                (member) => member.user.id === (user?.id || ""),
+                (member) => member.user.id === (session?.user?.id || ""),
               );
               const hasRecording = call.state.custom?.hasRecording || false;
               const meetingType = call.state.custom?.scheduled

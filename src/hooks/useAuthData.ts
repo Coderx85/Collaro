@@ -16,7 +16,6 @@ export const useAuthData = () => {
   return {
     // User Information
     userInfo: {
-      clerkId: userStore.clerkId,
       userId: userStore.userId,
       email: userStore.email,
       name: userStore.name,

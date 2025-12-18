@@ -6,14 +6,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Phone } from "lucide-react";
 import { toast } from "sonner";
-import { useOrganization } from "@clerk/nextjs";
+import { useWorkspaceStore } from "@/store/workspace";
 
 const EndCallButton = () => {
   const call = useCall();
   const router = useRouter();
   const [isEnding, setIsEnding] = useState(false);
-  const { organization } = useOrganization();
-  const workspaceId = organization?.id;
+  const { workspaceId } = useWorkspaceStore();
 
   if (!call)
     throw new Error(
@@ -49,7 +48,6 @@ const EndCallButton = () => {
         throw new Error("Failed to update meeting end time");
       }
 
-      // await call.stopTranscription();
       // End the call for everyone
       await call.endCall();
       toast.success("Call ended");
@@ -58,7 +56,6 @@ const EndCallButton = () => {
       toast.error(
         `Failed to end call: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
-      // console.error("Error ending call:", error);
     } finally {
       setIsEnding(false);
     }

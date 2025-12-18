@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "@/lib/auth-client";
 import { useUserStore } from "@/store/user";
 import { useWorkspaceStore } from "@/store/workspace";
 import { useEffect, useCallback } from "react";
@@ -8,24 +8,23 @@ import { useEffect, useCallback } from "react";
 /**
  * AuthStateManager - Handles post-signin data fetching
  *
- * WHY: This component runs immediately after Clerk authentication
- * WHEN: Triggered when user.isSignedIn becomes true
+ * WHY: This component runs immediately after better-auth authentication
+ * WHEN: Triggered when session becomes available
  * HOW: Fetches user data from database and updates stores
  */
 export const AuthStateManager = () => {
-  const { user, isSignedIn, isLoaded } = useUser();
+  const { data: session, isPending } = useSession();
   const {
     setUserData,
     clearUserData,
     setDataLoaded,
     isAuthenticated,
     isDataLoaded,
-    clerkId,
   } = useUserStore();
   const { setWorkspace, clearWorkspace } = useWorkspaceStore();
 
   const fetchUserData = useCallback(async () => {
-    if (!user?.id) return;
+    if (!session?.user?.id) return;
 
     try {
       const response = await fetch("/api/user/me");
@@ -36,11 +35,10 @@ export const AuthStateManager = () => {
 
         // Update user store with all data including workspaceName
         setUserData({
-          clerkId: userData.clerkId,
-          email: userData.email || user.primaryEmailAddress?.emailAddress || "",
-          name: userData.name || user.fullName || "",
-          userId: userData.userId,
-          userName: userData.userName,
+          email: userData.email || session.user.email || "",
+          name: userData.name || session.user.name || "",
+          userId: userData.userId || session.user.id,
+          userName: userData.userName || session.user.userName,
           currentWorkspaceId: userData.currentWorkspaceId,
           currentWorkspaceName: userData.currentWorkspaceName,
           role: userData.role,
@@ -60,19 +58,23 @@ export const AuthStateManager = () => {
           workspaceName: userData.currentWorkspaceName,
         });
       } else {
-        console.error("❌ Failed to fetch user data:", result.error);
+        // Use session data directly if API failed
+        setUserData({
+          email: session.user.email || "",
+          name: session.user.name || "",
+          userId: session.user.id,
+          userName: session.user.userName || "",
+          currentWorkspaceId: null,
+          currentWorkspaceName: null,
+          role: "member",
+        });
+        setDataLoaded(true);
+        console.warn("⚠️ Using session data, API fetch failed:", result.error);
       }
     } catch (error) {
       console.error("❌ Error fetching user data:", error);
     }
-  }, [
-    user?.id,
-    user?.primaryEmailAddress?.emailAddress,
-    user?.fullName,
-    setUserData,
-    setWorkspace,
-    setDataLoaded,
-  ]);
+  }, [session?.user, setUserData, setWorkspace, setDataLoaded]);
 
   const handleSignOut = useCallback(() => {
     clearUserData();
@@ -82,11 +84,11 @@ export const AuthStateManager = () => {
 
   // Effect: Handle authentication state changes
   useEffect(() => {
-    if (!isLoaded) return;
+    if (isPending) return;
 
-    if (isSignedIn && user) {
+    if (session?.user) {
       // User signed in - check if we need to fetch data
-      if (!isAuthenticated || clerkId !== user.id || !isDataLoaded) {
+      if (!isAuthenticated || !isDataLoaded) {
         console.log("🔄 Fetching user data after sign in...");
         fetchUserData();
       }
@@ -97,11 +99,9 @@ export const AuthStateManager = () => {
       }
     }
   }, [
-    isLoaded,
-    isSignedIn,
-    user,
+    isPending,
+    session,
     isAuthenticated,
-    clerkId,
     isDataLoaded,
     fetchUserData,
     handleSignOut,

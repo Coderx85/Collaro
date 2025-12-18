@@ -11,6 +11,7 @@ import {
 import { sql } from "drizzle-orm/sql";
 import * as t from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import z from "zod";
 
 // Define user_role enum first
 export const pgUserRole = pgEnum("user_role", ["admin", "member"]);
@@ -22,7 +23,7 @@ export const usersTable = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(),
     userName: text("user_name").notNull().unique(),
-    password: text("password").notNull(),
+    password: text("password"),
     emailVerified: boolean("email_verified").default(false),
     email: varchar("email", { length: 256 }).notNull().unique(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -31,7 +32,7 @@ export const usersTable = pgTable(
   (table) => [
     t.uniqueIndex("users_email_unique_idx").on(table.email),
     t.uniqueIndex("users_user_name_unique_idx").on(table.userName),
-  ]
+  ],
 );
 
 // Workspaces table definition
@@ -41,6 +42,7 @@ export const workspacesTable = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull().unique(),
     slug: text("slug").notNull().unique(),
+    logo: text("logo").default(""),
     createdBy: text("created_by").references(() => usersTable.userName, {
       onDelete: "set null",
     }),
@@ -50,7 +52,7 @@ export const workspacesTable = pgTable(
   (table) => [
     t.uniqueIndex("workspaces_name_unique_idx").on(table.name),
     t.uniqueIndex("workspaces_slug_unique_idx").on(table.slug),
-  ]
+  ],
 );
 
 // Members Table
@@ -70,7 +72,8 @@ export const membersTable = pgTable(
         onDelete: "cascade",
       }),
     role: pgUserRole().notNull().default("member"),
-    joinedAt: timestamp("joined_at").notNull().defaultNow(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => [
     t
@@ -78,7 +81,33 @@ export const membersTable = pgTable(
       .on(table.userId, table.workspaceId),
     t.index("members_workspace_id_idx").on(table.workspaceId),
     t.index("members_role_idx").on(table.role),
-  ]
+  ],
+);
+
+export const invitationTable = pgTable(
+  "invitation",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspacesTable.id, {
+        onDelete: "cascade",
+      }),
+    email: text("email").notNull(),
+    role: pgUserRole().notNull().default("member"),
+    status: text("status").default("pending").notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    inviterId: uuid("inviter_id")
+      .notNull()
+      .references(() => usersTable.id, {
+        onDelete: "cascade",
+      }),
+  },
+  (table) => [
+    t.index("invitation_workspace_id_idx").on(table.workspaceId),
+    t.index("invitation_email_idx").on(table.email),
+  ],
 );
 
 // Workspace meetings table
@@ -103,12 +132,15 @@ export const workspaceMeetingTable = pgTable(
   (table) => [
     t.index("workspace_meetings_workspace_id_idx").on(table.workspaceId),
     t.index("workspace_meetings_hosted_by_idx").on(table.hostedBy),
-  ]
+  ],
 );
 
 export const CreateUserSchema = createInsertSchema(usersTable);
 export const CreateWorkspaceSchema = createInsertSchema(workspacesTable);
-export const SelectUserSchema = createSelectSchema(usersTable);
+export const SelectUserSchema = createSelectSchema(usersTable, {
+  password: z.string().min(6),
+  email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/),
+});
 
 export type CreateMeetingType = typeof workspaceMeetingTable.$inferInsert;
 export type CreateWorkspaceType = typeof workspacesTable.$inferInsert;

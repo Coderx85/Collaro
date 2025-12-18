@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
 import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
-import { useOrganization, useUser } from "@clerk/nextjs";
+import { useSession } from "@/lib/auth-client";
+import { getCookie } from "cookies-next";
 
 export const useGetCallByTeamandId = () => {
   const [calls, setCalls] = useState<Call[]>([]);
   const [isCallsLoading, setIsCallsLoading] = useState(true);
 
   const client = useStreamVideoClient();
-  const { organization } = useOrganization();
-  const workspaceName = organization?.name;
-  const { user } = useUser();
-  const id = user?.id;
+  const { data: session } = useSession();
+
+  // Get workspace name from cookie (same as before)
+  const workspaceName = getCookie("workspaceName") as string | undefined;
+  const id = session?.user?.id;
+
   useEffect(() => {
-    if (!client) return;
+    if (!client || !id) return;
 
     const loadCall = async () => {
       try {

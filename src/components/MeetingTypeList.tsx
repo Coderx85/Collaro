@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "@/lib/auth-client";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import HomeCard from "./HomeCard";
@@ -13,6 +13,7 @@ import ReactDatePicker from "react-datepicker";
 import { type Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { CalendarExport } from "./CalendarExport";
 import { Label } from "./ui/label";
+import { session } from "@/db/schema/auth-schema";
 
 const initialValues = {
   dateTime: new Date(),
@@ -23,7 +24,7 @@ const initialValues = {
 const MeetingTypeList = () => {
   const router = useRouter();
   const client = useStreamVideoClient();
-  const { user } = useUser();
+  const { data: session, isPending } = useSession();
   const { toast } = useToast();
 
   const [meetingState, setMeetingState] = useState<
@@ -58,11 +59,11 @@ const MeetingTypeList = () => {
     return toast({ title: "Meeting Created" });
   }
 
-  if (!client || !user) return <Loader />;
+  if (isPending || !client || !session?.user) return <Loader />;
 
   // Create Meeting function
   const createMeeting = async () => {
-    if (!client || !user) return;
+    if (!client || !session?.user) return;
 
     try {
       if (!values.dateTime) {
@@ -200,11 +201,8 @@ const MeetingTypeList = () => {
                     location="Online Meeting"
                     meetingLink={meetingLink}
                     workspaceId={workspaceId}
-                    hostedBy={user?.fullName || "Collaro User"}
-                    hostEmail={
-                      user?.emailAddresses?.[0]?.emailAddress ||
-                      "user@collaro.com"
-                    }
+                    hostedBy={session?.user?.name || "Collaro User"}
+                    hostEmail={session?.user?.email || "user@collaro.com"}
                     attendees={[]}
                     variant="outline"
                     size="sm"

@@ -44,18 +44,21 @@ export const auth = betterAuth({
           modelName: "workspace",
           schema: schema.workspacesTable,
         },
-      },
-      organizationMember: {
-        modelName: "member",
-        schema: schema.membersTable,
-      },
-      organizationMemberRole: {
-        modelName: "roles",
-        schema: schema.pgUserRole,
-      },
-      organizationInvitation: {
-        modelName: "invitation",
-        schema: schema.invitationTable,
+        member: {
+          modelName: "member",
+          schema: schema.membersTable,
+          fields: {
+            organizationId: "workspaceId",
+          },
+        },
+        invitation: {
+          modelName: "invitation",
+          schema: schema.invitationTable,
+        },
+        organizationRole: {
+          modelName: "roles",
+          schema: schema.pgUserRole,
+        },
       },
     }),
   ],
