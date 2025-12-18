@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import { useOrganization, useUser } from "@clerk/nextjs";
+import { useSession } from "@/lib/auth-client";
+import { useWorkspaceStore } from "@/store/workspace";
 import { Button } from "@/components/ui/button";
 import { PhoneCall } from "lucide-react";
 import {
@@ -25,18 +26,15 @@ const DirectCallButton = ({ memberId, memberName }: DirectCallButtonProps) => {
   const [isCallStarting, setIsCallStarting] = useState(false);
   const router = useRouter();
   const client = useStreamVideoClient();
-  const { user } = useUser();
+  const { data: session, isPending } = useSession();
   const { toast } = useToast();
-  const { organization } = useOrganization();
-  const workspaceName = organization?.name || "Workspace";
-  // const { workspaceId } = useWorkspaceStore();
+  const { workspaceName } = useWorkspaceStore();
 
   const startDirectCall = async () => {
-    if (!client || !user) return;
+    if (!client || !session?.user) return;
 
     try {
       setIsCallStarting(true);
-      // console.log("Creating call with member ID:", memberId);
 
       // Create a unique meeting ID
       const id = crypto.randomUUID();
@@ -54,29 +52,9 @@ const DirectCallButton = ({ memberId, memberName }: DirectCallButtonProps) => {
             callType: "direct",
           },
           members: [{ user_id: memberId, role: "call_member" }],
-          team: workspaceName!,
+          team: workspaceName || "Workspace",
         },
-        // ring: true,
       });
-
-      // Create notification for the call recipient
-      // try {
-      //   await fetch("/api/notifications/create", {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({
-      //       title: `Call from ${user.fullName || user.username}`,
-      //       message: `${user.fullName || user.username} is calling you`,
-      //       meetingId: call.id,
-      //       userIds: [memberId],
-      //       type: "direct_call",
-      //     }),
-      //   });
-      // } catch (error) {
-      //   console.error("Failed to create call notification:", error);
-      // }
 
       // Navigate to the call page
       router.push(`/meeting/${call.id}`);
@@ -86,7 +64,6 @@ const DirectCallButton = ({ memberId, memberName }: DirectCallButtonProps) => {
         description: `Connecting to ${memberName}`,
       });
     } catch (error) {
-      // console.error("Error starting direct call:", error);
       toast({
         title: `Failed to start call with because: \n${error}`,
         variant: "destructive",
@@ -97,7 +74,7 @@ const DirectCallButton = ({ memberId, memberName }: DirectCallButtonProps) => {
     }
   };
 
-  if (!client || !user) return <Loader />;
+  if (isPending || !client || !session?.user) return <Loader />;
 
   return (
     <>

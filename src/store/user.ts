@@ -1,12 +1,10 @@
-import { UserState } from "@/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { UserState } from "@/types";
 
 export const useUserStore = create<UserState>()(
   persist(
-    (set, get) => ({
-      // Clerk Data
-      clerkId: null,
+    (set) => ({
       email: null,
       name: null,
 
@@ -17,14 +15,11 @@ export const useUserStore = create<UserState>()(
       currentWorkspaceName: null,
       role: null,
 
-      // State Management
       isAuthenticated: false,
       isDataLoaded: false,
 
-      // Actions
       setUserData: (userData) =>
         set({
-          clerkId: userData.clerkId,
           email: userData.email,
           name: userData.name,
           userId: userData.userId,
@@ -37,7 +32,6 @@ export const useUserStore = create<UserState>()(
 
       clearUserData: () =>
         set({
-          clerkId: null,
           email: null,
           name: null,
           userId: null,
@@ -61,7 +55,6 @@ export const useUserStore = create<UserState>()(
       name: "user-storage", // Key for localStorage
       partialize: (state) => ({
         // Only persist essential data
-        clerkId: state.clerkId,
         email: state.email,
         name: state.name,
         userId: state.userId,

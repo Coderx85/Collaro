@@ -1,8 +1,9 @@
 import { db } from "@/db/client";
-import { usersTable, workspacesTable } from "@/db/schema/schema";
-import { workspaceUserTable } from "@/db/schema/relations";
+import { workspacesTable, membersTable } from "@/db/schema/schema";
+import { usersTable } from "@/db/schema/schema";
 import type { APIResponse, CreateWorkspaceResponse } from "@/types";
-import { clerkClient, currentUser } from "@clerk/nextjs/server";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth-config";
 import { and, eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -13,46 +14,31 @@ export async function POST(
 ): Response<CreateWorkspaceResponse> {
   try {
     const { name } = await req.json();
-    const user = await currentUser();
-    if (!user) {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
       return NextResponse.json({
         success: false,
-        error: "User not found",
+        error: "User not authenticated",
       });
     }
 
-    const userId = user.id;
+    const userId = session.user.id;
 
-    // Check if user exists, create if not
-    let [dbUser] = await db
+    // Check if user exists in auth table
+    const [dbUser] = await db
       .select()
       .from(usersTable)
-      .where(eq(usersTable.clerkId, userId))
+      .where(eq(usersTable.id, userId))
       .execute();
 
     if (!dbUser) {
-      // Create user if they don't exist
-      const [newUser] = await db
-        .insert(usersTable)
-        .values({
-          clerkId: userId,
-          name: user.firstName + " " + user.lastName,
-          email: user.emailAddresses[0].emailAddress,
-          role: "member",
-          workspaceId: null,
-          userName: user.username ?? "anonymous",
-          updatedAt: new Date(),
-        })
-        .returning();
-
-      if (!newUser) {
-        return NextResponse.json({
-          success: false,
-          error: "Failed to create user",
-        });
-      }
-
-      dbUser = newUser;
+      return NextResponse.json({
+        success: false,
+        error: "User not found in database",
+      });
     }
 
     // Check if workspace exists
@@ -73,11 +59,11 @@ export async function POST(
     // Check if user is already a member
     const [existingMember] = await db
       .select()
-      .from(workspaceUserTable)
+      .from(membersTable)
       .where(
         and(
-          eq(workspaceUserTable.userId, dbUser.id),
-          eq(workspaceUserTable.workspaceId, workspace.id),
+          eq(membersTable.userId, userId),
+          eq(membersTable.workspaceId, workspace.id),
         ),
       )
       .execute();
@@ -89,7 +75,7 @@ export async function POST(
       });
     }
 
-    // validate request data and db user id to satisfy Drizzle's non-null typings
+    // validate request data
     if (!name || typeof name !== "string") {
       return NextResponse.json({
         success: false,
@@ -97,33 +83,16 @@ export async function POST(
       });
     }
 
-    if (!dbUser.userName) {
-      return NextResponse.json({
-        success: false,
-        error: "Invalid user name",
-      });
-    }
-
-    // Update user metadata
-    (await clerkClient()).users.updateUserMetadata(dbUser.clerkId, {
-      publicMetadata: {
-        role: "member",
-      },
-    });
-
-    // Add user to workspace
-    // Add user to workspace
-    const [workspaceUser] = await db
-      .insert(workspaceUserTable)
+    // Add user to workspace as member
+    const [member] = await db
+      .insert(membersTable)
       .values({
-        userId: dbUser.id,
+        userId: userId,
         workspaceId: workspace.id,
-        role: "member",
-        joinedAt: new Date(),
       })
       .returning();
 
-    if (!workspaceUser) {
+    if (!member) {
       return NextResponse.json({
         success: false,
         error: `Cannot join workspace: ${workspace.name}`,
@@ -134,14 +103,14 @@ export async function POST(
     // Get all workspace members
     const allMembers = await db
       .select()
-      .from(workspaceUserTable)
-      .where(eq(workspaceUserTable.workspaceId, workspace.id))
+      .from(membersTable)
+      .where(eq(membersTable.workspaceId, workspace.id))
       .execute();
 
     const responseData: CreateWorkspaceResponse = {
       ...workspace,
       createdBy: workspace.createdBy || "",
-      members: allMembers.map((member) => member.userId),
+      members: allMembers.map((m) => m.userId),
     };
     return NextResponse.json({ success: true, data: responseData });
   } catch (error: unknown) {

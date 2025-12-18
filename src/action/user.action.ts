@@ -1,110 +1,105 @@
 "use server";
 
 import { db } from "@/db/client";
-import { usersTable, workspacesTable, membersTable } from "@/db/schema/schema";
+import { workspacesTable, membersTable, usersTable } from "@/db/schema/schema";
 import type { APIResponse, UserResponse } from "@/types";
-import { clerkClient, currentUser } from "@clerk/nextjs/server";
-import { and, eq } from "drizzle-orm";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth-config";
+import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
-export async function checkUserWorkspaceId() {
-  // Get the current user first
-  const clerkUser = await currentUser();
-  console.log("clerkUser exist: \n", clerkUser);
-
-  if (!clerkUser) throw redirect("/sign-in");
-
-  const [user] = await db
-    .select()
-    .from(usersTable)
-    .where(eq(usersTable.clerkId, clerkUser.id))
-    .execute();
-
-  if (!user) throw redirect("/sign-in");
-
-  if (user.workspaceId) redirect(`/workspace/${user.workspaceId}`);
-
-  return null;
+// Helper to get current authenticated user
+async function getCurrentAuthUser() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  return session?.user ?? null;
 }
 
-export async function getUserWorkspaceId() {
-  // Get the current user first
-  const clerkUser = await currentUser();
-  console.log("clerkUser exist: \n", clerkUser);
-  if (!clerkUser) throw redirect("/sign-in");
+export async function loginAction(email: string, password: string) {
+  try {
+    // Use the server-side API for authentication
+    // Note: Do NOT hash the password - better-auth handles password hashing internally
+    const result = await auth.api.signInEmail({
+      body: {
+        email,
+        password,
+      },
+      headers: await headers(), // Crucial for setting cookies in Server Actions
+    });
 
-  const [user] = await db
+    if (!result) {
+      return { error: "Invalid email or password", success: false };
+    }
+
+    return { data: result.user, success: true };
+  } catch (error) {
+    console.error("Login Action Error:", error);
+    const message =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    return { error: message, success: false };
+  }
+}
+
+// export async function checkUserWorkspaceId() {
+//   const authUser = await getCurrentAuthUser();
+//   if (!authUser) throw redirect("/sign-in");
+
+//   // Check if user has any workspace membership
+//   const [membership] = await db
+//     .select()
+//     .from(membersTable)
+//     .where(eq(membersTable.userId, authUser.id))
+//     .limit(1)
+//     .execute();
+
+//   if (membership?.workspaceId) {
+//     redirect(`/workspace/${membership.workspaceId}`);
+//   }
+
+//   return null;
+// }
+
+export async function getUserWorkspaceId() {
+  const authUser = await getCurrentAuthUser();
+  if (!authUser) throw redirect("/sign-in");
+
+  // Get user's first workspace membership
+  const [membership] = await db
     .select()
-    .from(usersTable)
-    .where(eq(usersTable.clerkId, clerkUser.id))
+    .from(membersTable)
+    .where(eq(membersTable.userId, authUser.id))
+    .limit(1)
     .execute();
 
-  if (!user) throw redirect("/sign-in");
-
-  if (user.workspaceId === null) {
+  if (!membership?.workspaceId) {
     console.log("Workspace ID is null");
     return { error: "Workspace ID is null", success: false };
   }
 
-  console.log("user exist: \n", user);
-
-  const workspaceId = user.workspaceId;
-
   return {
     data: {
-      workspaceId,
+      workspaceId: membership.workspaceId,
     },
     success: true,
   };
 }
 
-export async function getWorkspaceMembers(workspaceId: string) {
-  try {
-    // Check if workspace exists
-    const [workspace] = await db
-      .select()
-      .from(workspacesTable)
-      .where(eq(workspacesTable.id, workspaceId))
-      .execute();
-
-    if (!workspace) {
-      return {
-        error: `Workspace not found with ID: ${workspaceId}`,
-        success: false,
-      };
-    }
-
-    const members = await db
-      .select()
-      .from(membersTable)
-      .where(eq(membersTable.workspaceId, workspace.id))
-      .execute();
-
-    return { data: members };
-  } catch (error: unknown) {
-    return { error: `Failed to get workspace members:: \n ${error}` };
-  }
-}
-
 export async function getUser(): Promise<APIResponse<UserResponse>> {
   try {
-    // Get the current user
-    const clerkUser = await currentUser();
-    if (!clerkUser) return redirect("/sign-in");
+    const authUser = await getCurrentAuthUser();
+    if (!authUser) return redirect("/sign-in");
 
-    const clerkId = clerkUser.id.toString();
-
-    // Check if the user exists in the database
+    // Get user from the better-auth user table
     const [user] = await db
       .select()
       .from(usersTable)
-      .where(eq(usersTable.clerkId, clerkId))
+      .where(eq(usersTable.id, authUser.id))
       .execute();
 
-    // If the user does not exist,
     if (!user) return { error: "User does not exist", success: false };
 
-    return { data: user, success: true };
+    return { data: user as UserResponse, success: true };
   } catch (error: unknown) {
     return { error: `Failed to get user:: \n ${error}`, success: false };
   }
@@ -113,7 +108,7 @@ export async function getUser(): Promise<APIResponse<UserResponse>> {
 export async function getAllUsers(): Promise<APIResponse<UserResponse[]>> {
   try {
     const data = await db.select().from(usersTable).execute();
-    return { data, success: true };
+    return { data: data as UserResponse[], success: true };
   } catch (error: unknown) {
     return { error: `Failed to get all users:: \n ${error}`, success: false };
   }

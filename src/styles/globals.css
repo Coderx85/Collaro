@@ -253,6 +253,13 @@
 
   /* =============================== */
 
+  .home-bg {
+    background-image: url("/bg.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+  }
+
   .pattern-bg {
     background-image: url("/pattern.png");
     background-repeat: repeat;

@@ -1,36 +1,58 @@
-import { redirect, RedirectType } from "next/navigation";
-import WorkspaceForm from "./components/WorkspaceForm";
-import { currentUser } from "@clerk/nextjs/server";
-import { usersTable } from "@/db/schema/schema";
-import { db } from "@/db/client";
-import { eq } from "drizzle-orm";
-
-async function fetchUserWorkspace(userId: string) {
-  const [user] = await db
-    .select()
-    .from(usersTable)
-    .where(eq(usersTable.clerkId, userId))
-    .execute();
-
-  return user?.workspaceId || null;
-}
+import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth-config";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 
 const WorkspacePage = async () => {
-  const user = await currentUser();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  if (!user) {
+  if (!session?.user) {
     redirect("/sign-in");
   }
 
-  const workspaceId = await fetchUserWorkspace(user.id);
+  const org = await auth.api.listOrganizations({
+    headers: await headers(),
+  });
 
-  if (workspaceId) {
-    redirect(`/workspace/${workspaceId}`, RedirectType.replace);
+  if (org.length === 0) {
+    return (
+      <div className="mx-auto flex h-full flex-col py-15 items-center justify-center rounded-sm">
+        <h1 className="text-xl font-bold">Your Workspace</h1>
+        <Link href="/workspace/new" className="mt-5">
+          Create Workspace
+        </Link>
+      </div>
+    );
   }
 
   return (
-    <div className="mx-auto flex h-full flex-col items-center justify-center rounded-sm">
-      <WorkspaceForm />
+    <div className="mx-auto flex h-full flex-col py-15 items-center justify-center rounded-sm">
+      {/* <WorkspaceForm /> */}
+      <h1 className="text-xl font-bold">Your Workspace</h1>
+      {/* {session?.session?.activeOrganizationId} */}
+
+      <div className="flex gap-5 mt-5">
+        {org.length > 0 &&
+          org.map((org) => (
+            // <Link href={`/workspace/${org.id}`} key={org.id}>
+            <Card
+              key={org.id}
+              className="w-[300px] bg-primary text-primary-foreground"
+            >
+              <CardHeader>
+                <CardTitle>{org.name}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">{org.slug}</p>
+                <p className="text-sm text-muted-foreground">{org.logo}</p>
+              </CardContent>
+            </Card>
+            // </Link>
+          ))}
+      </div>
     </div>
   );
 };

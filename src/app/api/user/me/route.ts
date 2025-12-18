@@ -1,67 +1,85 @@
-import { type NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth-config";
 import { db } from "@/db/client";
-import { usersTable, workspacesTable } from "@/db/schema/schema";
+import { membersTable, workspacesTable } from "@/db/schema/schema";
+import { usersTable } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const { userId: clerkUserId } = await auth();
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!clerkUserId) {
+    if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch user data from database using clerkId
-    const user = await db
+    const userId = session.user.id;
+
+    // Fetch user data from better-auth user table
+    const [userData] = await db
       .select({
         id: usersTable.id,
         name: usersTable.name,
         userName: usersTable.userName,
         email: usersTable.email,
-        workspaceId: usersTable.workspaceId,
-        role: usersTable.role,
       })
       .from(usersTable)
-      .where(eq(usersTable.clerkId, clerkUserId))
+      .where(eq(usersTable.id, userId))
       .limit(1);
 
-    if (!user.length) {
+    if (!userData) {
       return NextResponse.json(
         { error: "User not found in database" },
         { status: 404 },
       );
     }
 
-    const userData = user[0];
+    // Get user's first workspace membership
+    const [membership] = await db
+      .select({
+        workspaceId: membersTable.workspaceId,
+        role: membersTable.role,
+      })
+      .from(membersTable)
+      .where(eq(membersTable.userId, userId))
+      .limit(1);
+
     let workspaceName = null;
+    let workspaceId = null;
+    let role = "member";
 
     // If user has a workspace, fetch workspace name
-    if (userData.workspaceId) {
-      const workspace = await db
+    if (membership?.workspaceId) {
+      workspaceId = membership.workspaceId;
+      role = membership.role;
+
+      const [workspace] = await db
         .select({
           name: workspacesTable.name,
         })
         .from(workspacesTable)
-        .where(eq(workspacesTable.id, userData.workspaceId))
+        .where(eq(workspacesTable.id, workspaceId))
         .limit(1);
 
-      if (workspace.length) {
-        workspaceName = workspace[0].name;
+      if (workspace) {
+        workspaceName = workspace.name;
       }
     }
 
     return NextResponse.json({
       success: true,
       data: {
-        clerkId: clerkUserId,
+        clerkId: userId, // Legacy field name, now stores better-auth user id
         userId: userData.id,
         name: userData.name,
         userName: userData.userName,
         email: userData.email,
-        currentWorkspaceId: userData.workspaceId,
+        currentWorkspaceId: workspaceId,
         currentWorkspaceName: workspaceName,
-        role: userData.role,
+        role: role,
       },
     });
   } catch (error) {

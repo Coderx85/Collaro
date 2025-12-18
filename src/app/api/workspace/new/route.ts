@@ -1,8 +1,8 @@
 import { db } from "@/db/client";
-import { usersTable, workspacesTable } from "@/db/schema/schema";
-import { workspaceUserTable } from "@/db/schema/relations";
+import { workspacesTable, membersTable, usersTable } from "@/db/schema/schema";
 import type { APIResponse, CreateWorkspaceResponse } from "@/types";
-import { clerkClient, currentUser } from "@clerk/nextjs/server";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth-config";
 import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -13,45 +13,31 @@ export async function POST(
 ): Response<CreateWorkspaceResponse> {
   try {
     const { name } = await req.json();
-    const user = await currentUser();
-    if (!user) {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
       return NextResponse.json({
         success: false,
-        error: "User not found",
+        error: "User not authenticated",
       });
     }
 
-    const userId = user.id;
+    const userId = session.user.id;
 
-    // Check if user exists, create if not
-    let [dbUser] = await db
+    // Check if user exists in auth table
+    const [dbUser] = await db
       .select()
       .from(usersTable)
-      .where(eq(usersTable.clerkId, userId))
+      .where(eq(usersTable.id, userId))
       .execute();
 
     if (!dbUser) {
-      // Create user if they don't exist
-      const [newUser] = await db
-        .insert(usersTable)
-        .values({
-          clerkId: userId,
-          name: user.firstName + " " + user.lastName,
-          email: user.emailAddresses[0]?.emailAddress || "",
-          role: "member",
-          workspaceId: null,
-          userName: user.username ?? "anonymous",
-          updatedAt: new Date(),
-        })
-        .returning();
-
-      if (!newUser) {
-        return NextResponse.json({
-          success: false,
-          error: "Failed to create user",
-        });
-      }
-      dbUser = newUser;
+      return NextResponse.json({
+        success: false,
+        error: "User not found in database",
+      });
     }
 
     const [checkWorkspace] = await db
@@ -67,7 +53,7 @@ export async function POST(
       });
     }
 
-    // validate request data and db user id to satisfy Drizzle's non-null typings
+    // validate request data
     if (!name || typeof name !== "string") {
       return NextResponse.json({
         success: false,
@@ -75,7 +61,8 @@ export async function POST(
       });
     }
 
-    if (!dbUser.userName) {
+    const userName = dbUser.userName || session.user.name;
+    if (!userName) {
       return NextResponse.json({
         success: false,
         error: "Invalid user name",
@@ -93,7 +80,7 @@ export async function POST(
       .values({
         name,
         slug,
-        createdBy: dbUser.userName,
+        createdBy: userName,
       })
       .returning();
 
@@ -104,35 +91,27 @@ export async function POST(
       });
     }
 
-    // Update user metadata
-    (await clerkClient()).users.updateUserMetadata(dbUser.clerkId, {
-      publicMetadata: {
-        role: "member",
-      },
-    });
-
-    // Add user to workspaceUserTable as admin
-    const [workspaceUser] = await db
-      .insert(workspaceUserTable)
+    // Add user to members table as admin
+    const [member] = await db
+      .insert(membersTable)
       .values({
-        userId: dbUser.id,
+        userId: userId,
         workspaceId: workspace.id,
         role: "admin",
-        joinedAt: new Date(),
       })
       .returning();
 
-    if (!workspaceUser) {
+    if (!member) {
       return NextResponse.json({
         success: false,
-        error: `Cannot update workspaceUserTable with workspaceId: ${workspace.id} and userId: ${dbUser.id}`,
+        error: `Cannot add user to workspace: ${workspace.id}`,
       });
     }
 
     const responseData: CreateWorkspaceResponse = {
       ...workspace,
-      createdBy: dbUser.userName,
-      members: [dbUser.id],
+      createdBy: userName,
+      members: [userId],
     };
     return NextResponse.json({ success: true, data: responseData });
   } catch (error: unknown) {

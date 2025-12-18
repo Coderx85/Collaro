@@ -1,22 +1,20 @@
 "use client";
 
-import { useClerk } from "@clerk/nextjs";
+import { signOut } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { deleteCookie } from "cookies-next";
-import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export const SignOutButton = () => {
-  const { signOut } = useClerk();
-  useEffect(() => {
-    function deleteCookies() {
-      deleteCookie("workspaceId");
-      deleteCookie("username");
-      deleteCookie("role");
-    }
-    deleteCookies();
-  }, [signOut]);
+  const router = useRouter();
 
-  return (
-    <Button onClick={() => signOut({ redirectUrl: "/" })}>Sign out</Button>
-  );
+  const handleSignOut = async () => {
+    // Sign out using better-auth
+    await signOut();
+
+    // Redirect to home page
+    router.push("/auth/sign-in");
+    router.refresh();
+  };
+
+  return <Button onClick={handleSignOut}>Sign out</Button>;
 };

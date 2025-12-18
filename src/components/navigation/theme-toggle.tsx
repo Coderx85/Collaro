@@ -20,7 +20,7 @@ export function ThemeToggle() {
   return (
     <Toggle
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-primary data-[state=on]:*:[svg]:stroke-primary rounded-full border"
+      className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-primary data-[state=on]:*:[svg]:stroke-secondary rounded-full border"
       aria-label="Toggle Theme"
     >
       {theme === "dark" ? <Sun /> : <Moon />}

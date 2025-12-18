@@ -6,9 +6,10 @@ import {
   membersTable,
   type CreateUserType,
   type CreateWorkspaceType,
-  CreateMemberType,
+  pgUserRole,
 } from "@/db/schema/schema";
-import { sql } from "drizzle-orm/sql";
+import { auth } from "@/lib/auth-config";
+import { config } from "@/lib/config";
 
 type WorkspaceUserRole = "admin" | "member";
 
@@ -88,7 +89,7 @@ const workspaces: SeedWorkspace[] = [
   {
     name: "Avengers Workspace",
     slug: "avengers-workspace",
-    createdBy: "admin",
+    createdBy: "admin", // This user will be the creator/owner
   },
   {
     name: "New Avenger Workspace",
@@ -112,7 +113,7 @@ const workspaceAssignments: WorkspaceAssignment[] = [
   {
     workspaceSlug: "new-avenger-workspace",
     userName: "newavenger",
-    role: "member",
+    role: "member", // Note: Creator is always admin, so this might be redundant if this user is createdBy
   },
   {
     workspaceSlug: "multi-workspace-one",
@@ -126,93 +127,170 @@ const workspaceAssignments: WorkspaceAssignment[] = [
   },
 ];
 
-const assignWorkspaceUsers: CreateMemberType[] = [
-  ...workspaceAssignments.map((assignment) => ({
-    userId:
-      sql`(SELECT id FROM users WHERE user_name = ${assignment.userName})` as unknown as string,
-    workspaceId:
-      sql`(SELECT id FROM workspaces WHERE slug = ${assignment.workspaceSlug}) ` as unknown as string,
-    role: assignment.role,
-  })),
-];
-
 const tablesToReset = {
   users: usersTable,
   workspaces: workspacesTable,
   members: membersTable,
+  // Note: Drizzle Seed reset does not automatically clear auth tables like 'session' if not passed
+  // But cascading deletes from users should handle it if schemas are correct.
 };
 
 async function seed() {
   try {
     console.log("Starting database seed...");
 
+    // 1. Reset Database
+    // We wrapped in try/catch because sometimes reset fails on foreign keys if not ordered or if tables locked
     await reset(db, tablesToReset);
+    console.log("Database reset complete.");
 
-    await db.transaction(async (tx) => {
-      const userMap = new Map<string, string>();
-      const userWorkspaceTargets: Array<{
-        userId: string;
-        workspaceSlug?: string;
-        userName: string;
-      }> = [];
+    // Store user session tokens and IDs for later use
+    const userSessionMap = new Map<string, string>(); // userName -> sessionToken
+    const userIdMap = new Map<string, string>(); // userName -> userId
+    const userEmailMap = new Map<string, string>(); // userName -> email
 
-      for (const seedUser of users) {
-        const [inserted] = await tx
-          .insert(usersTable)
-          .values(seedUser)
-          .returning();
+    // 2. Create Users
+    console.log("Creating users...");
+    for (const seedUser of users) {
+      const response = await auth.api.signUpEmail({
+        body: {
+          email: seedUser.email,
+          password: seedUser.password || "password",
+          name: seedUser.name,
+          userName: seedUser.userName,
+        },
+      });
 
-        if (!inserted || !inserted.id || !inserted.userName) {
-          throw new Error(`Failed to insert user ${seedUser.userName}`);
-        }
+      const safeResponse = response as any;
+      if (
+        !safeResponse?.user ||
+        (!safeResponse?.session && !safeResponse?.token)
+      ) {
+        console.error(
+          "SignUp Response:",
+          JSON.stringify(safeResponse, null, 2),
+        );
+        throw new Error(`Failed to create user ${seedUser.userName}`);
+      }
 
-        userMap.set(inserted.userName, inserted.id);
-        userWorkspaceTargets.push({
-          userId: inserted.id,
-          userName: inserted.userName,
+      const sessionToken = safeResponse.token || safeResponse.session?.token;
+      if (!sessionToken) {
+        throw new Error(`Session token missing for ${seedUser.userName}`);
+      }
+
+      userSessionMap.set(seedUser.userName, sessionToken);
+      userIdMap.set(seedUser.userName, response.user.id);
+      userEmailMap.set(seedUser.userName, seedUser.email);
+      console.log(`Created user: ${seedUser.userName}`);
+    }
+
+    // Store workspace IDs mapped by slug
+    const workspaceIdMap = new Map<string, string>(); // slug -> workspaceId
+    const workspaceOwnerMap = new Map<string, string>(); // slug -> ownerUserName
+
+    // 3. Create Workspaces
+    console.log("Creating workspaces...");
+    for (const workspace of workspaces) {
+      if (!workspace.createdBy) {
+        console.warn(
+          `Skipping workspace ${workspace.name}: No createdBy user specified.`,
+        );
+        continue;
+      }
+
+      const ownerToken = userSessionMap.get(workspace.createdBy);
+      if (!ownerToken) {
+        console.error(
+          `Cannot create workspace ${workspace.name}: Creator ${workspace.createdBy} not found.`,
+        );
+        continue;
+      }
+
+      // Create Organization explicitly specifying userId (server-side mode)
+      const creatorId = userIdMap.get(workspace.createdBy);
+
+      const newOrg = await auth.api.createOrganization({
+        body: {
+          userId: creatorId, // Specify creator explicitly
+          name: workspace.name,
+          slug: workspace.slug,
+          logo: workspace.logo || "",
+        },
+      });
+
+      if (!newOrg) {
+        throw new Error(`Failed to create workspace ${workspace.name}`);
+      }
+
+      workspaceIdMap.set(workspace.slug, newOrg.id);
+      workspaceOwnerMap.set(workspace.slug, workspace.createdBy);
+      console.log(
+        `Created workspace: ${workspace.name} by ${workspace.createdBy} `,
+      );
+    }
+
+    // 4. Assign Members
+    console.log("Assigning members...");
+    for (const assignment of workspaceAssignments) {
+      const workspaceId = workspaceIdMap.get(assignment.workspaceSlug);
+      const ownerUserName = workspaceOwnerMap.get(assignment.workspaceSlug);
+      const ownerToken = ownerUserName
+        ? userSessionMap.get(ownerUserName)
+        : null;
+
+      if (!workspaceId || !ownerToken) {
+        console.warn(
+          `Skipping assignment for ${assignment.userName} in ${assignment.workspaceSlug}: Workspace or Owner not found.`,
+        );
+        continue;
+      }
+
+      // Skip if the user is the creator (they are already added)
+      if (assignment.userName === ownerUserName) {
+        // console.log(`Skipping explicit assignment for creator ${assignment.userName}`);
+        // But we DO ensuring the role is correct.
+        // Logic: createOrganization sets role to 'admin' (via creatorRole config)
+        // So we are good.
+        continue;
+      }
+
+      const userId = userIdMap.get(assignment.userName);
+      if (!userId) {
+        console.warn(`User ID not found for ${assignment.userName}`);
+        continue;
+      }
+
+      // Add member to organization using the Owner's session
+      try {
+        const result = await auth.api.addMember({
+          headers: {
+            cookie: `better-auth.session_token=${ownerToken}`,
+            origin: config.betterAuthUrl,
+          },
+          body: {
+            organizationId: workspaceId,
+            userId: userId, // Use userId instead of email
+            role: "member",
+          },
         });
-      }
-
-      const workspaceMap = new Map<string, string>();
-      for (const workspace of workspaces) {
-        const [inserted] = await tx
-          .insert(workspacesTable)
-          .values(workspace)
-          .returning();
-
-        if (!inserted || !inserted.id || !inserted.slug) {
-          throw new Error(`Failed to insert workspace ${workspace.slug}`);
+        if (result) {
+          console.log(result);
         }
-
-        workspaceMap.set(inserted.slug, inserted.id);
-      }
-
-      for (const { userId, workspaceSlug, userName } of userWorkspaceTargets) {
-        if (!workspaceSlug) {
-          continue;
-        }
-
-        const workspaceId = workspaceMap.get(workspaceSlug);
-        if (!workspaceId) {
-          console.warn(
-            `Workspace ${workspaceSlug} missing while updating ${userName}`,
-          );
-          continue;
-        }
-
-        await tx.execute(
-          sql`UPDATE users SET workspace_id = ${workspaceId} WHERE id = ${userId}`,
+        console.log(
+          `Added ${assignment.userName} to ${assignment.workspaceSlug} as ${assignment.role}`,
+        );
+      } catch (error: unknown) {
+        console.error(
+          `Failed to add member ${assignment.userName} to ${assignment.workspaceSlug}:`,
+          error,
         );
       }
-
-      if (assignWorkspaceUsers.length > 0) {
-        await tx.insert(membersTable).values(assignWorkspaceUsers);
-      }
-    });
+    }
 
     console.log("Seeding complete.");
   } catch (error) {
     console.error("Seeding failed:", error);
+    process.exit(1);
   }
 }
 

@@ -1,4 +1,4 @@
-import { UserRoleType } from "./database";
+import { CreateUserType } from "@/db/schema/schema";
 
 export type APIResponse<T> = {
   success: boolean;
@@ -6,17 +6,7 @@ export type APIResponse<T> = {
   error?: string;
 };
 
-export type UserResponse = {
-  id: string;
-  name: string;
-  email: string;
-  clerkId: string;
-  userName: string;
-  role: UserRoleType;
-  workspaceId: string | null;
-  createdAt: Date;
-  updatedAt: Date | null;
-};
+export type UserResponse = Omit<CreateUserType, "password">;
 
 export type WorkspaceResponse = {
   id: string;
