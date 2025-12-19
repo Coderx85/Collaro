@@ -18,5 +18,5 @@ coverage
 dist
 build
 .turbo
-
+.pnpm-store
 
