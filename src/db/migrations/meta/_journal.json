@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1766030982301,
-      "tag": "0000_dry_scorpion",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1766034969840,
-      "tag": "0001_stiff_flatman",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1766036728969,
-      "tag": "0002_cooing_nicolaos",
+      "when": 1766323463459,
+      "tag": "0000_dry_captain_flint",
       "breakpoints": true
     }
   ]

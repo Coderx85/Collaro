@@ -17,7 +17,7 @@ export default async function proxy(req: NextRequest) {
 
   // Check if route is protected
   const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
+    pathname.startsWith(route),
   );
 
   // Check if route is public auth route
