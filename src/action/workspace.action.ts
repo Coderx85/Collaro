@@ -119,23 +119,31 @@ export async function validateWorkspaceAccess(workspaceId: string) {
 }
 
 // This function is used to get the workspace details with members
-export async function getWorkspace(workspaceId: string) {
+export async function getWorkspace(workspaceSlug: string) {
   try {
     const authUser = await getCurrentAuthUser();
     if (!authUser) {
       return { message: "User not authenticated" };
     }
 
-    // Check if workspace exists
-    const [workspace] = await db
-      .select()
-      .from(workspacesTable)
-      .where(eq(workspacesTable.id, workspaceId))
-      .execute();
+    const workspace = await auth.api.listOrganizations({
+      query: {
+        slug: workspaceSlug,
+      },
+      headers: await headers(),
+    });
 
-    if (!workspace) {
-      return { message: "Workspace not found" };
+    if (!workspace || !(workspace.length > 0)) {
+      return { message: "Workspace not found", success: false };
     }
+
+    const member = await auth.api.getActiveMember({
+      query: {
+        userId: authUser.id,
+        organizationSlug: workspaceSlug,
+      },
+      headers: await headers(),
+    });
 
     // Get workspace members
     const workspaceMember = await getWorkspaceUsers(workspaceId);
@@ -153,9 +161,9 @@ export async function getWorkspace(workspaceId: string) {
     }));
 
     const data = { ...workspace, member };
-    return { data };
+    return { data, success: true };
   } catch (error: unknown) {
-    return { error: `Failed to get workspace:: \n ${error}` };
+    return { error: `Failed to get workspace:: \n ${error}`, success: false };
   }
 }
 

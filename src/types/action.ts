@@ -16,3 +16,14 @@ export interface Response<T> {
   success: boolean;
   status: number;
 }
+
+export type userRole = "owner" | "admin" | "member";
+
+export interface OrganizationMember {
+  id: string;
+  userId: string;
+  workspaceId: string;
+  role: userRole;
+  createdAt: Date;
+  updatedAt: Date;
+}

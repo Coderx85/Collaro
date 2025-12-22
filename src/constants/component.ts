@@ -8,29 +8,16 @@ import {
   IconUserCircle,
   IconUserPentagon,
   IconUsers,
+  IconUsersGroup,
   IconVideoFilled,
 } from "@tabler/icons-react";
 
 export const sidebarLinks: SidebarLink[] = [
   {
-    route: "",
-    label: "Home",
-    details: "This is the home page",
-    component: IconLayoutDashboard,
-    adminRoute: false,
-  },
-  {
-    route: "/workspace-room",
-    label: "Room",
-    details: "Workspace Room detail",
-    component: IconFolder,
-    adminRoute: true,
-  },
-  {
-    component: IconUsers,
-    label: "Members",
-    route: "/members",
-    details: "View and manage workspace members",
+    route: "/workspace-settings",
+    label: "Workspace Settings",
+    details: "Manage workspace settings (Admin/Owner only)",
+    component: IconSettings,
     adminRoute: true,
   },
   {
@@ -39,6 +26,20 @@ export const sidebarLinks: SidebarLink[] = [
     route: "/admin",
     details: "Manage workspace settings and permissions",
     adminRoute: true,
+  },
+  {
+    route: "",
+    label: "Home",
+    details: "This is the home page",
+    component: IconLayoutDashboard,
+    adminRoute: false,
+  },
+  {
+    route: "/workspace-details",
+    label: "Workspace",
+    details: "View and manage workspace details",
+    component: IconUsersGroup,
+    adminRoute: false,
   },
   {
     route: "/upcoming",
@@ -66,13 +67,6 @@ export const sidebarLinks: SidebarLink[] = [
     label: "User",
     details: "User Personal detail",
     component: IconUserCircle,
-    adminRoute: false,
-  },
-  {
-    route: "/setting",
-    label: "Settings",
-    details: "User settings",
-    component: IconSettings,
     adminRoute: false,
   },
 ];
