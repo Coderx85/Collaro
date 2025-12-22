@@ -11,7 +11,7 @@ import {
 import { auth } from "@/lib/auth-config";
 import { config } from "@/lib/config";
 
-type WorkspaceUserRole = "admin" | "member";
+type WorkspaceUserRole = "owner" | "admin" | "member";
 
 type SeedUser = CreateUserType;
 type SeedWorkspace = Omit<CreateWorkspaceType, "id">;
@@ -109,22 +109,27 @@ const workspaces: SeedWorkspace[] = [
 ];
 
 const workspaceAssignments: WorkspaceAssignment[] = [
-  { workspaceSlug: "avengers-workspace", userName: "admin", role: "admin" },
+  // Creators are assigned as 'owner' role
+  { workspaceSlug: "avengers-workspace", userName: "admin", role: "owner" },
   {
     workspaceSlug: "new-avenger-workspace",
     userName: "newavenger",
-    role: "member", // Note: Creator is always admin, so this might be redundant if this user is createdBy
+    role: "owner",
   },
   {
     workspaceSlug: "multi-workspace-one",
     userName: "multiworkspace",
-    role: "admin",
+    role: "owner",
   },
   {
     workspaceSlug: "multi-workspace-two",
     userName: "multiworkspace",
-    role: "admin",
+    role: "owner",
   },
+  // Additional members with different roles
+  { workspaceSlug: "avengers-workspace", userName: "member", role: "member" },
+  { workspaceSlug: "avengers-workspace", userName: "testuser", role: "admin" },
+  { workspaceSlug: "new-avenger-workspace", userName: "guest", role: "member" },
 ];
 
 const tablesToReset = {
@@ -245,12 +250,12 @@ async function seed() {
         continue;
       }
 
-      // Skip if the user is the creator (they are already added)
+      // Skip if the user is the creator (they are already added as owner by createOrganization)
       if (assignment.userName === ownerUserName) {
-        // console.log(`Skipping explicit assignment for creator ${assignment.userName}`);
-        // But we DO ensuring the role is correct.
-        // Logic: createOrganization sets role to 'admin' (via creatorRole config)
-        // So we are good.
+        // Creator is automatically assigned as 'owner' via creatorRole config
+        console.log(
+          `Skipping explicit assignment for creator/owner ${assignment.userName}`,
+        );
         continue;
       }
 
@@ -269,8 +274,8 @@ async function seed() {
           },
           body: {
             organizationId: workspaceId,
-            userId: userId, // Use userId instead of email
-            role: "member",
+            userId: userId,
+            role: assignment.role, // Use the role from assignment
           },
         });
         if (result) {

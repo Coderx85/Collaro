@@ -7,6 +7,7 @@ import Logo from "@/components/Logo";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { config } from "@/lib/config";
 
 const Navbar = async () => {
   const session = await auth.api.getSession({
@@ -53,11 +54,18 @@ const Navbar = async () => {
             </Avatar>
           </div>
         ) : (
-          <Link href={"/sign-in"}>
-            <Button className="text-white bg-transparent dark:bg-transparent hover:bg-primary/90 backdrop-blur-2xl transition-colors text-sm sm:text-base">
-              Sign In
-            </Button>
-          </Link>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Link href={config.SIGN_IN}>
+              <Button className="text-white bg-transparent dark:bg-transparent hover:bg-primary/90 backdrop-blur-2xl transition-colors text-sm sm:text-base">
+                Sign In
+              </Button>
+            </Link>
+            <Link href={config.SIGN_UP}>
+              <Button className="text-white dark:text-accent dark:bg-white/50 bg-white/50  hover:bg-primary/90 backdrop-blur-2xl transition-colors text-sm sm:text-base">
+                Sign Up
+              </Button>
+            </Link>
+          </div>
         )}
       </div>
     </div>

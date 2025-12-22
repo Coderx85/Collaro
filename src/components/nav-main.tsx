@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -14,7 +15,6 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { sidebarLinks } from "@/constants/component";
-import sidebar from "@/constants/sidebar.json";
 
 export function NavMain({
   items,
@@ -27,37 +27,73 @@ export function NavMain({
     icon?: Icon;
   }[];
   workspaceId?: string;
-  role?: "admin" | "member";
+  role: "owner" | "admin" | "member";
 }) {
   const pathname = usePathname();
 
-  // Workspace-specific sidebar (uses `sidebarLinks`)
-  if (workspaceId) {
+  if (!workspaceId) {
     return (
       <SidebarGroup>
         <SidebarGroupContent className="flex flex-col gap-2">
           <SidebarMenu>
-            {sidebarLinks.map((item) => {
+            <SidebarMenuItem className="flex items-center gap-2">
+              <SidebarMenuButton
+                tooltip="Quick Create"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
+              >
+                <IconCirclePlusFilled />
+                <span>Quick Create</span>
+              </SidebarMenuButton>
+              <Button
+                size="icon"
+                className="size-8 group-data-[collapsible=icon]:opacity-0"
+                variant="outline"
+              >
+                <IconMail />
+                <span className="sr-only">Inbox</span>
+              </Button>
+            </SidebarMenuItem>
+          </SidebarMenu>
+          <SidebarMenu>
+            {items?.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton tooltip={item.title}>
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    );
+  }
+  return (
+    <SidebarGroup>
+      {/* Non-Member Routes */}
+
+      <SidebarGroupLabel>Admin Routes</SidebarGroupLabel>
+      <SidebarGroupContent className="flex flex-col gap-2">
+        <SidebarMenu>
+          {sidebarLinks
+            .filter((item) => item.adminRoute === true)
+            .map((item) => {
               const route = `/workspace/${workspaceId}${item.route}`;
               const isActive = pathname === route;
               const isAdminRoute = item.adminRoute === true;
-              const isAdmin = role === "admin";
-              const shouldRender = !isAdminRoute || isAdmin;
+              const hasAdminAccess = role === "owner" || role === "admin";
+              const shouldRender = !isAdminRoute || hasAdminAccess;
 
               if (!shouldRender) return null;
 
               const Component = item.component;
-              // const iconClass = isActive ? "text-primary" : "text-muted";
-              // const iconClass = "text-muted";
 
               return (
                 <SidebarMenuItem key={route}>
                   <SidebarMenuButton
                     tooltip={item.label}
                     asChild
-                    size={"lg"}
                     isActive={isActive}
-                    className="[&>svg]:size-5"
                   >
                     <Link href={route}>
                       {Component && (
@@ -72,44 +108,45 @@ export function NavMain({
                 </SidebarMenuItem>
               );
             })}
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
-    );
-  }
+        </SidebarMenu>
+      </SidebarGroupContent>
 
-  // Fallback: generic nav (unchanged)
-  return (
-    <SidebarGroup>
+      <SidebarGroupLabel>Workspace</SidebarGroupLabel>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
-          <SidebarMenuItem className="flex items-center gap-2">
-            <SidebarMenuButton
-              tooltip="Quick Create"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
-            >
-              <IconCirclePlusFilled />
-              <span>Quick Create</span>
-            </SidebarMenuButton>
-            <Button
-              size="icon"
-              className="size-8 group-data-[collapsible=icon]:opacity-0"
-              variant="outline"
-            >
-              <IconMail />
-              <span className="sr-only">Inbox</span>
-            </Button>
-          </SidebarMenuItem>
-        </SidebarMenu>
-        <SidebarMenu>
-          {items?.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title}>
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          {sidebarLinks
+            .filter((item) => item.adminRoute !== true)
+            .map((item) => {
+              const route = `/workspace/${workspaceId}${item.route}`;
+              const isActive = pathname === route;
+              const isAdminRoute = item.adminRoute === true;
+              const hasAdminAccess = role === "owner" || role === "admin";
+              const shouldRender = !isAdminRoute || hasAdminAccess;
+
+              if (!shouldRender) return null;
+
+              const Component = item.component;
+
+              return (
+                <SidebarMenuItem key={route}>
+                  <SidebarMenuButton
+                    tooltip={item.label}
+                    asChild
+                    isActive={isActive}
+                  >
+                    <Link href={route}>
+                      {Component && (
+                        <Component
+                          selected={isActive}
+                          // className={iconClass}
+                        />
+                      )}
+                      <span>{item.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              );
+            })}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

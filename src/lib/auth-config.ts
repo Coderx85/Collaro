@@ -38,7 +38,7 @@ export const auth = betterAuth({
     nextCookies(),
     organization({
       allowUserToCreateOrganization: true,
-      creatorRole: "admin",
+      creatorRole: "owner",
       schema: {
         organization: {
           modelName: "workspace",
@@ -54,10 +54,9 @@ export const auth = betterAuth({
         invitation: {
           modelName: "invitation",
           schema: schema.invitationTable,
+          fields: {
+            organizationId: "workspaceId",
         },
-        organizationRole: {
-          modelName: "roles",
-          schema: schema.pgUserRole,
         },
       },
     }),
