@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
 import { authClient, useSession } from "@/lib/auth-client";
-import { useWorkspaceStore } from "@/store/workspace";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useEffect, useState } from "react";
 
@@ -13,10 +12,21 @@ type org = {
 const ProfileCard = () => {
   const { data: session } = useSession();
   const [org, setOrg] = useState<org>({});
+  const [memberRole, setMemberRole] = useState<{ role?: string }>({});
+
+  useEffect(() => {
+    const fetchMember = async () => {
+      const result = await authClient.organization.getActiveMemberRole();
+      if (result.data) {
+        setMemberRole({ role: result.data.role });
+      }
+    };
+    fetchMember();
+  }, []);
+
   useEffect(() => {
     const fetchOrg = async () => {
       const orgData = await authClient.organization.getFullOrganization();
-      console.log(orgData.data);
       setOrg({ data: orgData.data });
     };
     fetchOrg();
@@ -48,6 +58,11 @@ const ProfileCard = () => {
             {org?.data && (
               <p className="text-white/75 mt-2.5 text-xs xl:text-lg">
                 Team: {org?.data?.name}
+              </p>
+            )}
+            {memberRole && (
+              <p className="text-white/75 mt-2.5 text-xs xl:text-lg">
+                Role: {memberRole?.role}
               </p>
             )}
           </div>

@@ -10,11 +10,12 @@ import type { NewWorkspaceFormSchema } from "@/lib/form/new-workspace-form";
 import type { z } from "zod";
 import { canDeleteWorkspace } from "@/lib/workspace-auth";
 import { getCurrentUser } from "@/lib/session";
+import type { userRole } from "@/types";
 
 type NewWorkspaceFormSchemaType = z.infer<typeof NewWorkspaceFormSchema>;
 
 export async function createWorkspace(
-  workspaceData: NewWorkspaceFormSchemaType,
+  workspaceData: NewWorkspaceFormSchemaType
 ) {
   try {
     const response = await auth.api.createOrganization({
@@ -48,7 +49,7 @@ export async function createWorkspace(
  */
 export async function updateWorkspace(
   workspaceId: string,
-  data: { name?: string; slug?: string },
+  data: { name?: string; slug?: string }
 ): Promise<APIResponse<{ name: string; slug: string }>> {
   try {
     // Use better-auth's API to update the organization
@@ -109,8 +110,8 @@ export async function getWorkspaceUsers(workspaceId: string) {
     .where(
       and(
         eq(membersTable.userId, authUser.id),
-        eq(membersTable.workspaceId, workspaceId),
-      ),
+        eq(membersTable.workspaceId, workspaceId)
+      )
     )
     .execute();
 
@@ -152,8 +153,8 @@ export async function validateWorkspaceAccess(workspaceId: string) {
     .where(
       and(
         eq(membersTable.userId, authUser.id),
-        eq(membersTable.workspaceId, workspaceId),
-      ),
+        eq(membersTable.workspaceId, workspaceId)
+      )
     )
     .execute();
 
@@ -211,7 +212,7 @@ export async function getAllWorkspaces() {
             workspaceId: membersTable.workspaceId,
           })
           .from(membersTable)
-          .where(eq(membersTable.userId, user.id ?? "")),
+          .where(eq(membersTable.userId, user.id ?? ""))
       ),
   });
 
@@ -222,7 +223,7 @@ export async function getAllWorkspaces() {
 export async function updateUserRole(
   userId: string,
   workspaceId: string,
-  role: userRole,
+  role: userRole
 ): Promise<APIResponse<{ role: string }>> {
   try {
     const updatedMember = await db
@@ -231,8 +232,8 @@ export async function updateUserRole(
       .where(
         and(
           eq(membersTable.userId, userId),
-          eq(membersTable.workspaceId, workspaceId),
-        ),
+          eq(membersTable.workspaceId, workspaceId)
+        )
       )
       .returning();
 
@@ -306,6 +307,77 @@ export async function setWorkspaceFromDB() {
   } catch (error: unknown) {
     return {
       error: `Failed to fetch workspace from DB: ${error}`,
+      success: false,
+    };
+  }
+}
+
+export async function getWorkspaceUserRole(workspaceSlug: string) {
+  try {
+    const authUser = await getCurrentAuthUser();
+    if (!authUser) {
+      return {
+        error: "User not authenticated",
+        success: false,
+      };
+    }
+    const org = await auth.api.getActiveMemberRole({
+      query: {
+        userId: authUser.id,
+        organizationSlug: workspaceSlug,
+      },
+      headers: await headers(),
+    });
+
+    if (!org || !org.role) {
+      return {
+        error: "Failed to retrieve user role",
+        success: false,
+      };
+    }
+
+    return org.role;
+  } catch (error: unknown) {
+    return {
+      error: `Failed to get user role:\n ${error}`,
+      success: false,
+    };
+  }
+}
+
+/**
+ * Delete a workspace
+ * Only owners can delete workspaces
+ */
+export async function deleteWorkspace(
+  workspaceId: string
+): Promise<APIResponse<{ deleted: boolean }>> {
+  try {
+    // Check if user has permission to delete
+    const permission = await canDeleteWorkspace();
+
+    if (!permission.allowed) {
+      return {
+        error:
+          "You don't have permission to delete this workspace. Only owners can delete workspaces.",
+        success: false,
+      };
+    }
+
+    // Use better-auth's API to delete the organization
+    await auth.api.deleteOrganization({
+      headers: await headers(),
+      body: {
+        organizationId: workspaceId,
+      },
+    });
+
+    return { data: { deleted: true }, success: true };
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    return {
+      error: `Failed to delete workspace: ${message}`,
       success: false,
     };
   }
