@@ -7,17 +7,14 @@ import { AppSidebar } from "@/components/app-sidebar";
 const RootLayout = async ({
   children,
   navbar,
-  params,
 }: {
   children: ReactNode;
   navbar: ReactNode;
-  params: Promise<{ slug: string }>;
 }) => {
-  const slug = (await params).slug;
   return (
     <StreamVideoProvider>
       <SidebarProvider>
-        <AppSidebar workspaceId={slug} variant="inset" />
+        <AppSidebar />
         <SidebarInset>
           {navbar}
           <Suspense

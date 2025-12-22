@@ -8,6 +8,8 @@ import { redirect } from "next/navigation";
 import type { APIResponse } from "@/types/api";
 import type { NewWorkspaceFormSchema } from "@/lib/form/new-workspace-form";
 import type { z } from "zod";
+import { canDeleteWorkspace } from "@/lib/workspace-auth";
+import { getCurrentUser } from "@/lib/session";
 
 type NewWorkspaceFormSchemaType = z.infer<typeof NewWorkspaceFormSchema>;
 
@@ -33,9 +35,53 @@ export async function createWorkspace(
       },
     };
   } catch (error: unknown) {
-    console.error("Failed to create workspace:", error);
     return {
       error: `Failed to create workspace: ${error}`,
+      success: false,
+    };
+  }
+}
+
+/**
+ * Update a workspace's details
+ * Only owners and admins can update workspaces
+ */
+export async function updateWorkspace(
+  workspaceId: string,
+  data: { name?: string; slug?: string },
+): Promise<APIResponse<{ name: string; slug: string }>> {
+  try {
+    // Use better-auth's API to update the organization
+    const result = await auth.api.updateOrganization({
+      headers: await headers(),
+      body: {
+        organizationId: workspaceId,
+        data: {
+          name: data.name,
+          slug: data.slug,
+        },
+      },
+    });
+
+    if (!result) {
+      return {
+        error: "Failed to update workspace",
+        success: false,
+      };
+    }
+
+    return {
+      success: true,
+      data: {
+        name: result.name,
+        slug: result.slug,
+      },
+    };
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    return {
+      error: `Failed to update workspace: ${message}`,
       success: false,
     };
   }
@@ -145,21 +191,6 @@ export async function getWorkspace(workspaceSlug: string) {
       headers: await headers(),
     });
 
-    // Get workspace members
-    const workspaceMember = await getWorkspaceUsers(workspaceId);
-    if (!workspaceMember.data) {
-      return { message: "No members found for this workspace" };
-    }
-
-    const memberData = workspaceMember.data;
-    const member = memberData.map((m) => ({
-      id: m.userId,
-      name: m.name,
-      userName: m.userName,
-      email: m.email,
-      role: m.role,
-    }));
-
     const data = { ...workspace, member };
     return { data, success: true };
   } catch (error: unknown) {
@@ -169,23 +200,29 @@ export async function getWorkspace(workspaceSlug: string) {
 
 // This function is used to get all workspaces
 export async function getAllWorkspaces() {
-  try {
-    const data = await db.select().from(workspacesTable).execute();
-    const member = await db.select().from(membersTable).execute();
-    return {
-      workspaces: data,
-      members: member,
-    };
-  } catch (error: unknown) {
-    return { error: `Failed to get workspaces:: \n ${error}` };
-  }
+  const user = await getCurrentUser();
+
+  const data = db.query.workspacesTable.findMany({
+    where: (workspace, { eq, inArray }) =>
+      inArray(
+        workspace.id,
+        db
+          .select({
+            workspaceId: membersTable.workspaceId,
+          })
+          .from(membersTable)
+          .where(eq(membersTable.userId, user.id ?? "")),
+      ),
+  });
+
+  return data;
 }
 
 // This function is used to update the role of a user in a workspace
 export async function updateUserRole(
   userId: string,
   workspaceId: string,
-  role: "admin" | "member",
+  role: userRole,
 ): Promise<APIResponse<{ role: string }>> {
   try {
     const updatedMember = await db
