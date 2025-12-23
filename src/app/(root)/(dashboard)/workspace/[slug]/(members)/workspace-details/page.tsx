@@ -96,7 +96,7 @@ export default async function OrgDetailsPage({
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex items-center gap-2 p-4 rounded-lg bg-muted/50">
-              <Users className="h-5 w-5 text-muted-foreground" />
+              <Users className="size-7 text-muted-foreground" />
               <div>
                 <p className="text-sm text-muted-foreground">Members</p>
                 <p className="text-2xl font-bold">
@@ -105,7 +105,7 @@ export default async function OrgDetailsPage({
               </div>
             </div>
             <div className="flex items-center gap-2 p-4 rounded-lg bg-muted/50">
-              <Shield className="h-5 w-5 text-muted-foreground" />
+              <Shield className="size-7 text-muted-foreground" />
               <div>
                 <p className="text-sm text-muted-foreground">Your Role</p>
                 <p className="text-2xl font-bold capitalize">
@@ -114,7 +114,7 @@ export default async function OrgDetailsPage({
               </div>
             </div>
             <div className="flex items-center gap-2 p-4 rounded-lg bg-muted/50">
-              <Building2 className="h-5 w-5 text-muted-foreground" />
+              <Building2 className="size-7 text-muted-foreground" />
               <div>
                 <p className="text-sm text-muted-foreground">Status</p>
                 <p className="text-2xl font-bold text-green-500">Active</p>

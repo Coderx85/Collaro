@@ -58,7 +58,6 @@ export default async function OrgSettingsPage({
 
   return (
     <div className="space-y-8 p-2 flex flex-col gap-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl flex items-center gap-2 font-bold tracking-tight">
@@ -81,7 +80,7 @@ export default async function OrgSettingsPage({
       {canUpdate && (
         <Card>
           <CardHeader>
-            <CardTitle>Basic Settings</CardTitle>
+            <CardTitle className="text-2xl">Basic Settings</CardTitle>
             <CardDescription>
               Update your workspace name and details. Changes will be reflected
               across the entire organization.
