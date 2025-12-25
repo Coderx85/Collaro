@@ -6,7 +6,7 @@
   "author": {
     "name": "Priyahshu",
     "email": "work.priyanshu085@gmail.com",
-    "url": "https://github.com/Coderx85/collaro"
+    "url": "https://github.com/Coderx85/collaro.git"
   },
   "scripts": {
     "dev": "next dev --turbopack",
@@ -35,7 +35,7 @@
     ]
   },
   "dependencies": {
-    "@biomejs/biome": "^2.3.10",
+    "@biomejs/biome": "2.3.10",
     "@hookform/resolvers": "^5.0.1",
     "@neondatabase/serverless": "^1.0.2",
     "@radix-ui/react-accordion": "^1.2.11",
