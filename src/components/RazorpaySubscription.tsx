@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -10,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
-import {
+import type {
   SubscriptionPlanDetails,
   SubscriptionUserDetails,
 } from "@/types/razorpay";
@@ -146,7 +147,7 @@ const RazorpaySubscription: React.FC<RazorpaySubscriptionProps> = ({
         notes: {
           subscription_id: subscription.id,
         },
-        handler: async function (response: any) {
+        handler: async (response: any) => {
           try {
             // Verify subscription payment with our server
             const verifyResponse = await fetch(
@@ -205,7 +206,7 @@ const RazorpaySubscription: React.FC<RazorpaySubscriptionProps> = ({
           }
         },
         modal: {
-          ondismiss: function () {
+          ondismiss: () => {
             setProcessingPayment(false);
             toast({
               title: "Payment Cancelled",

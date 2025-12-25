@@ -1,5 +1,5 @@
-import { IconType } from "react-icons/lib";
-import { userRole } from "./action";
+import type { IconType } from "react-icons/lib";
+import type { TUserRole } from "./action";
 
 export interface CalendarExportProps {
   meetingId: string;
@@ -59,7 +59,7 @@ export type SidebarLink = {
 };
 
 export interface SidebarLinks {
-  role: userRole;
+  role: TUserRole;
   workspaceId: string;
 }
 

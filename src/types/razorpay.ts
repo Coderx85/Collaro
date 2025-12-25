@@ -1,4 +1,4 @@
-import { IconType } from "react-icons/lib";
+import type { IconType } from "react-icons/lib";
 
 // Razorpay API response types (simplified to avoid type conflicts)
 export interface RazorpayBaseEntity {

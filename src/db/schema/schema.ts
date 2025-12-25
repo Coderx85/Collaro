@@ -9,7 +9,11 @@ import {
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm/sql";
 import * as t from "drizzle-orm/pg-core";
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import {
+  createInsertSchema,
+  createSelectSchema,
+  createUpdateSchema,
+} from "drizzle-zod";
 import z from "zod";
 
 // Define user_role enum first
@@ -31,7 +35,7 @@ export const usersTable = pgTable(
   (table) => [
     t.uniqueIndex("users_email_unique_idx").on(table.email),
     t.uniqueIndex("users_user_name_unique_idx").on(table.userName),
-  ]
+  ],
 );
 
 // Workspaces table definition
@@ -51,7 +55,7 @@ export const workspacesTable = pgTable(
   (table) => [
     t.uniqueIndex("workspaces_name_unique_idx").on(table.name),
     t.uniqueIndex("workspaces_slug_unique_idx").on(table.slug),
-  ]
+  ],
 );
 
 // Members Table
@@ -80,7 +84,7 @@ export const membersTable = pgTable(
       .on(table.userId, table.workspaceId),
     t.index("members_workspace_id_idx").on(table.workspaceId),
     t.index("members_role_idx").on(table.role),
-  ]
+  ],
 );
 
 export const invitationTable = pgTable(
@@ -106,7 +110,7 @@ export const invitationTable = pgTable(
   (table) => [
     t.index("invitation_workspace_id_idx").on(table.workspaceId),
     t.index("invitation_email_idx").on(table.email),
-  ]
+  ],
 );
 
 // Workspace meetings table
@@ -131,7 +135,7 @@ export const workspaceMeetingTable = pgTable(
   (table) => [
     t.index("workspace_meetings_workspace_id_idx").on(table.workspaceId),
     t.index("workspace_meetings_hosted_by_idx").on(table.hostedBy),
-  ]
+  ],
 );
 
 export const CreateUserSchema = createInsertSchema(usersTable, {
@@ -153,7 +157,26 @@ export const CreateUserSchema = createInsertSchema(usersTable, {
     emailVerified: true,
     id: true,
   });
+
 export const CreateWorkspaceSchema = createInsertSchema(workspacesTable);
+
+export const UpdateWorkspaceSchema = createUpdateSchema(workspacesTable, {
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  slug: z
+    .string()
+    .min(2, "Slug must be at least 2 characters")
+    .regex(
+      /^[a-z0-9-]+$/,
+      "Slug can only contain lowercase letters, numbers, and hyphens",
+    ),
+  logo: z.string().url("Logo must be a valid URL").optional(),
+  updatedAt: z.date().optional(),
+}).omit({
+  id: true,
+  createdAt: true,
+  createdBy: true,
+});
+
 export const SelectUserSchema = createSelectSchema(usersTable, {
   password: z.string().min(6),
   email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/),

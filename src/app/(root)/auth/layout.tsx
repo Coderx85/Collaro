@@ -1,5 +1,5 @@
 import { CardContent } from "@/components/ui/card";
-import React from "react";
+import type React from "react";
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (

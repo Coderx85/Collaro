@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
@@ -80,7 +81,7 @@ const RazorpayButton: React.FC<RazorpayButtonProps> = ({
           email: prefillEmail,
           contact: prefillContact,
         },
-        handler: async function (response: any) {
+        handler: async (response: any) => {
           try {
             // Verify the payment on the server
             const verifyResponse = await fetch("/api/payment/verify", {
@@ -126,7 +127,7 @@ const RazorpayButton: React.FC<RazorpayButtonProps> = ({
           }
         },
         modal: {
-          ondismiss: function () {
+          ondismiss: () => {
             setLoading(false);
             toast({
               title: "Payment Cancelled",

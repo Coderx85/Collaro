@@ -2,7 +2,7 @@
 
 import { useEffect, useCallback } from "react";
 import { useWorkspaceStore } from "@/store/workspace";
-import { WorkspaceInitializerProps } from "@/types";
+import type { WorkspaceInitializerProps } from "@/types";
 
 export const WorkspaceInitializer = ({
   workspaceId,

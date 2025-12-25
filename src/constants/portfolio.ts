@@ -1,4 +1,4 @@
-import { ContactProps, SkillDataProps } from "@/types";
+import type { ContactProps, SkillDataProps } from "@/types";
 import {
   FaCss3,
   FaEnvelope,

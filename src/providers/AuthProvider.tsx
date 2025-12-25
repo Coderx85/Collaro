@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import { useSession as useBetterAuthSession } from "@/lib/auth-client";
 import type { PrivateUserDTO } from "@/lib/dto";
 

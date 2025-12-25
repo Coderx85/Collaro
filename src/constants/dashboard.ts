@@ -1,4 +1,4 @@
-import { FeatureCard } from "@/types";
+import type { FeatureCard } from "@/types";
 import {
   FaCalendarAlt,
   FaBolt,

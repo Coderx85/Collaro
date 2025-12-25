@@ -4,7 +4,7 @@ import { downloadMeetingICS, type Meeting } from "../lib/calendar-client";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { FaFileDownload } from "react-icons/fa";
-import { CalendarExportProps } from "@/types";
+import type { CalendarExportProps } from "@/types";
 
 export function CalendarExport({
   meetingId,

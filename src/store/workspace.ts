@@ -1,4 +1,4 @@
-import { WorkspaceState } from "@/types";
+import type { WorkspaceState } from "@/types";
 import { create } from "zustand";
 
 export const useWorkspaceStore = create<WorkspaceState>((set) => ({

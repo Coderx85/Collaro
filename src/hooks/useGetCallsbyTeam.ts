@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
+import { type Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
 
 export const useGetCallsByTeam = (team: string | string[]) => {
   const [calls, setCalls] = useState<Call[]>([]);

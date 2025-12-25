@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { useStreamVideoClient } from "@stream-io/video-react-sdk";
-import { NotificationProps } from "@/types";
+import type { NotificationProps } from "@/types";
 import { FaBell } from "react-icons/fa";
 
 const NotificationBell = () => {

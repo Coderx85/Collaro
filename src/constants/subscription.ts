@@ -1,4 +1,4 @@
-import { Plan } from "@/types/razorpay";
+import type { Plan } from "@/types/razorpay";
 import { FaBolt, FaIndustry, FaSquare } from "react-icons/fa";
 
 // Define the billing interval

@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { featureCard } from "@/constants";
 import React from "react";
-import { IconType } from "react-icons/lib";
+import type { IconType } from "react-icons/lib";
 import { FaTools } from "react-icons/fa";
 
 export function Feature() {

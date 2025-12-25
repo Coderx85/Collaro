@@ -8,7 +8,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Call, CallRecording } from "@stream-io/video-react-sdk";
+import type { Call, CallRecording } from "@stream-io/video-react-sdk";
 import { FaSearch } from "react-icons/fa";
 import { getFormattedDate } from "@/hooks/getFormatDate";
 

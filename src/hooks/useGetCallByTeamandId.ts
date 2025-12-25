@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
+import { type Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { useSession } from "@/lib/auth-client";
 import { getCookie } from "cookies-next";
 

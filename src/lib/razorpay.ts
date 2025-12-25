@@ -1,7 +1,7 @@
 // Razorpay integration utility
 import Razorpay from "razorpay";
 import crypto from "crypto";
-import { RazorpayResponse } from "@/types/razorpay";
+import type { RazorpayResponse } from "@/types/razorpay";
 
 // Initialize Razorpay with API keys from environment variables
 const razorpayInstance = new Razorpay({

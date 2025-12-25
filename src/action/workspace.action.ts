@@ -10,7 +10,7 @@ import type { NewWorkspaceFormSchema } from "@/lib/form/new-workspace-form";
 import type { z } from "zod";
 import { canDeleteWorkspace } from "@/lib/workspace-auth";
 import { getCurrentUser } from "@/lib/session";
-import type { userRole } from "@/types";
+import type { TUserRole } from "@/types";
 
 type NewWorkspaceFormSchemaType = z.infer<typeof NewWorkspaceFormSchema>;
 
@@ -49,8 +49,8 @@ export async function createWorkspace(
  */
 export async function updateWorkspace(
   workspaceId: string,
-  data: { name?: string; slug?: string }
-): Promise<APIResponse<{ name: string; slug: string }>> {
+  data: { name?: string; slug?: string; logo?: string }
+): Promise<APIResponse<{ name: string; slug: string; logo: string }>> {
   try {
     // Use better-auth's API to update the organization
     const result = await auth.api.updateOrganization({
@@ -74,6 +74,7 @@ export async function updateWorkspace(
     return {
       success: true,
       data: {
+        logo: data.logo || "",
         name: result.name,
         slug: result.slug,
       },
@@ -165,7 +166,12 @@ export async function validateWorkspaceAccess(workspaceId: string) {
   return;
 }
 
-// This function is used to get the workspace details with members
+/*
+ * `workspaceSlug` - slug of the workspace.
+ * `authUser` - authenticated user.
+ * This function is used to get the workspace details with members.
+ */
+
 export async function getWorkspace(workspaceSlug: string) {
   try {
     const authUser = await getCurrentAuthUser();
@@ -184,13 +190,16 @@ export async function getWorkspace(workspaceSlug: string) {
       return { message: "Workspace not found", success: false };
     }
 
-    const member = await auth.api.getActiveMember({
-      query: {
-        userId: authUser.id,
-        organizationSlug: workspaceSlug,
-      },
-      headers: await headers(),
-    });
+    const [member] = await db
+      .select()
+      .from(membersTable)
+      .where(
+        and(
+          eq(membersTable.userId, authUser.id),
+          eq(membersTable.workspaceId, workspaceSlug)
+        )
+      )
+      .execute();
 
     const data = { ...workspace, member };
     return { data, success: true };
@@ -223,7 +232,7 @@ export async function getAllWorkspaces() {
 export async function updateUserRole(
   userId: string,
   workspaceId: string,
-  role: userRole
+  role: TUserRole
 ): Promise<APIResponse<{ role: string }>> {
   try {
     const updatedMember = await db
@@ -312,7 +321,7 @@ export async function setWorkspaceFromDB() {
   }
 }
 
-export async function getWorkspaceUserRole(workspaceSlug: string) {
+export async function getWorkspaceTUserRole(workspaceSlug: string) {
   try {
     const authUser = await getCurrentAuthUser();
     if (!authUser) {

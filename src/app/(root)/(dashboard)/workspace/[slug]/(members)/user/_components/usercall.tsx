@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { useGetCallsByTeam } from "@/hooks/useGetCallsbyTeam";
 import { useWorkspaceStore } from "@/store/workspace";
-import { Call } from "@stream-io/video-react-sdk";
+import type { Call } from "@stream-io/video-react-sdk";
 
 const Usercall = () => {
   const { workspaceName } = useWorkspaceStore();

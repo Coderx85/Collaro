@@ -6,6 +6,7 @@ import { db } from "@/db/client";
 import { nextCookies } from "better-auth/next-js";
 import { config } from "./config";
 import { organization } from "better-auth/plugins";
+import { ac, roles } from "./permission";
 
 export const auth = betterAuth({
   secret: config.betterSecret,
@@ -37,6 +38,8 @@ export const auth = betterAuth({
   plugins: [
     nextCookies(),
     organization({
+      ac,
+      roles,
       allowUserToCreateOrganization: true,
       creatorRole: "owner",
       schema: {
@@ -56,7 +59,7 @@ export const auth = betterAuth({
           schema: schema.invitationTable,
           fields: {
             organizationId: "workspaceId",
-        },
+          },
         },
       },
     }),
@@ -74,6 +77,21 @@ export const auth = betterAuth({
   advanced: {
     database: {
       generateId: "uuid",
+    },
+  },
+  databaseHooks: {
+    session: {
+      create: {
+        // before: async (session) => {
+        //   const organization = await getActiveOrganization(session.user.id);
+        //   return (
+        //     data: {
+        //       ...session,
+        //       activeOrganisation: organization.id,
+        //     }
+        //   );
+        // },
+      },
     },
   },
 });

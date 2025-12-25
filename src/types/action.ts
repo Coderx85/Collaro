@@ -17,13 +17,13 @@ export interface Response<T> {
   status: number;
 }
 
-export type userRole = "owner" | "admin" | "member";
+export type TUserRole = "owner" | "admin" | "member";
 
-export interface OrganizationMember {
+export interface TOrganizationMember {
   id: string;
   userId: string;
   workspaceId: string;
-  role: userRole;
+  role: TUserRole;
   createdAt: Date;
   updatedAt: Date;
 }

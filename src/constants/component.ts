@@ -1,4 +1,4 @@
-import { SidebarLink } from "@/types";
+import type { SidebarLink } from "@/types";
 import {
   IconCalendarTime,
   IconFolder,

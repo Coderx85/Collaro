@@ -1,5 +1,5 @@
-import { ReactNode } from "react";
-import { Metadata } from "next";
+import type { ReactNode } from "react";
+import type { Metadata } from "next";
 import Navbar from "./_components/Navbar";
 
 export const metadata: Metadata = {

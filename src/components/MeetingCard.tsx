@@ -4,7 +4,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { MeetingCardProps } from "@/types";
+import type { MeetingCardProps } from "@/types";
 import { CalendarExport } from "./CalendarExport";
 
 const MeetingCard = ({

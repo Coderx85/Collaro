@@ -4,7 +4,7 @@ import * as React from "react";
 import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { z } from "zod";
+import type { z } from "zod";
 import { toast } from "sonner";
 import {
   Loader2,
@@ -173,9 +173,8 @@ export default function RegisterPage() {
                 <>
                   <div className="flex gap-4">
                     {/* Name Field */}
-                    <form.Field
-                      name="name"
-                      children={(field) => {
+                    <form.Field name="name">
+                      {(field) => {
                         const isInvalid =
                           field.state.meta.isTouched &&
                           !field.state.meta.isValid;
@@ -210,12 +209,11 @@ export default function RegisterPage() {
                           </Field>
                         );
                       }}
-                    />
+                    </form.Field>
 
                     {/* Email Field */}
-                    <form.Field
-                      name="email"
-                      children={(field) => {
+                    <form.Field name="email">
+                      {(field) => {
                         const isInvalid =
                           field.state.meta.isTouched &&
                           !field.state.meta.isValid;
@@ -250,12 +248,11 @@ export default function RegisterPage() {
                           </Field>
                         );
                       }}
-                    />
+                    </form.Field>
                   </div>
 
-                  <form.Field
-                    name="userName"
-                    children={(field) => {
+                  <form.Field name="userName">
+                    {(field) => {
                       const isInvalid =
                         field.state.meta.isTouched && !field.state.meta.isValid;
                       return (
@@ -289,7 +286,7 @@ export default function RegisterPage() {
                         </Field>
                       );
                     }}
-                  />
+                  </form.Field>
                 </>
               )}
 

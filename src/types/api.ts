@@ -1,4 +1,4 @@
-import { CreateUserType } from "@/db/schema/schema";
+import type { CreateUserType } from "@/db/schema/schema";
 
 export type APIResponse<T> = {
   success: boolean;

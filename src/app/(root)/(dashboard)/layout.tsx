@@ -1,5 +1,5 @@
 import StreamVideoProvider from "@/providers/StreamClientProvider";
-import React from "react";
+import type React from "react";
 
 type Props = {
   children: React.ReactNode;
