@@ -1,4 +1,4 @@
-import { CreateUserSchema } from "@/db/schema/schema";
+import { CreateUserSchema, CreateWorkspaceSchema } from "@/db/schema/schema";
 import { z } from "zod";
 
 export const profileFormSchema = z.object({
@@ -20,3 +20,9 @@ export const profileFormSchema = z.object({
 export const registerSchema = CreateUserSchema;
 
 export type RegisterFormValues = z.infer<typeof registerSchema>;
+
+export const NewWorkspaceFormSchema = CreateWorkspaceSchema.pick({
+  name: true,
+  slug: true,
+  logo: true,
+});

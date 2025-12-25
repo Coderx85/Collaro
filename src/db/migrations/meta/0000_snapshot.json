@@ -1,5 +1,5 @@
 {
-  "id": "d72db4d2-27c7-4330-8a30-ec8be77ca38d",
+  "id": "7046dedb-17fc-4087-8ed0-a32b08579f85",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -95,8 +95,12 @@
           "name": "account_user_id_users_id_fk",
           "tableFrom": "account",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -168,8 +172,12 @@
           "name": "session_user_id_users_id_fk",
           "tableFrom": "session",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -179,7 +187,9 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": ["token"]
+          "columns": [
+            "token"
+          ]
         }
       },
       "policies": {},
@@ -332,8 +342,12 @@
           "name": "invitation_workspace_id_workspaces_id_fk",
           "tableFrom": "invitation",
           "tableTo": "workspaces",
-          "columnsFrom": ["workspace_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "workspace_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -341,8 +355,12 @@
           "name": "invitation_inviter_id_users_id_fk",
           "tableFrom": "invitation",
           "tableTo": "users",
-          "columnsFrom": ["inviter_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "inviter_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -457,8 +475,12 @@
           "name": "members_user_id_users_id_fk",
           "tableFrom": "members",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -466,8 +488,12 @@
           "name": "members_workspace_id_workspaces_id_fk",
           "tableFrom": "members",
           "tableTo": "workspaces",
-          "columnsFrom": ["workspace_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "workspace_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -572,12 +598,16 @@
         "users_user_name_unique": {
           "name": "users_user_name_unique",
           "nullsNotDistinct": false,
-          "columns": ["user_name"]
+          "columns": [
+            "user_name"
+          ]
         },
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": [
+            "email"
+          ]
         }
       },
       "policies": {},
@@ -665,8 +695,12 @@
           "name": "workspace_meetings_workspace_id_workspaces_id_fk",
           "tableFrom": "workspace_meetings",
           "tableTo": "workspaces",
-          "columnsFrom": ["workspace_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "workspace_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -674,8 +708,12 @@
           "name": "workspace_meetings_hosted_by_users_user_name_fk",
           "tableFrom": "workspace_meetings",
           "tableTo": "users",
-          "columnsFrom": ["hosted_by"],
-          "columnsTo": ["user_name"],
+          "columnsFrom": [
+            "hosted_by"
+          ],
+          "columnsTo": [
+            "user_name"
+          ],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -773,8 +811,12 @@
           "name": "workspaces_created_by_users_user_name_fk",
           "tableFrom": "workspaces",
           "tableTo": "users",
-          "columnsFrom": ["created_by"],
-          "columnsTo": ["user_name"],
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "user_name"
+          ],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -784,12 +826,16 @@
         "workspaces_name_unique": {
           "name": "workspaces_name_unique",
           "nullsNotDistinct": false,
-          "columns": ["name"]
+          "columns": [
+            "name"
+          ]
         },
         "workspaces_slug_unique": {
           "name": "workspaces_slug_unique",
           "nullsNotDistinct": false,
-          "columns": ["slug"]
+          "columns": [
+            "slug"
+          ]
         }
       },
       "policies": {},
@@ -801,7 +847,11 @@
     "public.user_role": {
       "name": "user_role",
       "schema": "public",
-      "values": ["admin", "member"]
+      "values": [
+        "owner",
+        "admin",
+        "member"
+      ]
     }
   },
   "schemas": {},

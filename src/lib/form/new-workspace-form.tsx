@@ -1,7 +1,6 @@
 "use client";
-import { CreateWorkspaceSchema } from "@/db/schema/schema";
-import React, { useState } from "react";
-import { z } from "zod";
+
+import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -14,13 +13,9 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Link, Loader2, Briefcase } from "lucide-react";
+import { IconLink, IconLoader2, IconBriefcase } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
-
-export const NewWorkspaceFormSchema = CreateWorkspaceSchema.pick({
-  name: true,
-  slug: true,
-});
+import { NewWorkspaceFormSchema } from "@/types";
 
 const NewWorkspaceForm = () => {
   const router = useRouter();
@@ -38,7 +33,9 @@ const NewWorkspaceForm = () => {
       setPending(true);
       try {
         const result = await createWorkspace(value);
+
         if (!result.success || !result.data) {
+          console.error("Workspace creation failed: \n", result.error);
           toast.error(result.error || "Failed to create workspace");
           return;
         }
@@ -72,7 +69,7 @@ const NewWorkspaceForm = () => {
                   Name
                 </FieldLabel>
                 <div className="relative">
-                  <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <IconBriefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
                     id={field.name}
                     name={field.name}
@@ -101,7 +98,7 @@ const NewWorkspaceForm = () => {
                   Workspace Slug
                 </FieldLabel>
                 <div className="relative">
-                  <Link className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <IconLink className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
                     id={field.name}
                     name={field.name}
@@ -132,7 +129,7 @@ const NewWorkspaceForm = () => {
       >
         {isPending ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
             Creating...
           </>
         ) : (

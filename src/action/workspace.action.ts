@@ -5,40 +5,66 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth-config";
 import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import type { APIResponse } from "@/types/api";
-import type { NewWorkspaceFormSchema } from "@/lib/form/new-workspace-form";
-import type { z } from "zod";
 import { canDeleteWorkspace } from "@/lib/workspace-auth";
 import { getCurrentUser } from "@/lib/session";
-import type { TUserRole } from "@/types";
+import type { APIResponse } from "@/types/api";
+import type { z } from "zod";
+import type { NewWorkspaceFormSchema, TUserRole } from "@/types";
 
 type NewWorkspaceFormSchemaType = z.infer<typeof NewWorkspaceFormSchema>;
 
 export async function createWorkspace(
   workspaceData: NewWorkspaceFormSchemaType
-) {
+): Promise<APIResponse<NewWorkspaceFormSchemaType>> {
   try {
-    const response = await auth.api.createOrganization({
-      body: {
+    const user = await getCurrentUser();
+
+    if (!user) {
+      redirect("/sign-in");
+    }
+
+    const [res] = await db
+      .insert(workspacesTable)
+      .values({
+        createdAt: new Date(),
+        createdBy: user.userName || "",
         name: workspaceData.name,
         slug: workspaceData.slug,
-      },
-      headers: await headers(),
-    });
-    if (!response) {
-      throw new Error("Failed to create workspace");
+        logo: workspaceData.logo || "",
+      })
+      .returning();
+
+    const [addMember] = await db
+      .insert(membersTable)
+      .values({
+        createdAt: new Date(),
+        userId: user.id || "",
+        workspaceId: res.id,
+        role: "owner",
+      })
+      .returning();
+
+    if (!res || !addMember) {
+      return {
+        success: false,
+        error: `Failed to create workspace in DB with Name: ${workspaceData.name}`,
+      };
     }
+
     return {
       success: true,
       data: {
         name: workspaceData.name,
         slug: workspaceData.slug,
+        logo: workspaceData.logo || "",
       },
     };
   } catch (error: unknown) {
     return {
-      error: `Failed to create workspace: ${error}`,
       success: false,
+      error: `Failed to create workspace: ${
+        error instanceof Error ? error.message : "An unknown error occurred"
+      }`,
     };
   }
 }
@@ -105,7 +131,9 @@ export async function getWorkspaceUsers(workspaceId: string) {
   }
 
   // Check if user belongs to this workspace
-  const [membership] = await db
+  const [membership] = await (
+    await db
+  )
     .select()
     .from(membersTable)
     .where(

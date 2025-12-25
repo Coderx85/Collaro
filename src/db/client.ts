@@ -1,23 +1,7 @@
-import { drizzle as drizzleNeon } from "drizzle-orm/neon-http";
-import { drizzle as drizzleNode } from "drizzle-orm/node-postgres";
+import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
-import { Pool } from "pg";
 import * as schema from "./schema/schema";
 import { config } from "@/lib/config";
 
-const isProduction = process.env.NODE_ENV === "production";
-
-function createDb() {
-  if (isProduction) {
-    // Use Neon for production
-    const sql = neon(config.database);
-    return drizzleNeon({ client: sql, schema });
-  }
-  // Use node-postgres for local development
-  const pool = new Pool({
-    connectionString: config.database,
-  });
-  return drizzleNode({ client: pool, schema });
-}
-
-export const db = createDb();
+const sql = neon(config.database);
+export const db = drizzle(sql, { schema });

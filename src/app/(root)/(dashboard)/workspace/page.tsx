@@ -20,8 +20,11 @@ const WorkspacePage = async () => {
   if (org.length === 0) {
     return (
       <div className="mx-auto flex h-full flex-col py-15 items-center justify-center rounded-sm">
-        <h1 className="text-xl font-bold">Your Workspace</h1>
-        <Link href="/workspace/new" className="mt-5">
+        <h1 className="text-3xl font-bold">Your Workspace</h1>
+        <Link
+          href="/workspace/new"
+          className="mt-5 bg-accent hover:opacity-60 dark:text-accent dark:bg-white/75 py-3 px-2.5 rounded-xl"
+        >
           Create Workspace
         </Link>
       </div>

@@ -1,4 +1,4 @@
-CREATE TYPE "public"."user_role" AS ENUM('admin', 'member');--> statement-breakpoint
+CREATE TYPE "public"."user_role" AS ENUM('owner', 'admin', 'member');--> statement-breakpoint
 CREATE TABLE "account" (
 	"id" text PRIMARY KEY NOT NULL,
 	"account_id" text,
