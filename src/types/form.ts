@@ -1,3 +1,4 @@
+import { CreateUserSchema } from "@/db/schema/schema";
 import { z } from "zod";
 
 export const profileFormSchema = z.object({
@@ -15,3 +16,7 @@ export const profileFormSchema = z.object({
     .optional()
     .or(z.literal("")),
 });
+
+export const registerSchema = CreateUserSchema;
+
+export type RegisterFormValues = z.infer<typeof registerSchema>;

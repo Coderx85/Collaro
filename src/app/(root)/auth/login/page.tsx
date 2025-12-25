@@ -5,20 +5,24 @@ import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Loader2, Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
-
+import {
+  IconEye,
+  IconEyeOff,
+  IconLoader2,
+  IconLock,
+  IconMail,
+  IconUserPlus,
+} from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -89,9 +93,8 @@ export default function LoginPage() {
           >
             <FieldGroup>
               {/* Email Field */}
-              <form.Field
-                name="email"
-                children={(field) => {
+              <form.Field name="email">
+                {(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid;
                   return (
@@ -103,7 +106,7 @@ export default function LoginPage() {
                         Email Address
                       </FieldLabel>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground dark:text-foreground" />
+                        <IconMail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground dark:text-foreground" />
                         <Input
                           id={field.name}
                           name={field.name}
@@ -123,12 +126,11 @@ export default function LoginPage() {
                     </Field>
                   );
                 }}
-              />
+              </form.Field>
 
               {/* Password Field */}
-              <form.Field
-                name="password"
-                children={(field) => {
+              <form.Field name="password">
+                {(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid;
                   return (
@@ -148,7 +150,7 @@ export default function LoginPage() {
                         </Link>
                       </div>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground dark:text-foreground" />
+                        <IconLock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground dark:text-foreground" />
                         <Input
                           id={field.name}
                           name={field.name}
@@ -167,9 +169,9 @@ export default function LoginPage() {
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground dark:text-foreground hover:text-secondary/80 transition-colors"
                         >
                           {showPassword ? (
-                            <EyeOff className="h-4 w-4" />
+                            <IconEyeOff className="h-4 w-4" />
                           ) : (
-                            <Eye className="h-4 w-4" />
+                            <IconEye className="h-4 w-4" />
                           )}
                         </Button>
                       </div>
@@ -179,7 +181,7 @@ export default function LoginPage() {
                     </Field>
                   );
                 }}
-              />
+              </form.Field>
 
               {/* Submit Button */}
               <Button
@@ -190,12 +192,12 @@ export default function LoginPage() {
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
                     Signing in...
                   </>
                 ) : (
                   <>
-                    <LogIn className="mr-2 h-4 w-4" />
+                    <IconUserPlus className="mr-2 h-4 w-4" />
                     Sign In
                   </>
                 )}

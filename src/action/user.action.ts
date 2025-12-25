@@ -8,6 +8,7 @@ import { auth } from "@/lib/auth-config";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { config } from "@/lib/config";
+import type { RegisterFormValues } from "@/types";
 
 // Helper to get current authenticated user
 export async function getCurrentUser() {
@@ -30,6 +31,33 @@ export async function getCurrentUser() {
     ...session,
     user: dbUser,
   };
+}
+
+export async function signUpAction({
+  name,
+  email,
+  password,
+  userName,
+}: RegisterFormValues): Promise<APIResponse<{ user: UserResponse }>> {
+  try {
+    const result = await auth.api.signUpEmail({
+      body: {
+        email,
+        password,
+        name,
+        userName,
+      },
+      headers: await headers(),
+    });
+
+    if (!result || !result.user) {
+      return { error: "Sign up failed", success: false };
+    }
+
+    return { data: { user: result.user as UserResponse }, success: true };
+  } catch (error: unknown) {
+    return { error: `Sign up failed: ${error}`, success: false };
+  }
 }
 
 export async function loginAction(email: string, password: string) {

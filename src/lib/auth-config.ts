@@ -5,7 +5,7 @@ import { schema } from "@/db";
 import { db } from "@/db/client";
 import { nextCookies } from "better-auth/next-js";
 import { config } from "./config";
-import { organization } from "better-auth/plugins";
+import { organization, username } from "better-auth/plugins";
 import { ac, roles } from "./permission";
 
 export const auth = betterAuth({
@@ -61,6 +61,14 @@ export const auth = betterAuth({
             organizationId: "workspaceId",
           },
         },
+      },
+    }),
+    username({
+      minUsernameLength: 4,
+      maxUsernameLength: 20,
+      displayUsernameValidator(displayUsername) {
+        const usernameRegex = /^[a-zA-Z0-9_]+$/;
+        return usernameRegex.test(displayUsername);
       },
     }),
   ],
