@@ -17,13 +17,13 @@ const Rootpage = () => {
       style={{ scrollSnapType: "y mandatory" }}
     >
       <div className="absolute inset-y-0 left-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80">
-        <div className="absolute top-0 h-40 w-px bg-gradient-to-b from-transparent via-primary to-transparent" />
+        <div className="absolute top-0 h-40 w-px bg-linear-to-b from-transparent via-primary to-transparent" />
       </div>
       <div className="absolute inset-y-0 right-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80">
-        <div className="absolute h-40 w-px bg-gradient-to-b from-transparent via-primary to-transparent" />
+        <div className="absolute h-40 w-px bg-linear-to-b from-transparent via-primary to-transparent" />
       </div>
       <div className="absolute inset-x-0 bottom-0 h-px w-full bg-neutral-200/80 dark:bg-neutral-800/80">
-        <div className="absolute mx-auto h-px w-40 bg-gradient-to-r from-transparent via-primary to-transparent" />
+        <div className="absolute mx-auto h-px w-40 bg-linear-to-r from-transparent via-primary to-transparent" />
       </div>
       {/* Hero Section */}
       <div
@@ -46,7 +46,7 @@ const Rootpage = () => {
           <h1 className="text-4xl md:text-4xl font-semibold xl:text-8xl gap-3  flex xl:flex-row flex-col dark:text-white/75 text-slate-900/75 mx-auto text-center items-center">
             {"Welcome to "}
           </h1>
-          <span className="text-6xl sm:text-4xl xl:text-8xl group/heading font-extrabold bg-clip-text text-transparent bg-gradient-to-b from-green-600/85 via-green-700 to-teal-800 transition-all duration-300">
+          <span className="text-6xl sm:text-4xl xl:text-8xl group/heading font-extrabold bg-clip-text text-transparent bg-linear-to-b from-green-600/85 via-green-700 to-teal-800 transition-all duration-300">
             Collaro
             {/* <span className="absolute -bottom-2 left-0 w-0 group-hover/heading:w-full h-[2px] bg-gradient-to-r from-primary/50 to-primary transition-all duration-500" /> */}
           </span>
@@ -57,7 +57,7 @@ const Rootpage = () => {
           </p>
           <div className="flex justify-center mt-5 gap-3 sm:gap-5">
             <Link href="/workspace">
-              <Button className="rounded-lg font-bold bg-gradient-to-br from-primary/85 dark:to-white/5 hover:from-primary/90 hover:to-primary to-black shadow-md text-white text-sm sm:text-base">
+              <Button className="rounded-lg font-bold bg-linear-to-br from-primary/85 dark:to-white/5 hover:from-primary/90 hover:to-primary to-black shadow-md text-white text-sm sm:text-base">
                 Get Started
               </Button>
             </Link>

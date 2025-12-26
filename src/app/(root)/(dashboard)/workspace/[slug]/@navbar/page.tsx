@@ -2,10 +2,9 @@
 
 import { useEffect, useMemo } from "react";
 import Link from "next/link";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import Logo from "@/components/Logo";
 import {
-  useSession,
   useListOrganizations,
   useActiveOrganization,
   authClient,
@@ -24,22 +23,11 @@ import {
 } from "@/components/ui/breadcrumb";
 import { sidebarLinks } from "@/constants/component";
 import { IconSlash } from "@tabler/icons-react";
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuLabel,
-//   DropdownMenuSeparator,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu";
-// import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import OrgSwitcher from "@/components/org-switcher";
-// import { SelectWorkspaceType } from "@/db/schema/schema";
 
 export default function Navbar() {
   const params = useParams<{ slug: string }>();
   const pathname = usePathname();
-  // const router = useRouter();
   const { data: organizations } = useListOrganizations();
   const { data: activeOrg } = useActiveOrganization();
 
@@ -70,7 +58,7 @@ export default function Navbar() {
     const pathSegment = afterWorkspace.split("/").filter(Boolean)[0] || "";
     const normalizedRoute = pathSegment ? `/${pathSegment}` : "";
     const activeLink = sidebarLinks.find(
-      (link) => link.route === normalizedRoute,
+      (link) => link.route === normalizedRoute
     );
 
     if (activeLink) return activeLink.label;
@@ -79,7 +67,7 @@ export default function Navbar() {
   }, [pathname, slug]);
 
   return (
-    <header className="flex top-0 left-0 xl:left-50 right-0 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear">
+    <header className="flex top-0 left-0 xl:left-50 right-0 shrink-0 items-center gap-2 border-b bg-sidebar dark:bg-sidebar transition-[width,height] ease-linear">
       <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
         <SidebarTrigger className="-ml-1" />
         <Separator

@@ -46,11 +46,11 @@ const OrgSwitcher = () => {
       <SelectTrigger className="w-50 dark:text-white bg-white/75">
         <SelectValue>{orgName}</SelectValue>
       </SelectTrigger>
-      <SelectContent className="h-32">
-        {organizations.length > 0 &&
-          organizations.map((org) => (
+      <SelectContent>
+        <SelectGroup>
+          {organizations.map((org) => (
             <SelectItem
-              className="text-secondary dark:text-secondary"
+              className="dark:text-white/75"
               value={org.slug}
               key={org.id}
               onClick={() => router.push(`/workspace${org.slug}`)}
@@ -58,16 +58,15 @@ const OrgSwitcher = () => {
               {org.name}
             </SelectItem>
           ))}
-        <SelectSeparator />
-        {/* <SelectGroup> */}
-        <SelectItem
-          className="text-accent dark:text-white/75"
-          value="create-new-organization"
-          onClick={() => router.push("/workspace/new")}
-        >
-          Create New Organization
-        </SelectItem>
-        {/* </SelectGroup> */}
+          <SelectSeparator />
+          <SelectItem
+            className="dark:text-white/75"
+            value="create-new-organization"
+            onClick={() => router.push("/workspace/new")}
+          >
+            Create New Organization
+          </SelectItem>
+        </SelectGroup>
       </SelectContent>
     </Select>
   );
