@@ -106,7 +106,7 @@ app.use("/api/auth", createAuthRouter());
 ## 8) Local testing
 
 - Start your app (e.g., `npm run dev`) and call the auth endpoints:
-  - `POST /api/auth/sign-up`
+  - `POST /api/auth/register`
   - `POST /api/auth/sign-in`
   - `POST /api/auth/sign-out`
 - Use curl or a REST client to test flows and examine cookies/response codes.
@@ -116,7 +116,7 @@ Example:
 ```bash
 curl -X POST -H "Content-Type: application/json" \
   -d '{"email":"you@example.com","password":"password"}' \
-  http://localhost:3000/api/auth/sign-up
+  http://localhost:3000/api/auth/register
 ```
 
 ---

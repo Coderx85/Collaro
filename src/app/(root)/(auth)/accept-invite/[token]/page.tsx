@@ -198,8 +198,8 @@ export default async function AcceptInvitePage({
   }
 
   // User is not logged in - show invitation details and prompt to sign up/in
-  const signUpUrl = `/sign-up?email=${encodeURIComponent(invite.email)}&returnUrl=${encodeURIComponent(`/accept-invite/${token}?workspaceSlug=${workspaceSlug}&workspaceId=${workspaceId}`)}`;
-  const signInUrl = `/sign-in?returnUrl=${encodeURIComponent(`/accept-invite/${token}?workspaceSlug=${workspaceSlug}&workspaceId=${workspaceId}`)}`;
+  const signUpUrl = `/sign-register?email=${encodeURIComponent(invite.email)}&returnUrl=${encodeURIComponent(`/accept-invite/${token}?workspaceSlug=${workspaceSlug}&workspaceId=${workspaceId}`)}`;
+  const signInUrl = `/register?returnUrl=${encodeURIComponent(`/accept-invite/${token}?workspaceSlug=${workspaceSlug}&workspaceId=${workspaceId}`)}`;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-900 to-slate-800 p-4">
