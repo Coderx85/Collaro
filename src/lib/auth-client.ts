@@ -9,10 +9,7 @@ import type { auth } from "./auth-config";
 import { ac, roles } from "./permission";
 
 export const authClient = createAuthClient({
-  // Base URL is inferred from the current domain when running in browser
-  // If you need to specify a custom base URL, uncomment the line below
-  // baseURL: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
-  baseURL: config.betterAuthUrl,
+  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000",
   plugins: [
     inferAdditionalFields<typeof auth>(),
     organizationClient({
@@ -47,7 +44,7 @@ export type AuthSession = typeof authClient.$Infer.Session;
  * Check if a role can update workspace (synchronous, client-side only)
  */
 export function canRoleUpdateWorkspace(
-  role: "owner" | "admin" | "member",
+  role: "owner" | "admin" | "member"
 ): boolean {
   return authClient.organization.checkRolePermission({
     permissions: { organization: ["update"] },
@@ -59,7 +56,7 @@ export function canRoleUpdateWorkspace(
  * Check if a role can delete workspace (synchronous, client-side only)
  */
 export function canRoleDeleteWorkspace(
-  role: "owner" | "admin" | "member",
+  role: "owner" | "admin" | "member"
 ): boolean {
   return authClient.organization.checkRolePermission({
     permissions: { organization: ["delete"] },
@@ -71,7 +68,7 @@ export function canRoleDeleteWorkspace(
  * Check if a role can manage members (synchronous, client-side only)
  */
 export function canRoleManageMembers(
-  role: "owner" | "admin" | "member",
+  role: "owner" | "admin" | "member"
 ): boolean {
   return authClient.organization.checkRolePermission({
     permissions: { member: ["create", "update", "delete"] },
@@ -83,7 +80,7 @@ export function canRoleManageMembers(
  * Check if a role can invite members (synchronous, client-side only)
  */
 export function canRoleInviteMembers(
-  role: "owner" | "admin" | "member",
+  role: "owner" | "admin" | "member"
 ): boolean {
   return authClient.organization.checkRolePermission({
     permissions: { invitation: ["create"] },
@@ -96,7 +93,7 @@ export function canRoleInviteMembers(
  * Use this when you need to validate permissions before an action
  */
 export async function checkPermission(
-  permissions: Record<string, string[]>,
+  permissions: Record<string, string[]>
 ): Promise<boolean> {
   try {
     const result = await authClient.organization.hasPermission({

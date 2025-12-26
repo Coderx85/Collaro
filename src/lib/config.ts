@@ -1,5 +1,6 @@
 export const config = {
-  betterAuthUrl: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  betterAuthUrl:
+    process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000",
   database:
     process.env.DATABASE_URL ||
     "postgresql://user:password@localhost:5432/mydb",

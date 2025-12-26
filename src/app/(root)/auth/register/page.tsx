@@ -57,17 +57,21 @@ export default function RegisterPage() {
     },
     onSubmit: async ({ value }) => {
       setIsSubmitting(true);
-      if (!value) {
-        toast.error("Please fill all the fields");
-        return;
-      }
-      const result = registerSchema.safeParse(value);
-      if (!result.success) {
-        toast.error(result.error.message);
-        return;
-      }
       try {
-        const result = await signUpAction({
+        if (!value) {
+          toast.error("Please fill all the fields");
+          return;
+        }
+        const result = registerSchema.safeParse(value);
+        if (!result.success) {
+          const errorMsg =
+            result.error.issues?.[0]?.message || "Validation failed";
+          toast.error(errorMsg);
+          console.error("Validation errors:", result.error.issues);
+          return;
+        }
+
+        const signUpResult = await signUpAction({
           email: value.email,
           password: value.password,
           name: value.name,
@@ -75,8 +79,9 @@ export default function RegisterPage() {
           confirmPassword: value.confirmPassword,
         });
 
-        if (result.error) {
-          toast.error(result.error || "Failed to create account");
+        if (signUpResult.error) {
+          toast.error(signUpResult.error || "Failed to create account");
+          console.error("Sign up error:", signUpResult.error);
           return;
         }
 
@@ -104,8 +109,18 @@ export default function RegisterPage() {
       return;
     }
 
+    if (nameField.length < 6) {
+      toast.error("Name must be at least 6 characters");
+      return;
+    }
+
     if (!userNameField || userNameField.trim() === "") {
       toast.error("Please enter a username");
+      return;
+    }
+
+    if (userNameField.length < 6) {
+      toast.error("Username must be at least 6 characters");
       return;
     }
 
@@ -153,7 +168,7 @@ export default function RegisterPage() {
             onSubmit={(e) => {
               e.preventDefault();
               if (currentStep === 2) {
-                form.handleSubmit();
+                void form.handleSubmit();
               } else {
                 handleNext();
               }

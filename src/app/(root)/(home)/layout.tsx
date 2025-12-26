@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "Collaro - Home",
   description:
     "Collaro is a platform for developers to connect and share knowledge.",
-  icons: "/logo.png",
+  icons: "/icons/logo.png",
 };
 
 const layout = async ({ children }: { children: ReactNode }) => {

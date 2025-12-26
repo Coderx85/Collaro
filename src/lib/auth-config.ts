@@ -10,7 +10,7 @@ import { ac, roles } from "./permission";
 
 export const auth = betterAuth({
   secret: config.betterSecret,
-  baseURL: config.betterAuthUrl,
+  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000",
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
