@@ -45,12 +45,13 @@ const WorkspacePage = async () => {
               key={org.id}
               className="w-[300px] bg-primary text-primary-foreground"
             >
-              <CardHeader>
+              <CardHeader className="pb-2">
                 <CardTitle>{org.name}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">{org.slug}</p>
                 <p className="text-sm text-muted-foreground">{org.logo}</p>
+
+                <Link href={`/workspace/${org.slug}`} className="" children={org.slug} />
               </CardContent>
             </Card>
             // </Link>

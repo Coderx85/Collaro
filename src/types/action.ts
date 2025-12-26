@@ -19,6 +19,8 @@ export interface Response<T> {
 
 export type TUserRole = "owner" | "admin" | "member";
 
+export type TInviteMemberRole = "admin" | "member";
+
 export interface TOrganizationMember {
   id: string;
   userId: string;

@@ -1,5 +1,4 @@
 import { Separator } from "@/components/ui/separator";
-import { z } from "zod";
 import { Building2, Users, Shield } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -14,6 +13,7 @@ import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/dal";
 import { getMember } from "@/action/member.action";
+import { InviteMemberDialog } from "@/components/workspace/InviteMemberDialog";
 
 export default async function OrgDetailsPage({
   params,
@@ -87,10 +87,18 @@ export default async function OrgDetailsPage({
                 </CardDescription>
               </div>
             </div>
-            <Badge className="text-sm">
-              <Shield className="h-3 w-3 mr-1" />
-              {orgMember?.data?.role}
-            </Badge>
+            <div className="flex items-center gap-3">
+              {orgMember?.data?.role === "owner" && (
+                <InviteMemberDialog
+                  workspaceId={activeOrg.id}
+                  workspaceSlug={slug}
+                />
+              )}
+              <Badge className="text-sm">
+                <Shield className="h-3 w-3 mr-1" />
+                {orgMember?.data?.role}
+              </Badge>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
