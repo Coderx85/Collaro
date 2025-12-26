@@ -20,6 +20,42 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Environment Setup
+
+### Email Configuration (Nodemailer)
+
+The application uses Nodemailer for sending invitation emails. Configure the following environment variables:
+
+```env
+# SMTP Configuration
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+SMTP_FROM=Collaro <noreply@collaro.app>
+```
+
+For Gmail:
+
+1. Enable 2-factor authentication
+2. Generate an App Password: https://support.google.com/accounts/answer/185833
+3. Use your Gmail address as `SMTP_USER`
+4. Use the App Password as `SMTP_PASS`
+
+### Background Jobs (Inngest)
+
+The application uses Inngest for background job processing. Set up Inngest:
+
+1. Sign up at [Inngest](https://www.inngest.com)
+2. Create a new application
+3. Get your Event Key from the dashboard
+4. Set the environment variable:
+
+```env
+INNGEST_EVENT_KEY=your_inngest_event_key
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
