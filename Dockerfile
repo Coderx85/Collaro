@@ -7,6 +7,9 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 WORKDIR /app
+ENV NODE_ENV=production
+ENV NPM_CONFIG_REGISTRY=https://registry.npmjs.org/
+RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 
 FROM base AS deps
 ENV HUSKY=0
