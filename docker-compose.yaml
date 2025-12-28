@@ -1,0 +1,63 @@
+services:
+  collaro-db:
+    image: postgres:16.2
+    container_name: collaro-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - collaro-dev-network
+      - collaro-db-network
+
+  collaro-app:
+    image: coderx85/collaro:latest
+    container_name: collaro
+    restart: unless-stopped
+    env_file:
+      - .env.development
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@collaro-db:5432/postgres
+      - BETTER_AUTH_SECRET=asdfadfwerfdw423536t45g5645y7yu5678uj5678
+      - NEXT_BASE_URL=http://localhost:3000
+    ports:
+      - "4000:3000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    depends_on:
+      - collaro-db
+    networks:
+      - collaro-dev-network
+
+  neon-proxy:
+    image: ghcr.io/timowilhelm/local-neon-http-proxy:main
+    environment:
+      - PG_CONNECTION_STRING=postgres://postgres:postgres@collaro-db:5432/postgres
+    ports:
+      - "4444:4444"
+    depends_on:
+      collaro-db:
+        condition: service_healthy
+    networks:
+      - collaro-dev-network
+
+volumes:
+  postgres-data:
+
+networks:
+  collaro-dev-network:
+    driver: bridge
+  collaro-db-network:
+    driver: bridge
