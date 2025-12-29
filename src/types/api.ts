@@ -1,4 +1,4 @@
-import type { CreateUserType, CreateMemberType } from "@/db/schema/schema";
+import type { CreateUserType, SelectMemberType } from "@/db/schema/schema";
 
 export type APIResponse<T> = {
   success: boolean;
@@ -18,7 +18,7 @@ type APIErrorResponse = {
 
 export type UserResponse = Omit<CreateUserType, "password">;
 
-export type TUser = CreateUserType;
+export type TUser = UserResponse;
 
 export type WorkspaceResponse = {
   id: string;
@@ -58,6 +58,8 @@ export type AnalyticsResponse = {
   createdAt: Date;
 };
 
-export type TWorkspaceUser = CreateMemberType;
+export type TWorkspaceUser = SelectMemberType;
 
-export type TWorkspaceMembersTableRow = (TUser & TWorkspaceUser)[];
+export type TWorkspaceMember = TUser & TWorkspaceUser;
+
+export type TWorkspaceMembersTableRow = TWorkspaceMember[];
