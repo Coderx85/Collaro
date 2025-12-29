@@ -14,7 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useStreamVideoClient } from "@stream-io/video-react-sdk";
-import Loader from "./Loader";
+import Loader from "@/components/Loader";
 
 interface DirectCallButtonProps {
   memberId: string;

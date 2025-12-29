@@ -7,7 +7,7 @@ import {
   useCallStateHooks,
 } from "@stream-io/video-react-sdk";
 
-import Alert from "./Alert";
+import Alert from "@/components/Alert";
 import { Button } from "@/components/ui/button";
 
 const MeetingSetup = ({
@@ -27,7 +27,7 @@ const MeetingSetup = ({
 
   if (!call) {
     throw new Error(
-      "useStreamCall must be used within a StreamCall component.",
+      "useStreamCall must be used within a StreamCall component."
     );
   }
 

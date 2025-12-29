@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useSession } from "@/lib/auth-client";
 import Loader from "./Loader";
-import Logo from "./Logo";
+import Logo from "./navigation/Logo";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getMember } from "@/action/member.action";
@@ -31,7 +31,7 @@ export function AppSidebar({
     const fetchMemberRoel = async () => {
       const { data } = await getMember(
         pathname.split("/")[2],
-        session?.user?.id || "",
+        session?.user?.id || ""
       );
       if (!data) return;
       setRole(data.role);

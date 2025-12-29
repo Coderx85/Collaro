@@ -6,13 +6,13 @@ import { useToast } from "@/components/ui/use-toast";
 import { useSession } from "@/lib/auth-client";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import HomeCard from "./HomeCard";
+import HomeCard from "../calls/HomeCard";
 import MeetingModal from "./MeetingModal";
-import Loader from "./Loader";
+import Loader from "../../Loader";
 import ReactDatePicker from "react-datepicker";
 import { type Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
-import { CalendarExport } from "./CalendarExport";
-import { Label } from "./ui/label";
+import { CalendarExport } from "../../CalendarExport";
+import { Label } from "../../ui/label";
 import { session } from "@/db/schema/auth-schema";
 
 const initialValues = {

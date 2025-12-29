@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useWorkspaceStore } from "@/store/workspace";
-import DirectCallButton from "./DirectCallButton";
-import { Avatar, AvatarFallback } from "./ui/avatar";
-import { Card, CardContent } from "./ui/card";
-import Loader from "./Loader";
+import DirectCallButton from "@/components/workspace/calls/DirectCallButton";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+import Loader from "@/components/Loader";
 
 interface Member {
   id: string;

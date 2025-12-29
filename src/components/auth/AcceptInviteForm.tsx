@@ -155,3 +155,5 @@ export function AcceptInviteForm({ invitationId }: AcceptInviteFormProps) {
     </Card>
   );
 }
+
+export default AcceptInviteForm;

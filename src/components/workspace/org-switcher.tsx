@@ -10,7 +10,7 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "@/components/ui/select";
 import type { SelectWorkspaceType } from "@/db/schema/schema";
 import { getAllWorkspaces } from "@/action";
 import { useEffect, useState } from "react";

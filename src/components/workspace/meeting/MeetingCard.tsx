@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import type { MeetingCardProps } from "@/types";
-import { CalendarExport } from "./CalendarExport";
+import { CalendarExport } from "../../CalendarExport";
 
 const MeetingCard = ({
   icon,

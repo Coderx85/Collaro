@@ -1,9 +1,9 @@
 "use client";
 
-import Loader from "./Loader";
+import Loader from "@/components/Loader";
 import { useEffect, useState, useRef } from "react";
-import MeetingCard from "./workspace/meeting/MeetingCard";
 import { useGetCalls } from "@/hooks/useGetCalls";
+import MeetingCard from "@/components/workspace/meeting/MeetingCard";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";

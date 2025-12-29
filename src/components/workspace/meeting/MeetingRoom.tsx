@@ -19,8 +19,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Loader from "./Loader";
-import EndCallButton from "./EndCallButton";
+import Loader from "@/components/Loader";
+import EndCallButton from "@/components/workspace/calls/EndCallButton";
 import { cn } from "@/lib/utils";
 
 type CallLayoutType = "grid" | "speaker-left" | "speaker-right";

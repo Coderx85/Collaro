@@ -73,7 +73,7 @@ export function CalendarExport({
     <Button
       variant={variant}
       size={size}
-      className={`bg-transparent border !w-full border-slate-700 text-sky-2 hover:bg-slate-800/40 hover:border-sky-400 ${className || ""}`}
+      className={`bg-transparent border w-full! border-slate-700 text-sky-2 hover:bg-slate-800/40 hover:border-sky-400 ${className || ""}`}
       onClick={handleCalendarExport}
       title="Download .ics File"
     >
