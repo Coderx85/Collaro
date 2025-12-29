@@ -1,6 +1,50 @@
 "use server";
 import { db } from "@/db/client";
-import { workspacesTable, workspaceMeetingTable } from "@/db/schema/schema";
+import {
+  workspacesTable,
+  workspaceMeetingTable,
+  membersTable,
+} from "@/db/schema/schema";
+import { APIResponse, Call } from "@/types";
+import { eq, and } from "drizzle-orm";
+
+export async function getCallsBySlug(
+  slug: string
+): Promise<APIResponse<Call[]>> {
+  try {
+    const [workspace] = await db
+      .select()
+      .from(workspacesTable)
+      .where(eq(workspacesTable.slug, slug))
+      .execute();
+
+    if (!workspace) {
+      return {
+        error: `Workspace with slug ${slug} not found`,
+        success: false,
+      };
+    }
+
+    const meeting = await db
+      .select()
+      .from(workspaceMeetingTable)
+      .where(eq(workspaceMeetingTable.workspaceId, workspace.id))
+      .execute();
+
+    if (!meeting)
+      return {
+        error: `No meeting found for workspace with slug ${slug}`,
+        success: false,
+      };
+
+    return {
+      data: meeting,
+      success: true,
+    };
+  } catch (error: unknown) {
+    return { success: false, error: `Failed to get call by slug: ${error}` };
+  }
+}
 
 export async function getMeetingsData() {
   try {
