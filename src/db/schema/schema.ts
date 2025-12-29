@@ -182,6 +182,9 @@ export const SelectUserSchema = createSelectSchema(usersTable, {
   email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/),
 });
 
+export const SelectCallSchema = createSelectSchema(workspaceMeetingTable);
+export const SelectCallMember = createSelectSchema(membersTable);
+
 export type CreateMeetingType = typeof workspaceMeetingTable.$inferInsert;
 export type CreateWorkspaceType = typeof workspacesTable.$inferInsert;
 export type CreateMemberType = typeof membersTable.$inferInsert;
@@ -190,3 +193,5 @@ export type SelectMemberType = typeof membersTable.$inferSelect;
 export type SelectMeetingType = typeof workspaceMeetingTable.$inferSelect;
 export type SelectWorkspaceType = typeof workspacesTable.$inferSelect;
 export type SelectUserType = typeof usersTable.$inferSelect;
+export type SelectParticipantType =
+  typeof meetingParticipantsTable.$inferSelect;

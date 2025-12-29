@@ -3,9 +3,6 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth-config";
 import Image from "next/image";
 import Usercall from "./_components/usercall";
-import { WeeklyMeetingsChart } from "@/components/charts/WeeklyMeetingsChart";
-import { DailyMeetingsChart } from "@/components/charts/DailyMeetingsChart";
-
 const User = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -28,10 +25,6 @@ const User = async () => {
           <h2 className="text-md italic">@{user?.userName || user?.name}</h2>
           <p className="text-muted-foreground">{user?.email}</p>
         </div>
-      </div>
-      <div className="grid grid-cols-2 w-full h-full gap-2 border-2 border-gray-300 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800 mt-4">
-        <WeeklyMeetingsChart />
-        <DailyMeetingsChart />
       </div>
       <Usercall />
       <div className="flex flex-col gap-2">
