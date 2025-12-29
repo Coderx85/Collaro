@@ -4,6 +4,7 @@ import {
   membersTable,
   usersTable,
   workspaceMeetingTable,
+  meetingParticipantsTable,
 } from "@/db/schema/schema";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth-config";
@@ -61,11 +62,17 @@ export async function POST(): Response<SelectMeetingType> {
       })
       .returning();
 
+    // Add the meeting host as a participant
+    await db.insert(meetingParticipantsTable).values({
+      meetingId: meeting.meetingId,
+      memberId: membership.id,
+    });
+
     return NextResponse.json({ success: true, user: dbUser, meeting });
   } catch (error: unknown) {
     return NextResponse.json(
       { success: false, error: (error as Error).message },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

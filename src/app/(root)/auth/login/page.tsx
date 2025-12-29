@@ -64,6 +64,12 @@ export default function LoginPage() {
         toast.success("Welcome back!", {
           description: "You have been signed in successfully.",
         });
+
+        if (result.data?.organizationExists === false) {
+          router.push("/organization/new");
+          return;
+        }
+
         router.push("/workspace");
       } catch (error) {
         toast.error("An unexpected error occurred. Please try again.");
