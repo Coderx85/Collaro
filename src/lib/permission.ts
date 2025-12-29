@@ -22,10 +22,11 @@ import {
  */
 const statement = {
   ...defaultStatements,
-  // Workspace-specific permissions (maps to organization in better-auth)
-  workspace: ["update", "delete"],
+  // Organization/Workspace permissions (maps to organization in better-auth)
+  // Actions: create, delete, update, view
+  organization: ["create", "delete", "update", "view"],
   // Meeting permissions
-  meeting: ["create", "update", "delete"],
+  meeting: ["create", "update", "delete", "view", "stats"],
 } as const;
 
 /**
@@ -45,21 +46,24 @@ export const ac = createAccessControl(statement);
 // Owner: Full control over everything
 export const owner = ac.newRole({
   ...ownerAc.statements,
-  workspace: ["update", "delete"],
+  organization: ["create", "delete", "update", "view"],
   meeting: ["create", "update", "delete"],
 });
 
-// Admin: Full control except deleting workspace
+// Admin: Full control except deleting organization
 export const admin = ac.newRole({
   ...adminAc.statements,
-  workspace: ["update"],
+  // Admins can create, update, and view organizations but cannot delete
+  organization: ["create", "update", "view"],
   meeting: ["create", "update", "delete"],
 });
 
-// Member: Limited permissions - can only create meetings
+// Member: Limited permissions - can view organizations and create/manage meetings
 export const member = ac.newRole({
   ...memberAc.statements,
-  meeting: ["create"],
+  // Members can create and view organizations but cannot delete or update
+  organization: ["create", "view"],
+  meeting: ["create", "update", "delete"],
 });
 
 /**

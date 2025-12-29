@@ -12,10 +12,12 @@ import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/dal";
 import { getMember } from "@/action/member.action";
 import { redirect } from "next/navigation";
+import {
+  canRoleDeleteOrganization,
+  canRoleUpdateOrganization,
+} from "@/lib/auth-client";
 import { OrgSettingsForm } from "./_components/org-settings-form";
 import { DangerZone } from "./_components/danger-zone";
-
-type OrgMemberRole = "owner" | "admin" | "member";
 
 export default async function OrgSettingsPage({
   params,
@@ -46,15 +48,16 @@ export default async function OrgSettingsPage({
     redirect(`/workspace/${slug}`);
   }
 
-  const userRole = orgMember.data.role as OrgMemberRole;
+  const userRole = orgMember.data.role;
 
   // Only allow owner and admin to access this page
   if (userRole === "member") {
     redirect(`/workspace/${slug}/org-details`);
   }
 
-  const canDelete = userRole === "owner";
-  const canUpdate = userRole === "owner" || userRole === "admin";
+  // Check permissions using utility functions
+  const canDelete = canRoleDeleteOrganization(userRole);
+  const canUpdate = canRoleUpdateOrganization(userRole);
 
   return (
     <div className="space-y-8 p-2 flex flex-col gap-6">
