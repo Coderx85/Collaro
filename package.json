@@ -86,7 +86,6 @@
     "drizzle-seed": "^0.3.1",
     "drizzle-zod": "^0.8.3",
     "embla-carousel-react": "^8.6.0",
-    "framer-motion": "12.23.0",
     "geist": "^1.4.2",
     "globals": "^16.0.0",
     "ical-generator": "^9.0.0",
@@ -121,7 +120,6 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.0.17",
     "@types/node": "^22.15.3",
     "@types/nodemailer": "^6.4.14",
@@ -129,13 +127,11 @@
     "@types/react-datepicker": "^6.2.0",
     "@types/react-dom": "^19",
     "@types/uuid": "^10.0.0",
-    "@vitest/ui": "^3.2.4",
     "babel-plugin-react-compiler": "^1.0.0",
     "husky": "^9.1.7",
     "inngest-cli": "^1.15.3",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5",
-    "vitest": "^3.2.4"
+    "typescript": "^5"
   },
   "trustedDependencies": [
     "inngest-cli",
