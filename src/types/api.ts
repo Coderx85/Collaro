@@ -1,4 +1,10 @@
-import type { CreateUserType, SelectMemberType } from "@/db/schema/schema";
+import type {
+  CreateUserType,
+  SelectMeetingType,
+  SelectMemberType,
+  UpdateMeetingSchema,
+} from "@/db/schema/schema";
+import z from "zod";
 
 export type APIResponse<T> = {
   success: boolean;
@@ -37,26 +43,11 @@ export type CreateWorkspaceResponse = {
   updatedAt: Date | null;
 };
 
-export type MeetingIdOnly = Pick<MeetingResponse, "meetingId">;
+export type MeetingIdOnly = Pick<MeetingResponse, "description">;
 
-export type MeetingResponse = {
-  ttile: string;
-  hostedBy: string;
-  workspaceId: string;
-  workspaceName: string;
-  description: string;
-  meetingId: string;
-  startAt: Date;
-  endAt?: Date | null;
-  createdAt: Date;
-};
+export type MeetingResponse = SelectMeetingType;
 
-export type AnalyticsResponse = {
-  totalMeetings: number;
-  totalUsers: number;
-  totalWorkspaces: number;
-  createdAt: Date;
-};
+export type UpdateMeetingType = z.infer<typeof UpdateMeetingSchema>;
 
 export type TWorkspaceUser = SelectMemberType;
 
