@@ -1,16 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { db } from "@/db/client";
 import { membersTable, usersTable } from "@/db/schema/schema";
-import { account, session } from "@/db/schema/auth-schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
-import { TUser, TWorkspaceMembersTableRow, TWorkspaceUser } from "@/types";
+import { TWorkspaceMembersTableRow } from "@/types";
 
-export const GET = async (
-  request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
-) => {
+export const GET = async ({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) => {
   try {
     const { slug } = await params;
 

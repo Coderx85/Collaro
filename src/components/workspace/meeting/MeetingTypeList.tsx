@@ -13,7 +13,6 @@ import ReactDatePicker from "react-datepicker";
 import { type Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { CalendarExport } from "../../CalendarExport";
 import { Label } from "../../ui/label";
-import { session } from "@/db/schema/auth-schema";
 
 const initialValues = {
   dateTime: new Date(),
@@ -21,7 +20,7 @@ const initialValues = {
   link: "",
 };
 
-const MeetingTypeList = () => {
+const MeetingTypeList = ({ workspaceSlug }: { workspaceSlug: string }) => {
   const router = useRouter();
   const client = useStreamVideoClient();
   const { data: session, isPending } = useSession();
@@ -77,6 +76,8 @@ const MeetingTypeList = () => {
         values.dateTime.toISOString() || new Date(Date.now()).toISOString();
       const description = values.description || "Instant Meeting";
       await call.getOrCreate({
+        ring: true,
+        video: true,
         data: {
           starts_at: startsAt,
           custom: {

@@ -35,7 +35,7 @@ const Home = async ({ params }: { params: Promise<{ slug: string }> }) => {
           </div>
         </div>
       </div>
-      <MeetingTypeList />
+      <MeetingTypeList workspaceSlug={slug} />
     </section>
   );
 };

@@ -18,6 +18,22 @@ import z from "zod";
 
 // Define user_role enum first
 export const pgUserRole = pgEnum("user_role", ["owner", "admin", "member"]);
+export const pgMeetingStatus = pgEnum("meeting_status", [
+  "scheduled",
+  "active",
+  "completed",
+]);
+
+export const pgParticipantStatus = pgEnum("participant_status", [
+  "invited",
+  "joined",
+  "left",
+  "declined",
+]);
+
+export const UserRole = pgUserRole.enumValues;
+export const MeetingStatus = pgMeetingStatus.enumValues;
+export const ParticipantStatus = pgParticipantStatus.enumValues;
 
 // Users table definition
 export const usersTable = pgTable(
@@ -128,6 +144,7 @@ export const workspaceMeetingTable = pgTable(
       .references(() => usersTable.userName, {
         onDelete: "set null",
       }),
+    status: pgMeetingStatus().notNull().default("scheduled"),
     description: text("description").default("Instant Meeting"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     endAt: timestamp("end_at"),
@@ -135,6 +152,33 @@ export const workspaceMeetingTable = pgTable(
   (table) => [
     t.index("workspace_meetings_workspace_id_idx").on(table.workspaceId),
     t.index("workspace_meetings_hosted_by_idx").on(table.hostedBy),
+  ]
+);
+
+// Meeting participants table - tracks which members join which meetings
+export const meetingParticipantsTable = pgTable(
+  "meeting_participants",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    meetingId: uuid("meeting_id")
+      .notNull()
+      .references(() => workspaceMeetingTable.meetingId, {
+        onDelete: "cascade",
+      }),
+    memberId: uuid("member_id")
+      .notNull()
+      .references(() => membersTable.id, {
+        onDelete: "cascade",
+      }),
+    joinedAt: timestamp("joined_at").notNull().defaultNow(),
+    leftAt: timestamp("left_at"),
+    status: pgParticipantStatus().notNull().default("invited"),
+  },
+  (table) => [
+    t
+      .uniqueIndex("meeting_participants_meeting_member_unique_idx")
+      .on(table.meetingId, table.memberId),
+    t.index("meeting_participants_meeting_id_idx").on(table.meetingId),
   ]
 );
 
@@ -183,12 +227,26 @@ export const SelectUserSchema = createSelectSchema(usersTable, {
 });
 
 export const SelectCallSchema = createSelectSchema(workspaceMeetingTable);
+
 export const SelectCallMember = createSelectSchema(membersTable);
+
+export const UpdateMeetingSchema = createUpdateSchema(workspaceMeetingTable, {
+  status: z.enum(MeetingStatus),
+  endAt: z.date(),
+}).omit({
+  meetingId: true,
+  workspaceId: true,
+  hostedBy: true,
+  createdAt: true,
+});
 
 export type CreateMeetingType = typeof workspaceMeetingTable.$inferInsert;
 export type CreateWorkspaceType = typeof workspacesTable.$inferInsert;
 export type CreateMemberType = typeof membersTable.$inferInsert;
 export type CreateUserType = typeof usersTable.$inferInsert;
+export type CreateParticipantType =
+  typeof meetingParticipantsTable.$inferInsert;
+
 export type SelectMemberType = typeof membersTable.$inferSelect;
 export type SelectMeetingType = typeof workspaceMeetingTable.$inferSelect;
 export type SelectWorkspaceType = typeof workspacesTable.$inferSelect;

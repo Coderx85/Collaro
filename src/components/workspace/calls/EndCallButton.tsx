@@ -4,9 +4,9 @@ import { useCall, useCallStateHooks } from "@stream-io/video-react-sdk";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Phone } from "lucide-react";
 import { toast } from "sonner";
 import { useWorkspaceStore } from "@/store/workspace";
+import { IconPhone } from "@tabler/icons-react";
 
 const EndCallButton = () => {
   const call = useCall();
@@ -16,7 +16,7 @@ const EndCallButton = () => {
 
   if (!call)
     throw new Error(
-      "useStreamCall must be used within a StreamCall component.",
+      "useStreamCall must be used within a StreamCall component."
     );
 
   // https://getstream.io/video/docs/react/guides/call-and-participant-state/#participant-state-3
@@ -54,7 +54,7 @@ const EndCallButton = () => {
       router.push(`/workspace/${workspaceId}`);
     } catch (error: unknown) {
       toast.error(
-        `Failed to end call: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Failed to end call: ${error instanceof Error ? error.message : "Unknown error"}`
       );
     } finally {
       setIsEnding(false);
@@ -71,7 +71,7 @@ const EndCallButton = () => {
       `}
       variant={"destructive"}
     >
-      <Phone className="h-4 w-4" />
+      <IconPhone className="h-4 w-4" />
       {isEnding ? "Ending call..." : "End call for everyone"}
     </Button>
   );
