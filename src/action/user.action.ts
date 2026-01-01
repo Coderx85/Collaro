@@ -90,16 +90,20 @@ export async function loginAction(email: string, password: string) {
       headers: authHeaders,
     });
 
-    if (data.length > 0) {
-      await auth.api.setActiveOrganization({
-        body: {
-          organizationId: data[0].id,
-        },
-        headers: authHeaders,
-      });
+    if (data.length < 0) {
+      return {
+        data: { user: result.user, organizationExists: false },
+        success: true,
+      };
     }
 
-    return { data: result.user, success: true };
+    return {
+      data: {
+        user: result.user,
+        organizationExists: true,
+      },
+      success: true,
+    };
   } catch (error: unknown) {
     let message = "An unknown error occurred";
 

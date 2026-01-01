@@ -3,7 +3,7 @@
 import { useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
-import Logo from "@/components/Logo";
+import Logo from "@/components/navigation/Logo";
 import {
   useListOrganizations,
   useActiveOrganization,
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { sidebarLinks } from "@/constants/component";
 import { IconSlash } from "@tabler/icons-react";
-import OrgSwitcher from "@/components/org-switcher";
+import OrgSwitcher from "@/components/workspace/org-switcher";
 
 export default function Navbar() {
   const params = useParams<{ slug: string }>();

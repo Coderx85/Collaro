@@ -1,4 +1,4 @@
-import MeetingTypeList from "@/components/MeetingTypeList";
+import MeetingTypeList from "@/components/workspace/meeting/MeetingTypeList";
 import ProfileCard from "@/components/ProfileCard";
 import { checkWorkspaceAccess } from "@/lib/workspace-auth";
 
@@ -12,7 +12,7 @@ const Home = async ({ params }: { params: Promise<{ slug: string }> }) => {
     minute: "2-digit",
   });
   const date = new Intl.DateTimeFormat("en-IN", { dateStyle: "full" }).format(
-    now,
+    now
   );
 
   return (
@@ -35,7 +35,7 @@ const Home = async ({ params }: { params: Promise<{ slug: string }> }) => {
           </div>
         </div>
       </div>
-      <MeetingTypeList />
+      <MeetingTypeList workspaceSlug={slug} />
     </section>
   );
 };

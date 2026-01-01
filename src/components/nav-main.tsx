@@ -68,49 +68,86 @@ export function NavMain({
       </SidebarGroup>
     );
   }
+
+  // Non-Admin Routes
+  // if (sidebarLinks.filter((items) => items.adminRoute == true).length === 0) {
+  //   return (
+  //     <SidebarGroup>
+  //       <SidebarGroupContent className="flex flex-col gap-2">
+  //         <SidebarMenu>
+  //           {sidebarLinks
+  //             .filter((item) => item.adminRoute !== true)
+  //             .map((item) => {
+  //               const route = `/workspace/${workspaceId}${item.route}`;
+  //               const isActive = pathname === route;
+  //               const isAdminRoute = item.adminRoute === true;
+  //               const hasAdminAccess = role === "owner" || role === "admin";
+  //               const shouldRender = !isAdminRoute || hasAdminAccess;
+
+  //               if (!shouldRender) return null;
+
+  //               const Component = item.component;
+
+  //               return (
+  //                 <SidebarMenuItem key={route}>
+  //                   <SidebarMenuButton
+  //                     tooltip={item.label}
+  //                     asChild
+  //                     isActive={isActive}
+  //                   >
+  //                     <Link href={route}>
+  //                       {Component && <Component selected={isActive} />}
+  //                       <span>{item.label}</span>
+  //                     </Link>
+  //                   </SidebarMenuButton>
+  //                 </SidebarMenuItem>
+  //               );
+  //             })}
+  //         </SidebarMenu>
+  //       </SidebarGroupContent>
+  //     </SidebarGroup>
+  //   );
+  // }
+
   return (
     <SidebarGroup>
       {/* Non-Member Routes */}
+      {(role == "owner" || role == "admin") && (
+        <div>
+          <SidebarGroupLabel>Admin Routes</SidebarGroupLabel>
+          <SidebarGroupContent className="flex flex-col gap-2">
+            <SidebarMenu>
+              {sidebarLinks.filter((items) => items.adminRoute == true) &&
+                sidebarLinks
+                  .filter((item) => item.adminRoute === true)
+                  .map((item) => {
+                    const route = `/workspace/${workspaceId}${item.route}`;
+                    const isActive = pathname === route;
+                    const isAdminRoute = item.adminRoute === true;
+                    const hasAdminAccess = role === "owner" || role === "admin";
+                    const shouldRender = !isAdminRoute || hasAdminAccess;
 
-      <SidebarGroupLabel>Admin Routes</SidebarGroupLabel>
-      <SidebarGroupContent className="flex flex-col gap-2">
-        <SidebarMenu>
-          {sidebarLinks
-            .filter((item) => item.adminRoute === true)
-            .map((item) => {
-              const route = `/workspace/${workspaceId}${item.route}`;
-              const isActive = pathname === route;
-              const isAdminRoute = item.adminRoute === true;
-              const hasAdminAccess = role === "owner" || role === "admin";
-              const shouldRender = !isAdminRoute || hasAdminAccess;
+                    if (!shouldRender) return null;
 
-              if (!shouldRender) return null;
+                    const Component = item.component;
 
-              const Component = item.component;
+                    return (
+                      <SidebarMenuItem key={route}>
+                        <SidebarMenuButton asChild isActive={isActive}>
+                          <Link href={route}>
+                            {Component && <Component selected={isActive} />}
+                            <span>{item.label}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </div>
+      )}
 
-              return (
-                <SidebarMenuItem key={route}>
-                  <SidebarMenuButton
-                    tooltip={item.label}
-                    asChild
-                    isActive={isActive}
-                  >
-                    <Link href={route}>
-                      {Component && (
-                        <Component
-                          selected={isActive}
-                          // className={iconClass}
-                        />
-                      )}
-                      <span>{item.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              );
-            })}
-        </SidebarMenu>
-      </SidebarGroupContent>
-
+      {/* Member Routes */}
       <SidebarGroupLabel>Workspace</SidebarGroupLabel>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
@@ -135,12 +172,7 @@ export function NavMain({
                     isActive={isActive}
                   >
                     <Link href={route}>
-                      {Component && (
-                        <Component
-                          selected={isActive}
-                          // className={iconClass}
-                        />
-                      )}
+                      {Component && <Component selected={isActive} />}
                       <span>{item.label}</span>
                     </Link>
                   </SidebarMenuButton>

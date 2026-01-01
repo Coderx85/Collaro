@@ -13,12 +13,14 @@ import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/dal";
 import { getMember } from "@/action/member.action";
-import { InviteMemberDialog } from "@/components/workspace/InviteMemberDialog";
+import { InviteMemberDialog } from "@/components/workspace/members/InviteMemberDialog";
+import { TOrganizationMember } from "@/types";
+import MembersTable from "@/components/workspace/meeting/charts/members-table";
 
 export default async function OrgDetailsPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
 
@@ -40,9 +42,11 @@ export default async function OrgDetailsPage({
 
   const orgMember = await getMember(slug, user.id);
 
-  if (!orgMember) {
+  if (!orgMember || !orgMember.success || !orgMember?.data) {
     throw new Error("Organization member not found");
   }
+
+  const role = orgMember.data as TOrganizationMember;
 
   const workspace = { ...activeOrg, member: orgMember };
 
@@ -131,6 +135,8 @@ export default async function OrgDetailsPage({
           </div>
         </CardContent>
       </Card>
+
+      <MembersTable workspaceSlug={slug} />
     </div>
   );
 }

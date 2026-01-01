@@ -6,6 +6,11 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createWorkspace } from "@/action";
 import {
+  canRoleCreateOrganization,
+  useListOrganizations,
+  useSession,
+} from "@/lib/auth-client";
+import {
   Field,
   FieldDescription,
   FieldError,
@@ -15,11 +20,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { IconLink, IconLoader2, IconBriefcase } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
-import { NewWorkspaceFormSchema } from "@/types";
+import { NewWorkspaceFormSchema, TUserRole } from "@/types";
 
 const NewWorkspaceForm = () => {
   const router = useRouter();
+  const { data: session } = useSession();
+  const { data: organizations } = useListOrganizations();
+  const orgMember = organizations?.find(
+    (org) => org.id === organizations[0]?.id
+  );
+
   const [isPending, setPending] = useState<boolean>(false);
+
+  const userRole = orgMember?.role as TUserRole;
+
+  const canCreateWorkspace = canRoleCreateOrganization(userRole);
 
   const form = useForm({
     defaultValues: {
@@ -43,13 +58,33 @@ const NewWorkspaceForm = () => {
         toast.success("Workspace created successfully");
         router.push(`/workspace/${result.data.slug}`);
       } catch (error: unknown) {
-        toast.error("An unexpected error occurred. Please try again.");
-        console.error("Login error:", error);
+        // Handle permission denied errors
+        if (error instanceof Error && error.message.includes("permission")) {
+          toast.error(
+            "You don't have permission to create a workspace. Contact your admin."
+          );
+        } else {
+          toast.error("An unexpected error occurred. Please try again.");
+        }
+        console.error("Workspace creation error:", error);
       } finally {
         setPending(false);
       }
     },
   });
+  if (!canCreateWorkspace) {
+    return (
+      <div className="space-y-4 min-w-lg mx-auto text-center">
+        <p className="text-red-500 font-medium">
+          You don't have permission to create a workspace.
+        </p>
+        <p className="text-muted-foreground text-sm">
+          Contact your organization admin to request workspace creation access.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <form
       onSubmit={(e) => {

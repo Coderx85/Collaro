@@ -1,9 +1,14 @@
 "use server";
 import { db } from "@/db/client";
-import { workspacesTable, membersTable, usersTable } from "@/db/schema/schema";
+import {
+  workspacesTable,
+  membersTable,
+  usersTable,
+  workspaceMeetingTable,
+} from "@/db/schema/schema";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth-config";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { canDeleteWorkspace } from "@/lib/workspace-auth";
 import { getCurrentUser } from "@/lib/session";
@@ -415,6 +420,44 @@ export async function deleteWorkspace(
       error instanceof Error ? error.message : "An unknown error occurred";
     return {
       error: `Failed to delete workspace: ${message}`,
+      success: false,
+    };
+  }
+}
+
+export async function getActiveMeetingForWorkspace(workspaceSlug: string) {
+  try {
+    const [workspace] = await db
+      .select()
+      .from(workspacesTable)
+      .where(eq(workspacesTable.slug, workspaceSlug))
+      .execute();
+
+    if (!workspace) {
+      return { message: "Workspace not found", success: false };
+    }
+
+    const [activeMeeting] = await db
+      .select()
+      .from(workspaceMeetingTable)
+      .where(
+        and(
+          eq(workspaceMeetingTable.workspaceId, workspace.id),
+          isNull(workspaceMeetingTable.endAt)
+        )
+      )
+      .execute();
+
+    if (!activeMeeting) {
+      return { message: "No active meeting found", success: false };
+    }
+
+    return { meeting: activeMeeting, success: true };
+  } catch (error: unknown) {
+    return {
+      error: `Failed to get active meeting for workspace: ${
+        error instanceof Error ? error.message : "An unknown error occurred"
+      }`,
       success: false,
     };
   }

@@ -14,17 +14,24 @@ import {
 
 export const sidebarLinks: SidebarLink[] = [
   {
-    route: "/workspace-settings",
-    label: "Workspace Settings",
-    details: "Manage workspace settings (Admin/Owner only)",
-    component: IconSettings,
+    component: IconUserPentagon,
+    label: "Admin",
+    route: "/admin/dashboard",
+    details: "Manage workspace settings and permissions",
     adminRoute: true,
   },
   {
-    component: IconUserPentagon,
-    label: "Admin",
-    route: "/admin",
-    details: "Manage workspace settings and permissions",
+    route: "/admin/recordings",
+    label: "Recordings",
+    details: "List of recordings",
+    component: IconVideoFilled,
+    adminRoute: true,
+  },
+  {
+    route: "/admin/workspace-settings",
+    label: "Workspace Settings",
+    details: "Manage workspace settings (Admin/Owner only)",
+    component: IconSettings,
     adminRoute: true,
   },
   {
@@ -56,17 +63,20 @@ export const sidebarLinks: SidebarLink[] = [
     adminRoute: false,
   },
   {
-    route: "/recordings",
-    label: "Recordings",
-    details: "List of recordings",
-    component: IconVideoFilled,
-    adminRoute: false,
-  },
-  {
     route: "/personal-room",
     label: "User",
     details: "User Personal detail",
     component: IconUserCircle,
     adminRoute: false,
   },
+];
+
+export const dayNames = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
 ];

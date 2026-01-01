@@ -2,7 +2,7 @@
 
 import { ThemeToggle } from "@/components/navigation/theme-toggle";
 import { homeTabs } from "@/constants";
-import Logo from "@/components/Logo";
+import Logo from "@/components/navigation/Logo";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

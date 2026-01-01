@@ -1,3 +1,6 @@
+import { SelectCallSchema } from "@/db/schema/schema";
+import z from "zod";
+
 export type clientCall = {
   id: string;
   name: string;
@@ -17,7 +20,11 @@ export interface Response<T> {
   status: number;
 }
 
-export type TUserRole = "owner" | "admin" | "member";
+export type TUserRole = TAdminRole | TMemberRole | TInviteMemberRole;
+
+export type TAdminRole = "owner" | "admin";
+
+export type TMemberRole = "member";
 
 export type TInviteMemberRole = "admin" | "member";
 
@@ -29,3 +36,5 @@ export interface TOrganizationMember {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type Call = z.infer<typeof SelectCallSchema>;

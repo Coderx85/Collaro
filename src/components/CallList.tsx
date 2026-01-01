@@ -2,7 +2,7 @@
 
 import Loader from "./Loader";
 import { useEffect, useState, useRef } from "react";
-import MeetingCard from "./MeetingCard";
+import MeetingCard from "./workspace/meeting/MeetingCard";
 import { useGetCalls } from "@/hooks/useGetCalls";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useRouter } from "next/navigation";
@@ -63,7 +63,7 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
   useEffect(() => {
     const fetchRecordings = async (): Promise<void> => {
       const callData = await Promise.all(
-        callRecordings?.map((meeting) => meeting.queryRecordings()) ?? [],
+        callRecordings?.map((meeting) => meeting.queryRecordings()) ?? []
       );
 
       const recordings = callData
@@ -321,7 +321,7 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
                 className={`px-3 py-1 rounded-md ${
                   currentPage === totalPages
                     ? "bg-gray-300 cursor-not-allowed"
-                    : "bg-gradient-to-r from-dark-2 to-dark-1 text-white hover:opacity-90"
+                    : "bg-linear-to-r from-dark-2 to-dark-1 text-white hover:opacity-90"
                 }`}
               >
                 Next
