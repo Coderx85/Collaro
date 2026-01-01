@@ -8,6 +8,13 @@
       "when": 1766683325465,
       "tag": "0000_opposite_doctor_spectrum",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1767273569713,
+      "tag": "0001_boring_scorpion",
+      "breakpoints": true
     }
   ]
 }

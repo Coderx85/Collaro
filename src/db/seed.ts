@@ -1,15 +1,12 @@
 import { reset } from "drizzle-seed";
 import { db } from "@/db/client";
 import {
-  usersTable,
-  workspacesTable,
-  membersTable,
   type CreateUserType,
   type CreateWorkspaceType,
-  pgUserRole,
 } from "@/db/schema/schema";
 import { auth } from "@/lib/auth-config";
 import { config } from "@/lib/config";
+import { sql } from "drizzle-orm";
 
 type WorkspaceUserRole = "owner" | "admin" | "member";
 
@@ -132,21 +129,25 @@ const workspaceAssignments: WorkspaceAssignment[] = [
   { workspaceSlug: "new-avenger-workspace", userName: "guest", role: "member" },
 ];
 
-const tablesToReset = {
-  users: usersTable,
-  workspaces: workspacesTable,
-  members: membersTable,
-  // Note: Drizzle Seed reset does not automatically clear auth tables like 'session' if not passed
-  // But cascading deletes from users should handle it if schemas are correct.
-};
+// Custom reset function to truncate tables using raw SQL
+// This works with both local pg Pool and Neon HTTP connections
+async function resetTables() {
+  // Truncate in order that respects foreign key constraints
+  // The CASCADE option handles dependent rows
+  await db.execute(sql`TRUNCATE TABLE "members" CASCADE`);
+  await db.execute(sql`TRUNCATE TABLE "workspaces" CASCADE`);
+  await db.execute(sql`TRUNCATE TABLE "session" CASCADE`);
+  await db.execute(sql`TRUNCATE TABLE "account" CASCADE`);
+  await db.execute(sql`TRUNCATE TABLE "verification" CASCADE`);
+  await db.execute(sql`TRUNCATE TABLE "users" CASCADE`);
+}
 
 async function seed() {
   try {
     console.log("Starting database seed...");
 
-    // 1. Reset Database
-    // We wrapped in try/catch because sometimes reset fails on foreign keys if not ordered or if tables locked
-    await reset(db, tablesToReset);
+    // 1. Reset Database using custom truncate function
+    await resetTables();
     console.log("Database reset complete.");
 
     // Store user session tokens and IDs for later use
@@ -173,7 +174,7 @@ async function seed() {
       ) {
         console.error(
           "SignUp Response:",
-          JSON.stringify(safeResponse, null, 2),
+          JSON.stringify(safeResponse, null, 2)
         );
         throw new Error(`Failed to create user ${seedUser.userName}`);
       }
@@ -198,7 +199,7 @@ async function seed() {
     for (const workspace of workspaces) {
       if (!workspace.createdBy) {
         console.warn(
-          `Skipping workspace ${workspace.name}: No createdBy user specified.`,
+          `Skipping workspace ${workspace.name}: No createdBy user specified.`
         );
         continue;
       }
@@ -206,7 +207,7 @@ async function seed() {
       const ownerToken = userSessionMap.get(workspace.createdBy);
       if (!ownerToken) {
         console.error(
-          `Cannot create workspace ${workspace.name}: Creator ${workspace.createdBy} not found.`,
+          `Cannot create workspace ${workspace.name}: Creator ${workspace.createdBy} not found.`
         );
         continue;
       }
@@ -230,7 +231,7 @@ async function seed() {
       workspaceIdMap.set(workspace.slug, newOrg.id);
       workspaceOwnerMap.set(workspace.slug, workspace.createdBy);
       console.log(
-        `Created workspace: ${workspace.name} by ${workspace.createdBy} `,
+        `Created workspace: ${workspace.name} by ${workspace.createdBy} `
       );
     }
 
@@ -245,7 +246,7 @@ async function seed() {
 
       if (!workspaceId || !ownerToken) {
         console.warn(
-          `Skipping assignment for ${assignment.userName} in ${assignment.workspaceSlug}: Workspace or Owner not found.`,
+          `Skipping assignment for ${assignment.userName} in ${assignment.workspaceSlug}: Workspace or Owner not found.`
         );
         continue;
       }
@@ -254,7 +255,7 @@ async function seed() {
       if (assignment.userName === ownerUserName) {
         // Creator is automatically assigned as 'owner' via creatorRole config
         console.log(
-          `Skipping explicit assignment for creator/owner ${assignment.userName}`,
+          `Skipping explicit assignment for creator/owner ${assignment.userName}`
         );
         continue;
       }
@@ -282,12 +283,12 @@ async function seed() {
           console.log(result);
         }
         console.log(
-          `Added ${assignment.userName} to ${assignment.workspaceSlug} as ${assignment.role}`,
+          `Added ${assignment.userName} to ${assignment.workspaceSlug} as ${assignment.role}`
         );
       } catch (error: unknown) {
         console.error(
           `Failed to add member ${assignment.userName} to ${assignment.workspaceSlug}:`,
-          error,
+          error
         );
       }
     }

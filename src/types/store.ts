@@ -40,20 +40,17 @@ export type UserState = {
 export type WorkspaceState = {
   workspaceId: string | null;
   workspaceName: string | null;
+  workspaceSlug: string | null;
   members?: memberstore[];
   isInitialized: boolean;
 
   setWorkspace: (
     id: string,
     name: string,
-    members?: {
-      id: string;
-      name: string;
-      userName: string;
-      email: string;
-      role: string;
-    }[],
+    slug: string,
+    members?: memberstore[]
   ) => void;
+  updateWorkspaceSlug: (slug: string) => void;
   clearWorkspace: () => void;
   setInitialized: (value: boolean) => void;
 };

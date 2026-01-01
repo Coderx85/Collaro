@@ -14,23 +14,32 @@ import {
 import type { SelectWorkspaceType } from "@/db/schema/schema";
 import { getAllWorkspaces } from "@/action";
 import { useEffect, useState } from "react";
+import { useWorkspaceStore } from "@/store/workspace";
 
 const OrgSwitcher = () => {
   const [organizations, setOrganizations] = useState<SelectWorkspaceType[]>([]);
   const router = useRouter();
   const { data: org } = authClient.useListOrganizations();
-  const slug = org ? org[0]?.slug : "default-organization";
-  const orgName = org ? org[0]?.name : "Default Organization";
-  console.log("org-slug:: \n", slug);
+
+  // Use workspace store
+  const { workspaceSlug, setWorkspace } = useWorkspaceStore();
+
+  // Get current org from Better Auth or fallback to store
+  const currentSlug = org?.[0]?.slug || workspaceSlug || "default-organization";
+  const currentName = org?.[0]?.name || "Default Organization";
+
   useEffect(() => {
     const fetchOrganizations = async () => {
-      // const org await
       const orgs = await getAllWorkspaces();
-      // const { data } = await authClient.organization.getFullOrganization();
       setOrganizations(orgs || []);
+
+      // Sync workspace store with Better Auth active org
+      if (org?.[0]) {
+        setWorkspace(org[0].id, org[0].name, org[0].slug);
+      }
     };
     fetchOrganizations();
-  }, []);
+  }, [org, setWorkspace]);
 
   const handleChangeOrganization = async (organizationSlug: string) => {
     const { error } = await authClient.organization.setActive({
@@ -39,12 +48,19 @@ const OrgSwitcher = () => {
 
     if (error) throw new Error(error.statusText + error.status);
 
+    // Find the selected organization to update store
+    const selectedOrg = organizations.find((o) => o.slug === organizationSlug);
+    if (selectedOrg) {
+      setWorkspace(selectedOrg.id, selectedOrg.name, selectedOrg.slug);
+    }
+
     router.push(`/workspace/${organizationSlug}/`);
   };
+
   return (
-    <Select onValueChange={handleChangeOrganization} defaultValue={slug}>
+    <Select onValueChange={handleChangeOrganization} value={currentSlug}>
       <SelectTrigger className="w-50 dark:text-white bg-white/75">
-        <SelectValue>{orgName}</SelectValue>
+        <SelectValue>{currentName}</SelectValue>
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
