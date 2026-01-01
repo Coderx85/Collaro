@@ -1,7 +1,11 @@
 "use client";
 
-import { useCallStateHooks } from "@stream-io/video-react-sdk";
-import CustomParticipantView from "./CustomParticipantView";
+import { useCallStateHooks, ParticipantView } from "@stream-io/video-react-sdk";
+import {
+  CustomParticipantViewUISpotlight,
+  CustomParticipantViewUIBar,
+  CustomVideoPlaceholder,
+} from "./CustomParticipantView";
 import { useState, useEffect } from "react";
 import { useWorkspaceStore } from "@/store/workspace";
 
@@ -61,10 +65,11 @@ const CustomSpeakerLayout = ({
               className="cursor-pointer transition-transform hover:scale-105"
               onClick={() => setDominantSpeaker(participant)}
             >
-              <CustomParticipantView
+              <ParticipantView
                 participant={participant}
-                workspaceSlug={workspaceSlug}
-                className="w-full"
+                ParticipantViewUI={CustomParticipantViewUIBar}
+                VideoPlaceholder={CustomVideoPlaceholder}
+                className="w-full aspect-video"
               />
             </div>
           ))}
@@ -73,9 +78,10 @@ const CustomSpeakerLayout = ({
 
       {/* Main speaker view */}
       <div className="flex-1 flex items-center justify-center">
-        <CustomParticipantView
+        <ParticipantView
           participant={mainParticipant}
-          workspaceSlug={workspaceSlug}
+          ParticipantViewUI={CustomParticipantViewUISpotlight}
+          VideoPlaceholder={CustomVideoPlaceholder}
           className="w-full h-full max-w-[1200px]"
         />
       </div>
@@ -89,10 +95,11 @@ const CustomSpeakerLayout = ({
               className="cursor-pointer transition-transform hover:scale-105"
               onClick={() => setDominantSpeaker(participant)}
             >
-              <CustomParticipantView
+              <ParticipantView
                 participant={participant}
-                workspaceSlug={workspaceSlug}
-                className="w-full"
+                ParticipantViewUI={CustomParticipantViewUIBar}
+                VideoPlaceholder={CustomVideoPlaceholder}
+                className="w-full aspect-video"
               />
             </div>
           ))}

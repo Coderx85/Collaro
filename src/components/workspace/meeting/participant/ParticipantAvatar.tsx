@@ -1,3 +1,5 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { IconUser } from "@tabler/icons-react";
 import { User } from "lucide-react";
 
 interface ParticipantAvatarProps {
@@ -47,21 +49,21 @@ const ParticipantAvatar = ({
 
   if (imageUrl) {
     return (
-      <div
-        className={`${sizeClasses[size]} rounded-full overflow-hidden bg-linear-to-br from-slate-700 to-slate-800 flex items-center justify-center`}
-      >
-        <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
-      </div>
+      <Avatar className="rounded-lg w-full h-full justify-center items-center">
+        <AvatarImage
+          src={`https://multiavatar.com/${name}`}
+          // alt={name}
+          className={sizeClasses[size]}
+        />
+        <AvatarFallback className={sizeClasses[size]}>
+          {initials}
+        </AvatarFallback>
+      </Avatar>
     );
   }
 
   return (
-    <div
-      className={`${sizeClasses[size]} rounded-full flex items-center justify-center font-bold text-white relative overflow-hidden group`}
-      style={{
-        background: `linear-gradient(135deg, ${backgroundColor} 0%, ${backgroundColor}dd 100%)`,
-      }}
-    >
+    <div>
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 left-0 w-20 h-20 bg-white rounded-full blur-2xl -translate-x-10 -translate-y-10" />
@@ -70,7 +72,7 @@ const ParticipantAvatar = ({
 
       {/* Icon background (shown on hover) */}
       <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-        <User className="text-white/60" size={iconSizes[size]} />
+        <IconUser className="text-white/60" size={iconSizes[size]} />
       </div>
 
       {/* Initials */}

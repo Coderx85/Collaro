@@ -5,10 +5,17 @@ import {
   CallParticipantsList,
   CallStatsButton,
   CallingState,
+  PaginatedGridLayout,
+  SpeakerLayout,
   useCallStateHooks,
 } from "@stream-io/video-react-sdk";
 import { useRouter, useSearchParams } from "next/navigation";
-import { CustomGridLayout, CustomSpeakerLayout } from "./participant";
+import {
+  CustomParticipantViewUI,
+  CustomVideoPlaceholder,
+  CustomParticipantViewUISpotlight,
+  CustomParticipantViewUIBar,
+} from "./participant/CustomParticipantView";
 
 import {
   DropdownMenu,
@@ -40,22 +47,44 @@ const MeetingRoom = () => {
   const CallLayout = () => {
     switch (layout) {
       case "grid":
-        return <CustomGridLayout />;
+        // Use PaginatedGridLayout with custom UI components
+        return (
+          <PaginatedGridLayout
+            VideoPlaceholder={CustomVideoPlaceholder}
+            ParticipantViewUI={CustomParticipantViewUI}
+          />
+        );
       case "speaker-right":
-        return <CustomSpeakerLayout participantsBarPosition="left" />;
+        // Use SpeakerLayout with separate UI for spotlight and bar
+        return (
+          <SpeakerLayout
+            participantsBarPosition="left"
+            VideoPlaceholder={CustomVideoPlaceholder}
+            ParticipantViewUISpotlight={CustomParticipantViewUISpotlight}
+            ParticipantViewUIBar={CustomParticipantViewUIBar}
+          />
+        );
       default:
-        return <CustomSpeakerLayout participantsBarPosition="right" />;
+        // speaker-left
+        return (
+          <SpeakerLayout
+            participantsBarPosition="right"
+            VideoPlaceholder={CustomVideoPlaceholder}
+            ParticipantViewUISpotlight={CustomParticipantViewUISpotlight}
+            ParticipantViewUIBar={CustomParticipantViewUIBar}
+          />
+        );
     }
   };
 
   return (
     <section className="relative h-screen w-full overflow-hidden pt-4 text-white">
-      <div className="relative flex h-[calc(100vh-85px)] size-full items-center justify-center">
-        {/* <div className=" flex size-full max-w-[1000px] items-center"> */}
-        <CallLayout />
-        {/* </div> */}
+      <div className="relative flex h-full size-full items-center justify-center">
+        <div className="flex size-full max-w-[1000px] items-center">
+          <CallLayout />
+        </div>
         <div
-          className={cn("h-[calc(100vh-85px)] hidden ml-2", {
+          className={cn("h-full hidden ml-2", {
             "show-block": showParticipants,
           })}
         >

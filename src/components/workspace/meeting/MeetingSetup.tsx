@@ -169,20 +169,20 @@ const MeetingSetup = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-xl"
+        className="w-full max-w-3xl"
       >
-        <Card className="flex flex-col items-center justify-center overflow-hidden border-none bg-card/50 backdrop-blur-xl shadow-2xl">
-          <CardContent className="p-8">
-            <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
+        <Card className="flex flex-col items-center justify-center overflow-hidden border-none">
+          <CardContent className="p-8 bg-card/50 backdrop-blur-xl shadow-2xl">
+            <div className="flex sm:flex-col lg:flex-row px-4 py-8 border border-red-500">
               {/* Left Column: Preview */}
-              <div className="flex flex-col gap-6">
-                <div className="overflow-hidden rounded-2xl border bg-black/40 shadow-inner">
-                  <VideoPreview className="w-full object-cover" />
-                </div>
+              <div className="w-3/5">
+                {/* <div className="overflow-hidden rounded-2xl border bg-black/40 shadow-inner"> */}
+                <VideoPreview className="w-full object-cover" />
+                {/* </div> */}
               </div>
 
               {/* Right Column: Info & Actions */}
-              <div className="flex flex-col justify-center gap-8">
+              <div className="flex flex-col justify-center gap-8 w-2/5">
                 <div className="space-y-2">
                   <h1 className="text-3xl font-bold tracking-tight">
                     Ready to join?
