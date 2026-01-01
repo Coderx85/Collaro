@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { useGetCallById } from "@/hooks/useGetCallById";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import Usercall from "../user/_components/usercall";
 
 const Table = ({
   title,
@@ -85,7 +84,6 @@ const PersonalRoom = () => {
           Copy Invitation
         </Button>
       </div>
-      <Usercall />
     </section>
   );
 };

@@ -1,5 +1,5 @@
-import WeeklyMeetingsChart from "./_components/weekly-meeting-chart";
-import { DailyMeetingsChart } from "@/components/workspace/admin/charts/DailyMeetingsChart";
+import WeeklyMeetingsChart from "@/components/workspace/admin/charts/weekly-meeting-chart";
+import DailyMeetingsChart from "@/components/workspace/admin/charts/weekly-meeting-chart";
 
 const AdminDashboardPage = async ({
   params,
@@ -25,7 +25,7 @@ const AdminDashboardPage = async ({
         </div>
 
         <div className="card p-4 bg-card/80 rounded-lg">
-          <DailyMeetingsChart />
+          <DailyMeetingsChart slug={slug} />
         </div>
       </div>
     </section>
