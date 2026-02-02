@@ -74,8 +74,7 @@ const Rootpage = () => {
             For any queries, contact us or want to know about me <br />
             <Link
               className="underline text-black dark:text-white/85 hover:text-primary xl:text-2xl py-2"
-              href="/contact-us"
-              target="_blank"
+              href="#contact"
             >
               Contact Us
             </Link>{" "}
@@ -123,7 +122,7 @@ const Rootpage = () => {
         id="contact"
         className="w-full bg-gray-500/50 dark:bg-gray-700/60 py-4"
       >
-        <div className="w-full px-8 mx-auto">
+        <div className="w-full px-8 mx-auto" id="contact">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
             <div className="lg:col-span-1">
               <ContactForm />

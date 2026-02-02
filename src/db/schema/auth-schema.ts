@@ -63,8 +63,3 @@ export const verification = pgTable("verification", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
-
-// Type exports
-export type NewSession = typeof session.$inferInsert;
-export type NewAccount = typeof account.$inferInsert;
-export type NewVerification = typeof verification.$inferInsert;

@@ -12,6 +12,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
+    "type-check": "tsc -p tsconfig.json",
     "lint": "biome check",
     "format": "biome format --write",
     "lint-staged": "lint-staged",
@@ -19,14 +20,8 @@
     "docker:dev": "docker compose -f src/dev/compose.yaml",
     "with-dev-env": "dotenv -e .env.development -- ",
     "with-prod-env": "dotenv -e .env.production -- ",
-    "db:push": "drizzle-kit push",
-    "db:generate": "drizzle-kit generate",
-    "db:reset": "drizzle-kit drop",
-    "db:migrate": "drizzle-kit migrate",
     "db:seed": "bunx tsx src/db/seed.ts",
-    "db": "drizzle-kit ",
-    "db:studio": "cd ../../packages/database && drizzle-kit studio",
-    "docker:run": "node server.js"
+    "db": "drizzle-kit "
   },
   "lint-staged": {
     "**/*.{js,ts,tsx}": [

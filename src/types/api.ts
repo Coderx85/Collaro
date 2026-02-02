@@ -3,7 +3,7 @@ import type {
   SelectMeetingType,
   SelectMemberType,
   UpdateMeetingSchema,
-} from "@/db/schema/schema";
+} from "@/db/schema/type";
 import z from "zod";
 
 export type APIResponse<T> = {

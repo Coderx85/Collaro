@@ -28,7 +28,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { SelectUserSchema } from "@/db/schema/schema";
+import { SelectUserSchema } from "@/db/schema/type";
 import { loginAction } from "@/action";
 import { config } from "@/lib/config";
 

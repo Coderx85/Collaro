@@ -9,12 +9,6 @@ import {
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm/sql";
 import * as t from "drizzle-orm/pg-core";
-import {
-  createInsertSchema,
-  createSelectSchema,
-  createUpdateSchema,
-} from "drizzle-zod";
-import z from "zod";
 
 // Define user_role enum first
 export const pgUserRole = pgEnum("user_role", ["owner", "admin", "member"]);
@@ -30,10 +24,6 @@ export const pgParticipantStatus = pgEnum("participant_status", [
   "left",
   "declined",
 ]);
-
-export const UserRole = pgUserRole.enumValues;
-export const MeetingStatus = pgMeetingStatus.enumValues;
-export const ParticipantStatus = pgParticipantStatus.enumValues;
 
 // Users table definition
 export const usersTable = pgTable(
@@ -51,7 +41,7 @@ export const usersTable = pgTable(
   (table) => [
     t.uniqueIndex("users_email_unique_idx").on(table.email),
     t.uniqueIndex("users_user_name_unique_idx").on(table.userName),
-  ]
+  ],
 );
 
 // Workspaces table definition
@@ -71,7 +61,7 @@ export const workspacesTable = pgTable(
   (table) => [
     t.uniqueIndex("workspaces_name_unique_idx").on(table.name),
     t.uniqueIndex("workspaces_slug_unique_idx").on(table.slug),
-  ]
+  ],
 );
 
 // Members Table
@@ -100,7 +90,7 @@ export const membersTable = pgTable(
       .on(table.userId, table.workspaceId),
     t.index("members_workspace_id_idx").on(table.workspaceId),
     t.index("members_role_idx").on(table.role),
-  ]
+  ],
 );
 
 export const invitationTable = pgTable(
@@ -126,7 +116,7 @@ export const invitationTable = pgTable(
   (table) => [
     t.index("invitation_workspace_id_idx").on(table.workspaceId),
     t.index("invitation_email_idx").on(table.email),
-  ]
+  ],
 );
 
 // Workspace meetings table
@@ -152,7 +142,7 @@ export const workspaceMeetingTable = pgTable(
   (table) => [
     t.index("workspace_meetings_workspace_id_idx").on(table.workspaceId),
     t.index("workspace_meetings_hosted_by_idx").on(table.hostedBy),
-  ]
+  ],
 );
 
 // Meeting participants table - tracks which members join which meetings
@@ -179,77 +169,5 @@ export const meetingParticipantsTable = pgTable(
       .uniqueIndex("meeting_participants_meeting_member_unique_idx")
       .on(table.meetingId, table.memberId),
     t.index("meeting_participants_meeting_id_idx").on(table.meetingId),
-  ]
+  ],
 );
-
-export const CreateUserSchema = createInsertSchema(usersTable, {
-  password: z.string().min(6),
-  userName: z.string().min(6, "User Name is required"),
-  name: z.string().min(6, "Name is required"),
-  email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email is required"),
-})
-  .extend({
-    confirmPassword: z.string().min(6, "Must be at least 6 characters long"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  })
-  .omit({
-    createdAt: true,
-    updatedAt: true,
-    emailVerified: true,
-    id: true,
-  });
-
-export const CreateWorkspaceSchema = createInsertSchema(workspacesTable);
-
-export const UpdateWorkspaceSchema = createUpdateSchema(workspacesTable, {
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  slug: z
-    .string()
-    .min(2, "Slug must be at least 2 characters")
-    .regex(
-      /^[a-z0-9-]+$/,
-      "Slug can only contain lowercase letters, numbers, and hyphens"
-    ),
-  logo: z.string().url("Logo must be a valid URL").optional(),
-  updatedAt: z.date().optional(),
-}).omit({
-  id: true,
-  createdAt: true,
-  createdBy: true,
-});
-
-export const SelectUserSchema = createSelectSchema(usersTable, {
-  password: z.string().min(6),
-  email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/),
-});
-
-export const SelectCallSchema = createSelectSchema(workspaceMeetingTable);
-
-export const SelectCallMember = createSelectSchema(membersTable);
-
-export const UpdateMeetingSchema = createUpdateSchema(workspaceMeetingTable, {
-  status: z.enum(MeetingStatus),
-  endAt: z.date(),
-}).omit({
-  meetingId: true,
-  workspaceId: true,
-  hostedBy: true,
-  createdAt: true,
-});
-
-export type CreateMeetingType = typeof workspaceMeetingTable.$inferInsert;
-export type CreateWorkspaceType = typeof workspacesTable.$inferInsert;
-export type CreateMemberType = typeof membersTable.$inferInsert;
-export type CreateUserType = typeof usersTable.$inferInsert;
-export type CreateParticipantType =
-  typeof meetingParticipantsTable.$inferInsert;
-
-export type SelectMemberType = typeof membersTable.$inferSelect;
-export type SelectMeetingType = typeof workspaceMeetingTable.$inferSelect;
-export type SelectWorkspaceType = typeof workspacesTable.$inferSelect;
-export type SelectUserType = typeof usersTable.$inferSelect;
-export type SelectParticipantType =
-  typeof meetingParticipantsTable.$inferSelect;

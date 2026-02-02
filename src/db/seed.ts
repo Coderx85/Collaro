@@ -3,11 +3,11 @@ import { db } from "@/db/client";
 import {
   type CreateUserType,
   type CreateWorkspaceType,
-} from "@/db/schema/schema";
+} from "@/db/schema/type";
 import { auth } from "@/lib/auth-config";
 import { config } from "@/lib/config";
 import { sql } from "drizzle-orm";
-
+import { authSchema, schema } from ".";
 type WorkspaceUserRole = "owner" | "admin" | "member";
 
 type SeedUser = CreateUserType;
@@ -132,8 +132,11 @@ const workspaceAssignments: WorkspaceAssignment[] = [
 // Custom reset function to truncate tables using raw SQL
 // This works with both local pg Pool and Neon HTTP connections
 async function resetTables() {
-  // Truncate in order that respects foreign key constraints
-  // The CASCADE option handles dependent rows
+  await reset(db, {
+    auth: authSchema,
+    main: schema,
+  }); // Use drizzle-seed reset for basic reset
+
   await db.execute(sql`TRUNCATE TABLE "members" CASCADE`);
   await db.execute(sql`TRUNCATE TABLE "workspaces" CASCADE`);
   await db.execute(sql`TRUNCATE TABLE "session" CASCADE`);
@@ -174,7 +177,7 @@ async function seed() {
       ) {
         console.error(
           "SignUp Response:",
-          JSON.stringify(safeResponse, null, 2)
+          JSON.stringify(safeResponse, null, 2),
         );
         throw new Error(`Failed to create user ${seedUser.userName}`);
       }
@@ -199,7 +202,7 @@ async function seed() {
     for (const workspace of workspaces) {
       if (!workspace.createdBy) {
         console.warn(
-          `Skipping workspace ${workspace.name}: No createdBy user specified.`
+          `Skipping workspace ${workspace.name}: No createdBy user specified.`,
         );
         continue;
       }
@@ -207,7 +210,7 @@ async function seed() {
       const ownerToken = userSessionMap.get(workspace.createdBy);
       if (!ownerToken) {
         console.error(
-          `Cannot create workspace ${workspace.name}: Creator ${workspace.createdBy} not found.`
+          `Cannot create workspace ${workspace.name}: Creator ${workspace.createdBy} not found.`,
         );
         continue;
       }
@@ -231,7 +234,7 @@ async function seed() {
       workspaceIdMap.set(workspace.slug, newOrg.id);
       workspaceOwnerMap.set(workspace.slug, workspace.createdBy);
       console.log(
-        `Created workspace: ${workspace.name} by ${workspace.createdBy} `
+        `Created workspace: ${workspace.name} by ${workspace.createdBy} `,
       );
     }
 
@@ -246,7 +249,7 @@ async function seed() {
 
       if (!workspaceId || !ownerToken) {
         console.warn(
-          `Skipping assignment for ${assignment.userName} in ${assignment.workspaceSlug}: Workspace or Owner not found.`
+          `Skipping assignment for ${assignment.userName} in ${assignment.workspaceSlug}: Workspace or Owner not found.`,
         );
         continue;
       }
@@ -255,7 +258,7 @@ async function seed() {
       if (assignment.userName === ownerUserName) {
         // Creator is automatically assigned as 'owner' via creatorRole config
         console.log(
-          `Skipping explicit assignment for creator/owner ${assignment.userName}`
+          `Skipping explicit assignment for creator/owner ${assignment.userName}`,
         );
         continue;
       }
@@ -283,12 +286,12 @@ async function seed() {
           console.log(result);
         }
         console.log(
-          `Added ${assignment.userName} to ${assignment.workspaceSlug} as ${assignment.role}`
+          `Added ${assignment.userName} to ${assignment.workspaceSlug} as ${assignment.role}`,
         );
       } catch (error: unknown) {
         console.error(
           `Failed to add member ${assignment.userName} to ${assignment.workspaceSlug}:`,
-          error
+          error,
         );
       }
     }

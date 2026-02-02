@@ -1,9 +1,6 @@
 import { db } from "@/db/client";
-import {
-  type SelectMeetingType,
-  membersTable,
-  workspaceMeetingTable,
-} from "@/db/schema/schema";
+import { membersTable, workspaceMeetingTable } from "@/db/schema/schema";
+import { SelectMeetingType } from "@/db/schema/type";
 import { usersTable } from "@/db/schema/schema";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth-config";

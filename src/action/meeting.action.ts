@@ -5,12 +5,13 @@ import {
   workspaceMeetingTable,
   meetingParticipantsTable,
   membersTable,
-  SelectUserType,
   usersTable,
-  SelectParticipantType,
-  SelectWorkspaceType,
-  SelectMemberType,
 } from "@/db/schema/schema";
+import {
+  SelectMemberType,
+  SelectParticipantType,
+  SelectUserType,
+} from "@/db/schema/type";
 import { APIResponse, Call, MeetingResponse } from "@/types";
 import { eq, and } from "drizzle-orm";
 
@@ -71,7 +72,7 @@ type WorkspaceAccess = TParticipant & TMember & TUser;
 export async function checkWorkspaceMeetingAcces(
   meeting: string,
   workspaceId: string,
-  userId: string
+  userId: string,
 ): Response<WorkspaceAccess> {
   try {
     // First check if the current user is a member of the workspace
@@ -81,8 +82,8 @@ export async function checkWorkspaceMeetingAcces(
       .where(
         and(
           eq(membersTable.workspaceId, workspaceId),
-          eq(membersTable.userId, userId)
-        )
+          eq(membersTable.userId, userId),
+        ),
       )
       .execute();
 
@@ -114,8 +115,8 @@ export async function checkWorkspaceMeetingAcces(
       .where(
         and(
           eq(workspaceMeetingTable.workspaceId, workspaceId),
-          eq(workspaceMeetingTable.meetingId, meeting)
-        )
+          eq(workspaceMeetingTable.meetingId, meeting),
+        ),
       )
       .execute();
 
@@ -134,8 +135,8 @@ export async function checkWorkspaceMeetingAcces(
       .where(
         and(
           eq(meetingParticipantsTable.meetingId, meeting),
-          eq(meetingParticipantsTable.memberId, memberData.id)
-        )
+          eq(meetingParticipantsTable.memberId, memberData.id),
+        ),
       )
       .execute();
 
@@ -207,7 +208,7 @@ export async function addMemberToMeeting(meetingId: string, memberId: string) {
 
 export async function removeMemberFromMeeting(
   meetingId: string,
-  memberId: string
+  memberId: string,
 ) {
   try {
     await db
@@ -216,8 +217,8 @@ export async function removeMemberFromMeeting(
       .where(
         and(
           eq(meetingParticipantsTable.meetingId, meetingId),
-          eq(meetingParticipantsTable.memberId, memberId)
-        )
+          eq(meetingParticipantsTable.memberId, memberId),
+        ),
       );
 
     return {
@@ -244,7 +245,7 @@ export async function getMeetingParticipants(meetingId: string) {
       .from(meetingParticipantsTable)
       .innerJoin(
         membersTable,
-        eq(meetingParticipantsTable.memberId, membersTable.id)
+        eq(meetingParticipantsTable.memberId, membersTable.id),
       )
       .where(eq(meetingParticipantsTable.meetingId, meetingId));
 
@@ -264,7 +265,7 @@ export async function getMeetingParticipants(meetingId: string) {
 
 export async function endMeeting(
   meetingId: string,
-  owner: boolean
+  owner: boolean,
 ): Promise<APIResponse<MeetingResponse>> {
   try {
     //

@@ -1,4 +1,4 @@
-import { CreateUserSchema, CreateWorkspaceSchema } from "@/db/schema/schema";
+import { CreateUserSchema, CreateWorkspaceSchema } from "@/db/schema/type";
 import { z } from "zod";
 
 export const profileFormSchema = z.object({

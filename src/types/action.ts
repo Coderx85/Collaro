@@ -1,4 +1,4 @@
-import { SelectCallSchema } from "@/db/schema/schema";
+import { SelectCallSchema } from "@/db/schema/type";
 import z from "zod";
 
 export type clientCall = {

@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { toast } from "@/components/ui/use-toast";
-import { UpdateWorkspaceSchema } from "@/db/schema/schema";
+import { UpdateWorkspaceSchema } from "@/db/schema/type";
 import { updateWorkspace } from "@/action/workspace.action";
 
 interface OrgSettingsFormProps {

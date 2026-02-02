@@ -42,7 +42,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="sticky z-50 top-0 flex items-center justify-between w-full px-4 sm:px-8 py-2 xl:py-4 bg-linear-to-r from-black/50 to-gray-700/50 dark:from-black/10 dark:to-black/20 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700">
+    <div className="sticky z-50 top-0 flex items-center justify-between w-full px-4 sm:px-8 py-2 xl:py-4 bg-linear-to-r from-black/50 to-gray-700/50 dark:from-black/10 dark:to-black/20 backdrop-blur-lg">
       <Logo />
       <div>
         <ul className="hidden sm:flex gap-4 text-lg sm:text-base font-semibold text-slate-900 dark:text-white">

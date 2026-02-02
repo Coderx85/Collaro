@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { SelectWorkspaceType } from "@/db/schema/schema";
+import type { SelectWorkspaceType } from "@/db/schema/type";
 import { getAllWorkspaces } from "@/action";
 import { useEffect, useState } from "react";
 import { useWorkspaceStore } from "@/store/workspace";

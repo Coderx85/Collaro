@@ -1,6 +1,5 @@
 import { db } from "@/db/client";
 import {
-  type SelectMeetingType,
   membersTable,
   usersTable,
   workspaceMeetingTable,
@@ -11,6 +10,7 @@ import { auth } from "@/lib/auth-config";
 import { eq } from "drizzle-orm";
 import { NextResponse, type NextRequest } from "next/server";
 import type { APIResponse } from "@/types";
+import type { SelectMeetingType } from "@/db/schema/type";
 
 type Response<T> = Promise<NextResponse<APIResponse<T>>>;
 
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest): Response<SelectMeetingType> {
 
     return NextResponse.json(
       { success: false, error: (error as Error).message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
