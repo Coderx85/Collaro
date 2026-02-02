@@ -44,8 +44,9 @@ export type AuthSession = typeof authClient.$Infer.Session;
  * Check if a role can update workspace (synchronous, client-side only)
  */
 export function canRoleUpdateWorkspace(
-  role: "owner" | "admin" | "member"
+  role: "owner" | "admin" | "member" | undefined,
 ): boolean {
+  if (!role) return false;
   return authClient.organization.checkRolePermission({
     permissions: { organization: ["create"] },
     role,
@@ -56,8 +57,9 @@ export function canRoleUpdateWorkspace(
  * Check if a role can delete an organization (synchronous, client-side only)
  */
 export function canRoleDeleteOrganization(
-  role: "owner" | "admin" | "member"
+  role: "owner" | "admin" | "member" | undefined,
 ): boolean {
+  if (!role) return false;
   return authClient.organization.checkRolePermission({
     permissions: { organization: ["delete"] },
     role,
@@ -68,8 +70,9 @@ export function canRoleDeleteOrganization(
  * Check if a role can view an organization (synchronous, client-side only)
  */
 export function canRoleViewOrganization(
-  role: "owner" | "admin" | "member"
+  role: "owner" | "admin" | "member" | undefined,
 ): boolean {
+  if (!role) return false;
   return authClient.organization.checkRolePermission({
     permissions: { organization: ["view"] },
     role,
@@ -80,8 +83,9 @@ export function canRoleViewOrganization(
  * Check if a role can update an organization (synchronous, client-side only)
  */
 export function canRoleUpdateOrganization(
-  role: "owner" | "admin" | "member"
+  role: "owner" | "admin" | "member" | undefined,
 ): boolean {
+  if (!role) return false;
   return authClient.organization.checkRolePermission({
     permissions: { organization: ["update"] },
     role,
@@ -93,28 +97,9 @@ export function canRoleUpdateOrganization(
  * @deprecated
  */
 export function canRoleDeleteWorkspace(
-  role: "owner" | "admin" | "member"
+  role: "owner" | "admin" | "member",
 ): boolean {
   return canRoleDeleteOrganization(role);
-}
-
-/**
- * Deprecated: Use canRoleCreateOrganization instead
- * @deprecated
- */
-export function canRoleCreateWorkspace(
-  role: "owner" | "admin" | "member"
-): boolean {
-  return canRoleCreateOrganization(role);
-}
-
-export function canRoleCreateOrganization(
-  role: "owner" | "admin" | "member"
-): boolean {
-  return authClient.organization.checkRolePermission({
-    permissions: { organization: ["create"] },
-    role,
-  });
 }
 
 /**
@@ -122,7 +107,7 @@ export function canRoleCreateOrganization(
  * @deprecated
  */
 export function canRoleViewWorkspace(
-  role: "owner" | "admin" | "member"
+  role: "owner" | "admin" | "member",
 ): boolean {
   return canRoleViewOrganization(role);
 }
@@ -131,8 +116,9 @@ export function canRoleViewWorkspace(
  * Check if a role can manage members (synchronous, client-side only)
  */
 export function canRoleManageMembers(
-  role: "owner" | "admin" | "member"
+  role: "owner" | "admin" | "member" | undefined,
 ): boolean {
+  if (!role) return false;
   return authClient.organization.checkRolePermission({
     permissions: { member: ["create", "update", "delete"] },
     role,
@@ -143,8 +129,9 @@ export function canRoleManageMembers(
  * Check if a role can invite members (synchronous, client-side only)
  */
 export function canRoleInviteMembers(
-  role: "owner" | "admin" | "member"
+  role: "owner" | "admin" | "member" | undefined,
 ): boolean {
+  if (!role) return false;
   return authClient.organization.checkRolePermission({
     permissions: { invitation: ["create"] },
     role,
@@ -158,7 +145,7 @@ class Permission {
    */
   static checkPermissionSync(
     role: "owner" | "admin" | "member",
-    permissions: Record<string, string[]>
+    permissions: Record<string, string[]>,
   ): boolean {
     return authClient.organization.checkRolePermission({
       permissions,
@@ -167,40 +154,46 @@ class Permission {
   }
 
   private static canRoleCreateOrganization(
-    role: "owner" | "admin" | "member"
+    role: "owner" | "admin" | "member" | undefined,
   ): boolean {
+    if (!role) return false;
     return Permission.checkPermissionSync(role, { organization: ["create"] });
   }
 
   private static canRoleDeleteOrganization(
-    role: "owner" | "admin" | "member"
+    role: "owner" | "admin" | "member" | undefined,
   ): boolean {
+    if (!role) return false;
     return Permission.checkPermissionSync(role, { organization: ["delete"] });
   }
 
   private static canRoleViewOrganization(
-    role: "owner" | "admin" | "member"
+    role: "owner" | "admin" | "member" | undefined,
   ): boolean {
+    if (!role) return false;
     return Permission.checkPermissionSync(role, { organization: ["view"] });
   }
 
   private static canRoleUpdateOrganization(
-    role: "owner" | "admin" | "member"
+    role: "owner" | "admin" | "member" | undefined,
   ): boolean {
+    if (!role) return false;
     return Permission.checkPermissionSync(role, { organization: ["update"] });
   }
 
   private static canRoleManageMembers(
-    role: "owner" | "admin" | "member"
+    role: "owner" | "admin" | "member" | undefined,
   ): boolean {
+    if (!role) return false;
     return Permission.checkPermissionSync(role, {
       member: ["create", "update", "delete"],
     });
   }
 
   private static canRoleInviteMembers(
-    role: "owner" | "admin" | "member"
+    role: "owner" | "admin" | "member" | undefined,
   ): boolean {
+    if (!role) return false;
     return Permission.checkPermissionSync(role, { invitation: ["create"] });
   }
 
@@ -221,7 +214,7 @@ class Permission {
  * Use this when you need to validate permissions before an action
  */
 export async function checkPermission(
-  permissions: Record<string, string[]>
+  permissions: Record<string, string[]>,
 ): Promise<boolean> {
   try {
     const result = await authClient.organization.hasPermission({

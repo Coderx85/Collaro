@@ -5,11 +5,7 @@ import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createWorkspace } from "@/action";
-import {
-  canRoleCreateOrganization,
-  useListOrganizations,
-  useSession,
-} from "@/lib/auth-client";
+import { useListOrganizations, useSession } from "@/lib/auth-client";
 import {
   Field,
   FieldDescription,
@@ -24,17 +20,12 @@ import { NewWorkspaceFormSchema, TUserRole } from "@/types";
 
 const NewWorkspaceForm = () => {
   const router = useRouter();
-  const { data: session } = useSession();
   const { data: organizations } = useListOrganizations();
   const orgMember = organizations?.find(
-    (org) => org.id === organizations[0]?.id
+    (org) => org.id === organizations[0]?.id,
   );
 
   const [isPending, setPending] = useState<boolean>(false);
-
-  const userRole = orgMember?.role as TUserRole;
-
-  const canCreateWorkspace = canRoleCreateOrganization(userRole);
 
   const form = useForm({
     defaultValues: {
@@ -61,7 +52,7 @@ const NewWorkspaceForm = () => {
         // Handle permission denied errors
         if (error instanceof Error && error.message.includes("permission")) {
           toast.error(
-            "You don't have permission to create a workspace. Contact your admin."
+            "You don't have permission to create a workspace. Contact your admin.",
           );
         } else {
           toast.error("An unexpected error occurred. Please try again.");
@@ -72,18 +63,6 @@ const NewWorkspaceForm = () => {
       }
     },
   });
-  if (!canCreateWorkspace) {
-    return (
-      <div className="space-y-4 min-w-lg mx-auto text-center">
-        <p className="text-red-500 font-medium">
-          You don't have permission to create a workspace.
-        </p>
-        <p className="text-muted-foreground text-sm">
-          Contact your organization admin to request workspace creation access.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <form
