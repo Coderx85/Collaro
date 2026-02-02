@@ -1,20 +1,8 @@
-import CallList from "@/components/CallList";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Upcoming Calls | Collaro",
-  description: "",
-  icons: {
-    icon: "/icons/upcoming.svg",
-  },
-};
+"use client";
+import { UpcomingCalendar } from "@/components/UpcomingCalendar";
 
 const UpcomingPage = () => {
-  return (
-    <>
-      <CallList type="upcoming" />
-    </>
-  );
+  return <UpcomingCalendar />;
 };
 
 export default UpcomingPage;

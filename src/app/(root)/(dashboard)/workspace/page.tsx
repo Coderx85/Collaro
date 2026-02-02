@@ -28,8 +28,6 @@ const WorkspacePage = async () => {
   return (
     <div className="mx-auto flex h-full flex-col py-15 items-center justify-center rounded-sm">
       {/* <WorkspaceForm /> */}
-      <h1 className="text-xl font-bold">Your Workspace</h1>
-      {/* {session?.session?.activeOrganizationId} */}
       <div className="mx-auto flex h-full flex-col py-15 items-center justify-center rounded-sm">
         <h1 className="text-3xl font-bold">Your Workspace</h1>
         <Link
@@ -42,30 +40,37 @@ const WorkspacePage = async () => {
       <div className="flex gap-5 mt-5">
         {org.length > 0 ? (
           org.map((org) => (
-            <Card
-              key={org.id}
-              className="w-[300px] bg-primary text-primary-foreground"
-            >
-              <CardHeader className="pb-2">
-                <CardTitle>{org.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">{org.logo}</p>
-                <Link href={`/workspace/${org.slug}`} key={org.id}>
-                  <p className="text-sm text-muted-foreground">{org.slug}</p>
-                </Link>
-              </CardContent>
-            </Card>
+            <Link href={`/workspace/${org.slug}`} key={org.id}>
+              <Card className="w-[300px] group cursor-pointer bg-sidebar glassmorphism dark:glassmorphism2 border border-border hover:shadow-md hover:bg-accent/30 transform transition-all duration-300">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg font-semibold transition-all duration-300 transform group-hover:scale-105 text-foreground">
+                    {org.name}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {org.logo && (
+                    <p className="text-sm text-muted-foreground transition-all duration-300 group-hover:text-primary">
+                      {org.logo}
+                    </p>
+                  )}
+                  <p className="text-sm font-medium text-muted-foreground transition-all duration-300 group-hover:text-primary/80">
+                    {org.slug}
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
           ))
         ) : (
-          <Empty>
+          <Empty className="group transform transition-all duration-300 hover:scale-105">
             <EmptyHeader>
-              <EmptyTitle>No Workspaces Found</EmptyTitle>
-              <EmptyMedia>
-                <IconBuildingSkyscraper />
+              <EmptyMedia className="text-muted-foreground group-hover:text-primary transition-all duration-300">
+                <IconBuildingSkyscraper className="size-12" />
               </EmptyMedia>
+              <EmptyTitle className="text-lg font-semibold text-foreground group-hover:text-primary transition-all duration-300">
+                No Workspaces Found
+              </EmptyTitle>
             </EmptyHeader>
-            <EmptyDescription>
+            <EmptyDescription className="text-sm text-muted-foreground group-hover:text-foreground/80 transition-all duration-300">
               You have not created any workspaces yet. Get started by creating a
               new workspace.
             </EmptyDescription>
