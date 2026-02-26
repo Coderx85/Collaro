@@ -57,12 +57,15 @@ export async function POST(request: NextRequest): Response<SelectMeetingType> {
       .where(eq(workspaceMeetingTable.meetingId, meetingId))
       .returning();
 
-    return NextResponse.json({ success: true, user: dbUser, meeting });
+    return NextResponse.json({
+      success: true,
+      data: meeting,
+    });
   } catch (error: unknown) {
     console.error("Error ending meeting:", error);
-    return NextResponse.json(
-      { success: false, error: (error as Error).message },
-      { status: 500 },
-    );
+    return NextResponse.json({
+      success: false,
+      error: (error as Error).message,
+    });
   }
 }

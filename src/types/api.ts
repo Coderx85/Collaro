@@ -6,11 +6,7 @@ import type {
 } from "@/db/schema/type";
 import z from "zod";
 
-export type APIResponse<T> = {
-  success: boolean;
-  data?: T;
-  error?: string;
-};
+export type APIResponse<T> = APISuccessResponse<T> | APIErrorResponse;
 
 export type APISuccessResponse<T> = {
   success: true;
