@@ -15,7 +15,7 @@ import Loader from "@/components/Loader";
 import {
   acceptInvitation,
   getInvitationById,
-} from "@/action/invitation.action";
+} from "@/action/invitation.actions";
 import { authClient } from "@/lib/auth-client";
 
 interface AcceptInviteFormProps {

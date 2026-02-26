@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createInvitation } from "@/action/invitation.action";
+import { createInvitation } from "@/action/invitation.actions";
 import { IconUser, IconUserPlus, IconUserStar } from "@tabler/icons-react";
 
 interface InviteMemberDialogProps {

@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/dal";
-import { getMember } from "@/action/member.action";
+import { getMember } from "@/action/member.actions";
 import { InviteMemberDialog } from "@/components/workspace/members/InviteMemberDialog";
 import { TOrganizationMember } from "@/types";
 import MembersTable from "@/components/workspace/meeting/charts/members-table";

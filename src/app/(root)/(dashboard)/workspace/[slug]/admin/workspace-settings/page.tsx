@@ -10,7 +10,7 @@ import {
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/dal";
-import { getMember } from "@/action/member.action";
+import { getMember } from "@/action/member.actions";
 import { redirect } from "next/navigation";
 import {
   canRoleDeleteOrganization,
@@ -44,7 +44,7 @@ export default async function OrgSettingsPage({
 
   const orgMember = await getMember(slug, user.id);
 
-  if (!orgMember || !orgMember.data) {
+  if (!orgMember || !orgMember.success) {
     redirect(`/workspace/${slug}`);
   }
 

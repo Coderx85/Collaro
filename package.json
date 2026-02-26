@@ -12,7 +12,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "type-check": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json",
     "lint": "biome check",
     "format": "biome format --write",
     "lint-staged": "lint-staged",

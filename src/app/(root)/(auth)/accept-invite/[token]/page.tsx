@@ -12,7 +12,7 @@ import { auth } from "@/lib/auth-config";
 import {
   getInvitationById,
   acceptInvitation,
-} from "@/action/invitation.action";
+} from "@/action/invitation.actions";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -147,8 +147,8 @@ export default async function AcceptInvitePage({
                 Unable to Accept
               </CardTitle>
               <CardDescription>
-                {acceptResult.error ||
-                  "Something went wrong while accepting the invitation."}
+                {!acceptResult.success &&
+                  `${acceptResult.error || "An unknown error occurred while accepting the invitation."}`}
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center">

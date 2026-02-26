@@ -5,7 +5,6 @@ import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createWorkspace } from "@/action";
-import { useListOrganizations, useSession } from "@/lib/auth-client";
 import {
   Field,
   FieldDescription,
@@ -16,14 +15,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { IconLink, IconLoader2, IconBriefcase } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
-import { NewWorkspaceFormSchema, TUserRole } from "@/types";
+import { NewWorkspaceFormSchema } from "@/types";
 
 const NewWorkspaceForm = () => {
   const router = useRouter();
-  const { data: organizations } = useListOrganizations();
-  const orgMember = organizations?.find(
-    (org) => org.id === organizations[0]?.id,
-  );
 
   const [isPending, setPending] = useState<boolean>(false);
 
@@ -40,8 +35,8 @@ const NewWorkspaceForm = () => {
       try {
         const result = await createWorkspace(value);
 
-        if (!result.success || !result.data) {
-          console.error("Workspace creation failed: \n", result.error);
+        if (!result.success) {
+          console.error("Workspace creation failed:", result.error);
           toast.error(result.error || "Failed to create workspace");
           return;
         }

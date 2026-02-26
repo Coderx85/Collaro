@@ -1,4 +1,4 @@
-import type { ParticipantRole } from "@/action/participant.action";
+import type { ParticipantRole } from "@/action/participant.actions";
 import { Crown, Shield, User } from "lucide-react";
 
 interface ParticipantBadgeProps {

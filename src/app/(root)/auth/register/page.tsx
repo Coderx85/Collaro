@@ -79,9 +79,10 @@ export default function RegisterPage() {
           confirmPassword: value.confirmPassword,
         });
 
-        if (signUpResult.error) {
-          toast.error(signUpResult.error || "Failed to create account");
-          console.error("Sign up error:", signUpResult.error);
+        if (!signUpResult.success && signUpResult.error) {
+          const errorMsg = signUpResult.error || "Failed to create account";
+          toast.error(errorMsg);
+          console.error("Sign up error:", errorMsg);
           return;
         }
 

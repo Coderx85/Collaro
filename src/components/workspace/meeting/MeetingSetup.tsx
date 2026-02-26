@@ -53,7 +53,7 @@ const MeetingSetup = ({
 
   if (!call) {
     throw new Error(
-      "useStreamCall must be used within a StreamCall component."
+      "useStreamCall must be used within a StreamCall component.",
     );
   }
 
@@ -74,17 +74,18 @@ const MeetingSetup = ({
         const result = await checkWorkspaceMeetingAcces(
           meetingId,
           workspaceId,
-          session.user.id
+          session.user.id,
         );
 
-        if (result.success && result.data) {
+        if (result.success) {
           setUserRole(result.data.role);
           setIsValid(true);
         } else {
+          const errorMsg =
+            result.error || "You don't have access to this meeting";
+
           setIsValid(false);
-          setErrorMessage(
-            result.error || "You don't have access to this meeting"
-          );
+          setErrorMessage(errorMsg);
         }
       } catch (error) {
         console.error("Failed to verify meeting access:", error);

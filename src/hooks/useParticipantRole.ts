@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   getParticipantRole,
   type ParticipantRole,
-} from "@/action/participant.action";
+} from "@/action/participant.actions";
 import type { StreamVideoParticipant } from "@stream-io/video-react-sdk";
 import { TWorkspaceMember, TWorkspaceUser } from "@/types";
 
@@ -28,7 +28,7 @@ type Data = Pick<
  */
 export const useParticipantRole = (
   participant: StreamVideoParticipant,
-  workspaceSlug: string
+  workspaceSlug: string,
 ): Data => {
   const [roleData, setRoleData] = useState<Data>({
     role: "member",
@@ -45,7 +45,7 @@ export const useParticipantRole = (
       try {
         const fetchRole = await getParticipantRole(
           participant.userId,
-          workspaceSlug
+          workspaceSlug,
         );
       } catch (error) {
         console.error("Error fetching participant role:", error);

@@ -17,7 +17,7 @@ import Loader from "./Loader";
 import Logo from "./navigation/Logo";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getMember } from "@/action/member.action";
+import { getMember } from "@/action/member.actions";
 import { usePathname } from "next/navigation";
 
 export function AppSidebar({
@@ -29,12 +29,14 @@ export function AppSidebar({
 
   useEffect(() => {
     const fetchMemberRoel = async () => {
-      const { data } = await getMember(
+      const res = await getMember(
         pathname.split("/")[2],
-        session?.user?.id || ""
+        session?.user?.id || "",
       );
-      if (!data) return;
-      setRole(data.role);
+      if (!res.success) return;
+      const role = res.data.role;
+
+      setRole(role);
     };
     fetchMemberRoel();
   }, [session, pathname]);
