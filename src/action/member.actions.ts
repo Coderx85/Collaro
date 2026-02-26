@@ -3,12 +3,11 @@
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth-config";
 import type { APIResponse, TOrganizationMember } from "@/types";
-
-interface MemberResponse extends APIResponse<TOrganizationMember> {}
+type MemberResponse = APIResponse<TOrganizationMember>;
 
 export const getMember = async (
   workspaceSlug: string,
-  userId: string
+  userId: string,
 ): Promise<MemberResponse> => {
   const workspace = await auth.api.getFullOrganization({
     query: {

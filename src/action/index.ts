@@ -1,9 +1,9 @@
-export * from "./stream.action";
+export * from "./stream.actions";
 
-export * from "./user.action";
+export * from "./user.actions";
 
-export * from "./meeting.action";
+export * from "./meeting.actions";
 
-export * from "./workspace.action";
+export * from "./workspace.actions";
 
-export * from "./invitation.action";
+export * from "./invitation.actions";

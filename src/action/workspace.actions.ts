@@ -14,12 +14,12 @@ import { canDeleteWorkspace } from "@/lib/workspace-auth";
 import { getCurrentUser } from "@/lib/session";
 import type { APIResponse } from "@/types/api";
 import type { z } from "zod";
-import type { NewWorkspaceFormSchema, TUserRole } from "@/types";
+import { NewWorkspaceFormSchema, type TUserRole } from "@/types";
 
 type NewWorkspaceFormSchemaType = z.infer<typeof NewWorkspaceFormSchema>;
 
 export async function createWorkspace(
-  workspaceData: NewWorkspaceFormSchemaType
+  workspaceData: NewWorkspaceFormSchemaType,
 ): Promise<APIResponse<NewWorkspaceFormSchemaType>> {
   try {
     const user = await getCurrentUser();
@@ -80,7 +80,7 @@ export async function createWorkspace(
  */
 export async function updateWorkspace(
   workspaceId: string,
-  data: { name?: string; slug?: string; logo?: string }
+  data: { name?: string; slug?: string; logo?: string },
 ): Promise<APIResponse<{ name: string; slug: string; logo: string }>> {
   try {
     // Use better-auth's API to update the organization
@@ -144,8 +144,8 @@ export async function getWorkspaceUsers(workspaceId: string) {
     .where(
       and(
         eq(membersTable.userId, authUser.id),
-        eq(membersTable.workspaceId, workspaceId)
-      )
+        eq(membersTable.workspaceId, workspaceId),
+      ),
     )
     .execute();
 
@@ -187,8 +187,8 @@ export async function validateWorkspaceAccess(workspaceId: string) {
     .where(
       and(
         eq(membersTable.userId, authUser.id),
-        eq(membersTable.workspaceId, workspaceId)
-      )
+        eq(membersTable.workspaceId, workspaceId),
+      ),
     )
     .execute();
 
@@ -229,8 +229,8 @@ export async function getWorkspace(workspaceSlug: string) {
       .where(
         and(
           eq(membersTable.userId, authUser.id),
-          eq(membersTable.workspaceId, workspaceSlug)
-        )
+          eq(membersTable.workspaceId, workspaceSlug),
+        ),
       )
       .execute();
 
@@ -254,7 +254,7 @@ export async function getAllWorkspaces() {
             workspaceId: membersTable.workspaceId,
           })
           .from(membersTable)
-          .where(eq(membersTable.userId, user.id ?? ""))
+          .where(eq(membersTable.userId, user.id ?? "")),
       ),
   });
 
@@ -265,7 +265,7 @@ export async function getAllWorkspaces() {
 export async function updateUserRole(
   userId: string,
   workspaceId: string,
-  role: TUserRole
+  role: TUserRole,
 ): Promise<APIResponse<{ role: string }>> {
   try {
     const updatedMember = await db
@@ -274,8 +274,8 @@ export async function updateUserRole(
       .where(
         and(
           eq(membersTable.userId, userId),
-          eq(membersTable.workspaceId, workspaceId)
-        )
+          eq(membersTable.workspaceId, workspaceId),
+        ),
       )
       .returning();
 
@@ -392,7 +392,7 @@ export async function getWorkspaceTUserRole(workspaceSlug: string) {
  * Only owners can delete workspaces
  */
 export async function deleteWorkspace(
-  workspaceId: string
+  workspaceId: string,
 ): Promise<APIResponse<{ deleted: boolean }>> {
   try {
     // Check if user has permission to delete
@@ -425,6 +425,31 @@ export async function deleteWorkspace(
   }
 }
 
+export async function createWorkspaceFormAction(
+  _prevState: APIResponse<{ name: string; slug: string; logo: string }> | null,
+  formData: FormData,
+): Promise<APIResponse<{ name: string; slug: string; logo: string }>> {
+  const parsed = NewWorkspaceFormSchema.safeParse({
+    name: formData.get("name"),
+    slug: formData.get("slug"),
+  });
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: "Invalid form data",
+    };
+  }
+
+  const result = await createWorkspace(parsed.data);
+
+  if (result.success) {
+    redirect(`/workspace/${result.data.slug}`);
+  }
+
+  return result;
+}
+
 export async function getActiveMeetingForWorkspace(workspaceSlug: string) {
   try {
     const [workspace] = await db
@@ -443,8 +468,8 @@ export async function getActiveMeetingForWorkspace(workspaceSlug: string) {
       .where(
         and(
           eq(workspaceMeetingTable.workspaceId, workspace.id),
-          isNull(workspaceMeetingTable.endAt)
-        )
+          isNull(workspaceMeetingTable.endAt),
+        ),
       )
       .execute();
 

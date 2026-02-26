@@ -12,8 +12,8 @@ import { auth } from "@/lib/auth-config";
 import { and, eq, gt } from "drizzle-orm";
 import { inngest } from "@/lib/inngest";
 import type { APIResponse } from "@/types/api";
-import { getWorkspace } from "./workspace.action";
-import { getCurrentUser } from "./user.action";
+import { getWorkspace } from "./workspace.actions";
+import { getCurrentUser } from "./user.actions";
 
 interface CreateInvitationParams {
   workspaceId: string;
@@ -119,7 +119,7 @@ export async function createInvitation({
  * Get all pending invitations for a workspace
  */
 export async function getPendingInvitations(
-  workspaceId: string
+  workspaceId: string,
 ): Promise<APIResponse<InvitationData[]>> {
   try {
     const authUser = await getCurrentUser();
@@ -140,8 +140,8 @@ export async function getPendingInvitations(
         and(
           eq(invitationTable.workspaceId, workspaceId),
           eq(invitationTable.status, "pending"),
-          gt(invitationTable.expiresAt, new Date())
-        )
+          gt(invitationTable.expiresAt, new Date()),
+        ),
       )
       .execute();
 
@@ -170,7 +170,7 @@ export async function getPendingInvitations(
  * Only workspace owners can cancel invitations
  */
 export async function cancelInvitation(
-  invitationId: string
+  invitationId: string,
 ): Promise<APIResponse<{ cancelled: boolean }>> {
   try {
     const authUser = await getCurrentUser();
@@ -294,7 +294,7 @@ export async function getInvitationById(invitationId: string): Promise<
  * Adds the current user to the workspace and marks invitation as accepted
  */
 export async function acceptInvitation(
-  invitationId: string
+  invitationId: string,
 ): Promise<APIResponse<{ workspaceSlug: string }>> {
   try {
     const authUser = await getCurrentUser();
@@ -338,8 +338,8 @@ export async function acceptInvitation(
       .where(
         and(
           eq(membersTable.userId, authUser.user.id),
-          eq(membersTable.workspaceId, invitation.workspaceId)
-        )
+          eq(membersTable.workspaceId, invitation.workspaceId),
+        ),
       )
       .execute();
 

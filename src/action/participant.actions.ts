@@ -17,7 +17,7 @@ interface ParticipantRoleResponse {
   email: string;
 }
 
-interface RoleResponse extends APIResponse<ParticipantRoleResponse> {}
+type RoleResponse = APIResponse<ParticipantRoleResponse>;
 
 /**
  * Get participant role in a workspace
@@ -25,7 +25,7 @@ interface RoleResponse extends APIResponse<ParticipantRoleResponse> {}
  */
 export const getParticipantRole = async (
   userId: string,
-  workspaceId: string
+  workspaceId: string,
 ): Promise<RoleResponse> => {
   try {
     // First try using Better Auth (faster)
@@ -67,8 +67,8 @@ export const getParticipantRole = async (
       .where(
         and(
           eq(membersTable.userId, userId),
-          eq(membersTable.workspaceId, workspaceId)
-        )
+          eq(membersTable.workspaceId, workspaceId),
+        ),
       )
       .limit(1);
 
@@ -104,7 +104,7 @@ export const getParticipantRole = async (
  */
 export const getParticipantRoles = async (
   userIds: string[],
-  workspaceId: string
+  workspaceId: string,
 ): Promise<APIResponse<ParticipantRoleResponse[]>> => {
   try {
     const results = await db
@@ -121,8 +121,8 @@ export const getParticipantRoles = async (
         and(
           eq(membersTable.workspaceId, workspaceId),
           // Filter by userIds array
-          userIds.length > 0 ? eq(membersTable.userId, userIds[0]) : undefined
-        )
+          userIds.length > 0 ? eq(membersTable.userId, userIds[0]) : undefined,
+        ),
       );
 
     return {
