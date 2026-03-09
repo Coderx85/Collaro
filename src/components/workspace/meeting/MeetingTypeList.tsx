@@ -36,27 +36,27 @@ const MeetingTypeList = ({ workspaceSlug }: { workspaceSlug: string }) => {
   const pathname = usePathname();
   const workspaceId = pathname.split("/")[2];
 
-  async function createMeetingDB(meetingId: string) {
-    const res = await fetch(`/api/meeting/new`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        data: {
-          meetingId,
-        },
-      }),
-    });
+  // async function createMeetingDB(meetingId: string) {
+  //   const res = await fetch(`/api/meeting/new`, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       data: {
+  //         meetingId,
+  //       },
+  //     }),
+  //   });
 
-    const data = await res.json();
+  //   const data = await res.json();
 
-    if (!data || data.error) {
-      return toast({ title: "Failed to create meeting" });
-    }
+  //   if (!data || data.error) {
+  //     return toast({ title: "Failed to create meeting" });
+  //   }
 
-    return toast({ title: "Meeting Created" });
-  }
+  //   return toast({ title: "Meeting Created" });
+  // }
 
   if (isPending || !client || !session?.user) return <Loader />;
 
@@ -88,7 +88,7 @@ const MeetingTypeList = ({ workspaceSlug }: { workspaceSlug: string }) => {
 
       setCallDetail(call);
 
-      createMeetingDB(call.id);
+      // createMeetingDB(call.id);
 
       toast({
         title: "Meeting Created",
