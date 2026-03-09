@@ -34,10 +34,10 @@ const MeetingSetup = ({
   const meetingId = pathname.split("/").pop() || "";
   const { workspaceId } = useWorkspaceStore();
 
-  const [isValid, setIsValid] = useState<boolean | null>(null);
-  const [isChecking, setIsChecking] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [userRole, setUserRole] = useState<TUserRole>("member");
+  // const [isValid, setIsValid] = useState<boolean | null>(null);
+  // const [isChecking, setIsChecking] = useState(true);
+  // const [errorMessage, setErrorMessage] = useState("");
+  // const [userRole, setUserRole] = useState<TUserRole>("member");
   const [isMicCamOff, setIsMicCamOff] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
 
@@ -57,48 +57,6 @@ const MeetingSetup = ({
     );
   }
 
-  // Fetch user role and verify access
-  useEffect(() => {
-    const verifyAccess = async () => {
-      if (!session?.user?.id || !workspaceId || !meetingId) {
-        if (
-          !sessionLoading &&
-          (!session?.user?.id || !workspaceId || !meetingId)
-        ) {
-          setIsChecking(false);
-        }
-        return;
-      }
-
-      try {
-        const result = await checkWorkspaceMeetingAcces(
-          meetingId,
-          workspaceId,
-          session.user.id,
-        );
-
-        if (result.success) {
-          setUserRole(result.data.role);
-          setIsValid(true);
-        } else {
-          const errorMsg =
-            result.error || "You don't have access to this meeting";
-
-          setIsValid(false);
-          setErrorMessage(errorMsg);
-        }
-      } catch (error) {
-        console.error("Failed to verify meeting access:", error);
-        setIsValid(false);
-        setErrorMessage("An error occurred while verifying access");
-      } finally {
-        setIsChecking(false);
-      }
-    };
-
-    verifyAccess();
-  }, [session?.user?.id, workspaceId, meetingId, sessionLoading]);
-
   // Handle mic/cam toggle
   useEffect(() => {
     if (isMicCamOff) {
@@ -116,7 +74,7 @@ const MeetingSetup = ({
       await call.join({
         data: {
           custom: {
-            role: userRole,
+            role: "member" as TUserRole,
             name: session?.user?.name || "",
             email: session?.user?.email || "",
           },
@@ -130,18 +88,18 @@ const MeetingSetup = ({
     }
   };
 
-  if (isChecking || sessionLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background text-foreground">
-        <div className="flex flex-col items-center gap-4">
-          <IconLoader2 className="h-12 w-12 animate-spin text-primary" />
-          <p className="text-muted-foreground animate-pulse">
-            Verifying meeting access...
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // if (isChecking || sessionLoading) {
+  //   return (
+  //     <div className="flex h-screen items-center justify-center bg-background text-foreground">
+  //       <div className="flex flex-col items-center gap-4">
+  //         <IconLoader2 className="h-12 w-12 animate-spin text-primary" />
+  //         <p className="text-muted-foreground animate-pulse">
+  //           Verifying meeting access...
+  //         </p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   if (callTimeNotArrived) {
     return (
@@ -160,9 +118,9 @@ const MeetingSetup = ({
     );
   }
 
-  if (isValid === false) {
-    return <Alert title={errorMessage} />;
-  }
+  // if (isValid === false) {
+  //   return <Alert title={errorMessage} />;
+  // }
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-linear-to-br from-background via-background to-muted/20 p-4 font-sans text-foreground">
@@ -244,13 +202,13 @@ const MeetingSetup = ({
                       ) : null}
                       {isJoining ? "Joining..." : "Join Meeting"}
                     </Button>
-                    <p className="mt-4 text-center text-xs text-muted-foreground">
+                    {/* <p className="mt-4 text-center text-xs text-muted-foreground">
                       Joining as{" "}
                       <span className="font-medium text-foreground">
                         {session?.user?.name}
                       </span>{" "}
                       ({userRole})
-                    </p>
+                    </p> */}
                   </div>
                 </div>
               </div>
