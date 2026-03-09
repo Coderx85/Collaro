@@ -33,13 +33,16 @@ export const getMember = async (
     };
   }
 
+  const validRoles = ["owner", "admin", "member"] as const;
+  const role = validRoles.includes(member.role as any) ? (member.role as "owner" | "admin" | "member") : "member";
+
   return {
     success: true,
     data: {
       id: member.id,
       userId: member.userId,
       workspaceId: workspace.id,
-      role: member.role as "owner" | "admin" | "member",
+      role,
       createdAt: new Date(member.createdAt),
       updatedAt: new Date(member.createdAt),
     },

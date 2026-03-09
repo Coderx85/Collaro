@@ -46,7 +46,8 @@ export type AuthSession = typeof authClient.$Infer.Session;
 export function canRoleUpdateWorkspace(
   role: "owner" | "admin" | "member" | undefined,
 ): boolean {
-  if (!role) return false;
+  const validRoles = ["owner", "admin", "member"];
+  if (!role || !validRoles.includes(role)) return false;
   return authClient.organization.checkRolePermission({
     permissions: { organization: ["create"] },
     role,
@@ -59,7 +60,8 @@ export function canRoleUpdateWorkspace(
 export function canRoleDeleteOrganization(
   role: "owner" | "admin" | "member" | undefined,
 ): boolean {
-  if (!role) return false;
+  const validRoles = ["owner", "admin", "member"];
+  if (!role || !validRoles.includes(role)) return false;
   return authClient.organization.checkRolePermission({
     permissions: { organization: ["delete"] },
     role,
@@ -72,7 +74,8 @@ export function canRoleDeleteOrganization(
 export function canRoleViewOrganization(
   role: "owner" | "admin" | "member" | undefined,
 ): boolean {
-  if (!role) return false;
+  const validRoles = ["owner", "admin", "member"];
+  if (!role || !validRoles.includes(role)) return false;
   return authClient.organization.checkRolePermission({
     permissions: { organization: ["view"] },
     role,
@@ -85,7 +88,8 @@ export function canRoleViewOrganization(
 export function canRoleUpdateOrganization(
   role: "owner" | "admin" | "member" | undefined,
 ): boolean {
-  if (!role) return false;
+  const validRoles = ["owner", "admin", "member"];
+  if (!role || !validRoles.includes(role)) return false;
   return authClient.organization.checkRolePermission({
     permissions: { organization: ["update"] },
     role,
