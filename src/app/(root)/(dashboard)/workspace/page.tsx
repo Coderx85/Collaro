@@ -17,10 +17,6 @@ const WorkspacePage = async () => {
     headers: await headers(),
   });
 
-  if (!session?.user) {
-    redirect("/sign-in");
-  }
-
   const org = await auth.api.listOrganizations({
     headers: await headers(),
   });
