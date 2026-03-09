@@ -128,7 +128,7 @@ const MeetingSetup = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-3xl"
+        className="w-full max-w-5xl"
       >
         <Card className="flex flex-col items-center justify-center overflow-hidden border-none">
           <CardContent className="p-8 bg-card/50 backdrop-blur-xl shadow-2xl">
