@@ -6,15 +6,15 @@ import {
 } from "better-auth/client/plugins";
 import { config } from "./config";
 import type { auth } from "./auth-config";
-import { ac, roles } from "./permission";
+// import { ac, roles } from "./permission";
 
 export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000",
   plugins: [
     inferAdditionalFields<typeof auth>(),
     organizationClient({
-      ac,
-      roles,
+      // ac,
+      // roles,
       schema: inferOrgAdditionalFields<typeof auth>(),
     }),
   ],
@@ -43,16 +43,16 @@ export type AuthSession = typeof authClient.$Infer.Session;
 /**
  * Check if a role can update workspace (synchronous, client-side only)
  */
-export function canRoleUpdateWorkspace(
-  role: "owner" | "admin" | "member" | undefined,
-): boolean {
-  const validRoles = ["owner", "admin", "member"];
-  if (!role || !validRoles.includes(role)) return false;
-  return authClient.organization.checkRolePermission({
-    permissions: { organization: ["create"] },
-    role,
-  });
-}
+// export function canRoleUpdateWorkspace(
+//   role: "owner" | "admin" | "member" | undefined,
+// ): boolean {
+//   const validRoles = ["owner", "admin", "member"];
+//   if (!role || !validRoles.includes(role)) return false;
+//   return authClient.organization.checkRolePermission({
+//     permissions: { organization: ["create"] },
+//     role,
+//   });
+// }
 
 /**
  * Check if a role can delete an organization (synchronous, client-side only)
@@ -71,16 +71,16 @@ export function canRoleDeleteOrganization(
 /**
  * Check if a role can view an organization (synchronous, client-side only)
  */
-export function canRoleViewOrganization(
-  role: "owner" | "admin" | "member" | undefined,
-): boolean {
-  const validRoles = ["owner", "admin", "member"];
-  if (!role || !validRoles.includes(role)) return false;
-  return authClient.organization.checkRolePermission({
-    permissions: { organization: ["view"] },
-    role,
-  });
-}
+// export function canRoleViewOrganization(
+//   role: "owner" | "admin" | "member" | undefined,
+// ): boolean {
+//   const validRoles = ["owner", "admin", "member"];
+//   if (!role || !validRoles.includes(role)) return false;
+//   return authClient.organization.checkRolePermission({
+//     permissions: { organization: ["view"] },
+//     role,
+//   });
+// }
 
 /**
  * Check if a role can update an organization (synchronous, client-side only)
@@ -100,21 +100,21 @@ export function canRoleUpdateOrganization(
  * Deprecated: Use canRoleDeleteOrganization instead
  * @deprecated
  */
-export function canRoleDeleteWorkspace(
-  role: "owner" | "admin" | "member",
-): boolean {
-  return canRoleDeleteOrganization(role);
-}
+// export function canRoleDeleteWorkspace(
+//   role: "owner" | "admin" | "member",
+// ): boolean {
+//   return canRoleDeleteOrganization(role);
+// }
 
 /**
  * Deprecated: Use canRoleViewOrganization instead
  * @deprecated
  */
-export function canRoleViewWorkspace(
-  role: "owner" | "admin" | "member",
-): boolean {
-  return canRoleViewOrganization(role);
-}
+// export function canRoleViewWorkspace(
+//   role: "owner" | "admin" | "member",
+// ): boolean {
+//   return canRoleViewOrganization(role);
+// }
 
 /**
  * Check if a role can manage members (synchronous, client-side only)
