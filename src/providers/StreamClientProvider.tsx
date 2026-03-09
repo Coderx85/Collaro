@@ -16,7 +16,8 @@ const StreamVideoProvider = ({ children }: { children: ReactNode }) => {
     if (isPending || !session?.user) return;
     if (!API_KEY) throw new Error("Stream API key is missing");
 
-    const client = new StreamVideoClient({
+    // Use getOrCreateInstance to prevent multiple clients for the same user
+    const client = StreamVideoClient.getOrCreateInstance({
       apiKey: API_KEY,
       user: {
         id: session.user.id,

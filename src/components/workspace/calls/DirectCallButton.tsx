@@ -10,6 +10,7 @@ import { PhoneCall } from "lucide-react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -92,6 +93,9 @@ const DirectCallButton = ({ memberId, memberName }: DirectCallButtonProps) => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Call {memberName}</DialogTitle>
+            <DialogDescription>
+              Start a direct video call with {memberName}
+            </DialogDescription>
           </DialogHeader>
 
           <div className="flex flex-col items-center justify-center gap-6 py-4">
