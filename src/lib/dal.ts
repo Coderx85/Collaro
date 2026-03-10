@@ -3,7 +3,7 @@ import "server-only";
 import { cache } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth-config";
+import { authClient } from "./auth-client";
 
 // Session type that includes verified user data
 export type Session = {
@@ -34,8 +34,10 @@ export type Session = {
  * Memoized with React cache to avoid duplicate calls during render pass
  */
 export const verifySession = cache(async (): Promise<Session | null> => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
+  const { data: session } = await authClient.getSession({
+    fetchOptions: {
+      headers: await headers(),
+    },
   });
 
   if (!session) {

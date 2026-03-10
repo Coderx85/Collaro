@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { auth } from "@/lib/auth-config";
+import { authClient } from "@/lib/auth-client";
 import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/dal";
 import { getMember } from "@/action/member.actions";
@@ -31,12 +31,16 @@ export default async function OrgSettingsPage({
     redirect("/sign-in");
   }
 
-  const activeOrg = await auth.api.getFullOrganization({
-    query: {
-      organizationSlug: slug,
+  const { data: activeOrg } = await authClient.organization.getFullOrganization(
+    {
+      fetchOptions: {
+        headers: await headers(),
+      },
+      query: {
+        organizationSlug: slug,
+      },
     },
-    headers: await headers(),
-  });
+  );
 
   if (!activeOrg) {
     redirect(`/workspace/${slug}`);

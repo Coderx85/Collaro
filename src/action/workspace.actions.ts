@@ -7,7 +7,7 @@ import {
   workspaceMeetingTable,
 } from "@/db/schema/schema";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
+import { authClient } from "@/lib/auth-client";
 import { and, eq, isNull } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { canDeleteWorkspace } from "@/lib/workspace-auth";
@@ -84,14 +84,14 @@ export async function updateWorkspace(
 ): Promise<APIResponse<{ name: string; slug: string; logo: string }>> {
   try {
     // Use better-auth's API to update the organization
-    const result = await auth.api.updateOrganization({
-      headers: await headers(),
-      body: {
-        organizationId: workspaceId,
-        data: {
-          name: data.name,
-          slug: data.slug,
-        },
+    const { data: result } = await authClient.organization.update({
+      fetchOptions: {
+        headers: await headers(),
+      },
+      organizationId: workspaceId,
+      data: {
+        name: data.name,
+        slug: data.slug,
       },
     });
 
@@ -122,8 +122,10 @@ export async function updateWorkspace(
 
 // Helper to get current authenticated user
 async function getCurrentAuthUser() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
+  const { data: session } = await authClient.getSession({
+    fetchOptions: {
+      headers: await headers(),
+    },
   });
   return session?.user ?? null;
 }
@@ -212,11 +214,13 @@ export async function getWorkspace(workspaceSlug: string) {
       return { message: "User not authenticated" };
     }
 
-    const workspace = await auth.api.listOrganizations({
+    const { data: workspace } = await authClient.organization.list({
+      fetchOptions: {
+        headers: await headers(),
+      },
       query: {
         slug: workspaceSlug,
       },
-      headers: await headers(),
     });
 
     if (!workspace || !(workspace.length > 0)) {
@@ -363,12 +367,14 @@ export async function getWorkspaceTUserRole(workspaceSlug: string) {
         success: false,
       };
     }
-    const org = await auth.api.getActiveMemberRole({
+    const { data: org } = await authClient.organization.getActiveMemberRole({
+      fetchOptions: {
+        headers: await headers(),
+      },
       query: {
         userId: authUser.id,
         organizationSlug: workspaceSlug,
       },
-      headers: await headers(),
     });
 
     if (!org || !org.role) {
@@ -407,11 +413,11 @@ export async function deleteWorkspace(
     }
 
     // Use better-auth's API to delete the organization
-    await auth.api.deleteOrganization({
-      headers: await headers(),
-      body: {
-        organizationId: workspaceId,
+    await authClient.organization.delete({
+      fetchOptions: {
+        headers: await headers(),
       },
+      organizationId: workspaceId,
     });
 
     return { data: { deleted: true }, success: true };

@@ -1,7 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
+import { authClient } from "@/lib/auth-client";
 import type { APIResponse, TOrganizationMember } from "@/types";
 type MemberResponse = APIResponse<TOrganizationMember>;
 
@@ -9,12 +9,16 @@ export const getMember = async (
   workspaceSlug: string,
   userId: string,
 ): Promise<MemberResponse> => {
-  const workspace = await auth.api.getFullOrganization({
-    query: {
-      organizationSlug: workspaceSlug,
+  const { data: workspace } = await authClient.organization.getFullOrganization(
+    {
+      fetchOptions: {
+        headers: await headers(),
+      },
+      query: {
+        organizationSlug: workspaceSlug,
+      },
     },
-    headers: await headers(),
-  });
+  );
 
   if (!workspace) {
     return {

@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import {
@@ -11,15 +10,22 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { IconBuildingSkyscraper } from "@tabler/icons-react";
+import { authClient } from "@/lib/auth-client";
 
 const WorkspacePage = async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
+  const session = await authClient.getSession({
+    fetchOptions: {
+      headers: await headers(),
+    },
   });
 
-  const org = await auth.api.listOrganizations({
-    headers: await headers(),
+  const { data: org } = await authClient.organization.list({
+    fetchOptions: {
+      headers: await headers(),
+    },
   });
+
+  if (!org) return null;
 
   return (
     <div className="mx-auto flex h-full flex-col py-15 items-center justify-center rounded-sm">

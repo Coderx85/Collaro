@@ -1,15 +1,17 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
 import { db } from "@/db/client";
 import { membersTable, workspacesTable } from "@/db/schema/schema";
 import { usersTable } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
+import { authClient } from "@/lib/auth-client";
 
 export async function GET() {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
+    const { data: session } = await authClient.getSession({
+      fetchOptions: {
+        headers: await headers(),
+      },
     });
 
     if (!session?.user) {

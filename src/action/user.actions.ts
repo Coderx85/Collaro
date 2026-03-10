@@ -4,16 +4,18 @@ import { db } from "@/db/client";
 import { workspacesTable, membersTable, usersTable } from "@/db/schema/schema";
 import type { APIResponse, UserResponse } from "@/types";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { config } from "@/lib/config";
 import type { RegisterFormValues } from "@/types";
+import { authClient } from "@/lib/auth-client";
 
 // Helper to get current authenticated user
 export async function getCurrentUser() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
+  const { data: session } = await authClient.getSession({
+    fetchOptions: {
+      headers: await headers(),
+    },
   });
 
   if (!session?.user) {
@@ -40,14 +42,11 @@ export async function signUpAction({
   userName,
 }: RegisterFormValues): Promise<APIResponse<{ user: UserResponse }>> {
   try {
-    const result = await auth.api.signUpEmail({
-      body: {
-        email,
-        password,
-        name,
-        userName,
-      },
-      headers: await headers(),
+    const { data: result } = await authClient.signUp.email({
+      email,
+      password,
+      name,
+      userName,
     });
 
     if (!result || !result.user) {
@@ -64,12 +63,9 @@ export async function loginAction(email: string, password: string) {
   try {
     // Use the server-side API for authentication
     // Note: Do NOT hash the password - better-auth handles password hashing internally
-    const result = await auth.api.signInEmail({
-      body: {
-        email,
-        password,
-      },
-      headers: await headers(), // Crucial for setting cookies in Server Actions
+    const { data: result } = await authClient.signIn.email({
+      email,
+      password,
     });
 
     if (!result) {
@@ -86,11 +82,13 @@ export async function loginAction(email: string, password: string) {
     };
 
     // Check workspaces
-    const data = await auth.api.listOrganizations({
-      headers: authHeaders,
+    const { data } = await authClient.organization.list({
+      query: {
+        headers: authHeaders,
+      },
     });
 
-    if (data.length < 0) {
+    if (!data || data.length < 0) {
       return {
         data: { user: result.user, organizationExists: false },
         success: true,

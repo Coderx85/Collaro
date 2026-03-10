@@ -8,12 +8,12 @@ import {
   workspacesTable,
 } from "@/db/schema/schema";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
 import { and, eq, gt } from "drizzle-orm";
 import { inngest } from "@/lib/inngest";
 import type { APIResponse } from "@/types/api";
 import { getWorkspace } from "./workspace.actions";
 import { getCurrentUser } from "./user.actions";
+import { authClient } from "@/lib/auth-client";
 
 interface CreateInvitationParams {
   workspaceId: string;
@@ -46,15 +46,19 @@ export async function createInvitation({
       return { success: false, error: "Not authenticated" };
     }
 
-    const invitation = await auth.api.createInvitation({
-      body: {
-        organizationId: workspaceId,
-        email,
-        role,
-        resend: true,
+    const { data: invitation } = await authClient.organization.inviteMember({
+      fetchOptions: {
+        headers: await headers(),
       },
-      headers: await headers(),
+      organizationId: workspaceId,
+      email,
+      role,
+      resend: true,
     });
+
+    if (!invitation) {
+      return { success: false, error: "Failed to create invitation" };
+    }
 
     // Get workspace name
     const [workspace] = await db

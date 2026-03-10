@@ -3,9 +3,9 @@ import { workspacesTable, membersTable } from "@/db/schema/schema";
 import { usersTable } from "@/db/schema/schema";
 import type { APIResponse, CreateWorkspaceResponse } from "@/types";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
 import { and, eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
+import { authClient } from "@/lib/auth-client";
 
 type Response<T> = Promise<NextResponse<APIResponse<T>>>;
 
@@ -14,8 +14,10 @@ export async function POST(
 ): Response<CreateWorkspaceResponse> {
   try {
     const { name } = await req.json();
-    const session = await auth.api.getSession({
-      headers: await headers(),
+    const { data: session } = await authClient.getSession({
+      fetchOptions: {
+        headers: await headers(),
+      },
     });
 
     if (!session?.user) {

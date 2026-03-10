@@ -1,13 +1,15 @@
 import { db } from "../db/client";
 import { workspacesTable } from "../db/schema/schema";
-import { auth } from "./auth";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 export async function checkWorkspaceAccess(slug: string) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
+  const session = await authClient.getSession({
+    fetchOptions: {
+      headers: await headers(),
+    },
   });
 
   if (!session) {
@@ -22,8 +24,10 @@ export async function checkWorkspaceAccess(slug: string) {
     notFound();
   }
 
-  const organizations = await auth.api.listOrganizations({
-    headers: await headers(),
+  const { data: organizations } = await authClient.organization.list({
+    fetchOptions: {
+      headers: await headers(),
+    },
   });
 
   const hasAccess = organizations?.find((org) => org.id === workspace.id);
@@ -44,12 +48,12 @@ export async function canUpdateWorkspace(): Promise<{
   error?: string;
 }> {
   try {
-    const result = await auth.api.hasPermission({
-      headers: await headers(),
-      body: {
-        permissions: {
-          organization: ["update"],
-        },
+    const { data: result } = await authClient.organization.hasPermission({
+      fetchOptions: {
+        headers: await headers(),
+      },
+      permissions: {
+        organization: ["update"],
       },
     });
 
@@ -69,12 +73,12 @@ export async function canDeleteWorkspace(): Promise<{
   error?: string;
 }> {
   try {
-    const result = await auth.api.hasPermission({
-      headers: await headers(),
-      body: {
-        permissions: {
-          organization: ["delete"],
-        },
+    const { data: result } = await authClient.organization.hasPermission({
+      fetchOptions: {
+        headers: await headers(),
+      },
+      permissions: {
+        organization: ["delete"],
       },
     });
 
@@ -94,12 +98,12 @@ export async function canManageMembers(): Promise<{
   error?: string;
 }> {
   try {
-    const result = await auth.api.hasPermission({
-      headers: await headers(),
-      body: {
-        permissions: {
-          member: ["create", "update", "delete"],
-        },
+    const { data: result } = await authClient.organization.hasPermission({
+      fetchOptions: {
+        headers: await headers(),
+      },
+      permissions: {
+        member: ["create", "update", "delete"],
       },
     });
 
@@ -118,12 +122,12 @@ export async function canInviteMembers(): Promise<{
   error?: string;
 }> {
   try {
-    const result = await auth.api.hasPermission({
-      headers: await headers(),
-      body: {
-        permissions: {
-          invitation: ["create"],
-        },
+    const { data: result } = await authClient.organization.hasPermission({
+      fetchOptions: {
+        headers: await headers(),
+      },
+      permissions: {
+        invitation: ["create"],
       },
     });
 
@@ -139,19 +143,25 @@ export async function canInviteMembers(): Promise<{
  */
 export async function getCurrentUserRole(): Promise<string | null> {
   try {
-    const { members } = await auth.api.listMembers({
-      headers: await headers(),
+    const { data: members } = await authClient.organization.listMembers({
+      fetchOptions: {
+        headers: await headers(),
+      },
     });
 
-    const session = await auth.api.getSession({
-      headers: await headers(),
+    const { data: session } = await authClient.getSession({
+      fetchOptions: {
+        headers: await headers(),
+      },
     });
 
     if (!session || !session.user || !members) {
       return null;
     }
 
-    const member = members.find((member) => member.userId === session.user.id);
+    const member = members.members.find(
+      (member) => member.userId === session.user.id,
+    );
 
     const res = member?.role ?? null;
     return res;

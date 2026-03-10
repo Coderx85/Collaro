@@ -2,14 +2,16 @@
 
 import { StreamClient } from "@stream-io/node-sdk";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
+import { authClient } from "@/lib/auth-client";
 
 const STREAM_API_KEY = process.env.NEXT_PUBLIC_STREAM_API_KEY;
 const STREAM_API_SECRET = process.env.STREAM_SECRET_KEY;
 
 export const tokenProvider = async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
+  const { data: session } = await authClient.getSession({
+    fetchOptions: {
+      headers: await headers(),
+    },
   });
 
   if (!session?.user) throw new Error("User is not authenticated");

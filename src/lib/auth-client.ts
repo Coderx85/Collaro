@@ -5,22 +5,24 @@ import {
   organizationClient,
 } from "better-auth/client/plugins";
 import { openAPI } from "better-auth/plugins";
+import { betterOpts, type AuthOptions } from "./auth-options";
 // import { ac, roles } from "./permission";
 
 export const authClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000",
-  fetchOptions: {
-    credentials: "include",
+  baseURL: process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:4000",
+  basePath: "/auth",
+  emailandPassword: {
+    sendVerificationEmail: true,
   },
   plugins: [
     openAPI(),
     organizationClient({
       // ac,
       // roles,
-      // schema: inferOrgAdditionalFields<typeof auth>(),
+      // schema: inferOrgAdditionalFields<AuthOptions>(),
     }),
+    inferAdditionalFields<AuthOptions>(),
   ],
-  basePath: "/auth",
 });
 
 // Export individual methods for convenience

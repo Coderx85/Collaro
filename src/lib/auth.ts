@@ -2,7 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { auth } from "./auth-config";
+import { authClient } from "./auth-client";
+// import { auth } from "./auth-config";
 
 /**
  * Auth Module
@@ -17,14 +18,18 @@ export type AuthResult =
  * Log out the current user
  */
 export async function logout(): Promise<void> {
-  const session = await auth.api.getSession({
-    headers: await headers(),
+  const session = await authClient.getSession({
+    fetchOptions: {
+      headers: await headers(),
+    },
   });
 
   if (session) {
     // Revoke the current session
-    await auth.api.signOut({
-      headers: await headers(),
+    await authClient.signOut({
+      fetchOptions: {
+        headers: await headers(),
+      },
     });
   }
 
@@ -52,6 +57,3 @@ export async function checkUsernameAvailability(
   // For now, return true as the signup will fail if username exists
   return true;
 }
-
-// Re-export the auth instance for advanced use cases
-export { auth } from "./auth-config";

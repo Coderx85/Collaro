@@ -8,7 +8,7 @@ import {
   Clock,
   ArrowRight,
 } from "lucide-react";
-import { auth } from "@/lib/auth-config";
+import { authClient } from "@/lib/auth-client";
 import {
   getInvitationById,
   acceptInvitation,
@@ -121,8 +121,10 @@ export default async function AcceptInvitePage({
   }
 
   // Check if user is logged in
-  const session = await auth.api.getSession({
-    headers: await headers(),
+  const { data: session } = await authClient.getSession({
+    fetchOptions: {
+      headers: await headers(),
+    },
   });
 
   // If user is logged in, try to accept the invitation

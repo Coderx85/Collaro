@@ -3,7 +3,7 @@ import { membersTable, workspaceMeetingTable } from "@/db/schema/schema";
 import { SelectMeetingType } from "@/db/schema/type";
 import { usersTable } from "@/db/schema/schema";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
+import { authClient } from "@/lib/auth-client";
 import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import type { APIResponse } from "@/types";
@@ -13,8 +13,10 @@ type Response<T> = Promise<NextResponse<APIResponse<T>>>;
 export async function POST(request: NextRequest): Response<SelectMeetingType> {
   const { meetingId } = await request.json();
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
+    const { data: session } = await authClient.getSession({
+      fetchOptions: {
+        headers: await headers(),
+      },
     });
 
     if (!session?.user) {

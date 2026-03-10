@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { db } from "@/db/client";
 import { membersTable, usersTable } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
-import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { TWorkspaceMembersTableRow } from "@/types";
+import { authClient } from "@/lib/auth-client";
 
 export const GET = async ({
   params,
@@ -21,12 +21,15 @@ export const GET = async ({
       );
     }
 
-    const workspace = await auth.api.getFullOrganization({
-      query: {
-        organizationSlug: slug,
-      },
-      headers: await headers(),
-    });
+    const { data: workspace } =
+      await authClient.organization.getFullOrganization({
+        fetchOptions: {
+          headers: await headers(),
+        },
+        query: {
+          organizationSlug: slug,
+        },
+      });
 
     if (!workspace) {
       return NextResponse.json(

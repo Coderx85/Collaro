@@ -1,7 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
+import { authClient } from "@/lib/auth-client";
 import { db } from "@/db/client";
 import { membersTable, usersTable } from "@/db/schema/schema";
 import { eq, and } from "drizzle-orm";
@@ -29,12 +29,15 @@ export const getParticipantRole = async (
 ): Promise<RoleResponse> => {
   try {
     // First try using Better Auth (faster)
-    const workspace = await auth.api.getFullOrganization({
-      query: {
-        organizationId: workspaceId,
-      },
-      headers: await headers(),
-    });
+    const { data: workspace } =
+      await authClient.organization.getFullOrganization({
+        fetchOptions: {
+          headers: await headers(),
+        },
+        query: {
+          organizationId: workspaceId,
+        },
+      });
 
     if (workspace) {
       const member = workspace.members?.find((m) => m.userId === userId);

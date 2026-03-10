@@ -6,18 +6,20 @@ import {
   meetingParticipantsTable,
 } from "@/db/schema/schema";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
 import { eq } from "drizzle-orm";
 import { NextResponse, type NextRequest } from "next/server";
 import type { APIResponse } from "@/types";
 import type { SelectMeetingType } from "@/db/schema/type";
+import { authClient } from "@/lib/auth-client";
 
 type Response<T> = Promise<NextResponse<APIResponse<T>>>;
 
 export async function POST(request: NextRequest): Response<SelectMeetingType> {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
+    const { data: session } = await authClient.getSession({
+      fetchOptions: {
+        headers: await headers(),
+      },
     });
 
     if (!session?.user) {

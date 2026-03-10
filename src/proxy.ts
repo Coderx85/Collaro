@@ -1,7 +1,7 @@
-import { auth } from "./lib/auth-config";
 import { config as appConfig } from "@/lib/config";
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
+import { authClient } from "./lib/auth-client";
 
 const protectedRoutes = ["/workspace", "/meeting"];
 const authRoutes = [appConfig.SIGN_IN, appConfig.SIGN_UP];
@@ -32,8 +32,10 @@ export default async function proxy(req: NextRequest) {
   }
 
   // Get session
-  const session = await auth.api.getSession({
-    headers: await headers(),
+  const session = await authClient.getSession({
+    fetchOptions: {
+      headers: await headers(),
+    },
   });
 
   // Redirect to login if accessing protected route without session
