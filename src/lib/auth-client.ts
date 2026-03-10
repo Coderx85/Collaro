@@ -4,8 +4,7 @@ import {
   inferOrgAdditionalFields,
   organizationClient,
 } from "better-auth/client/plugins";
-import { config } from "./config";
-import type { auth } from "./auth-config";
+import { openAPI } from "better-auth/plugins";
 // import { ac, roles } from "./permission";
 
 export const authClient = createAuthClient({
@@ -14,11 +13,11 @@ export const authClient = createAuthClient({
     credentials: "include",
   },
   plugins: [
-    inferAdditionalFields<typeof auth>(),
+    openAPI(),
     organizationClient({
       // ac,
       // roles,
-      schema: inferOrgAdditionalFields<typeof auth>(),
+      // schema: inferOrgAdditionalFields<typeof auth>(),
     }),
   ],
   basePath: "/auth",
