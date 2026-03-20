@@ -42,20 +42,29 @@ export async function signUpAction({
   userName,
 }: RegisterFormValues): Promise<APIResponse<{ user: UserResponse }>> {
   try {
-    const { data: result } = await authClient.signUp.email({
+    console.log("📝 Starting sign-up with:", { name, email, userName });
+    
+    const { data: result, error } = await authClient.signUp.email({
       email,
       password,
       name,
       userName,
     });
 
+    console.log("📤 Sign-up response:", { data: result, error });
+
     if (!result || !result.user) {
+      const errorMsg = error ? String(error) : "No user data returned";
+      console.error("❌ Sign up failed:", errorMsg);
       return { error: "Sign up failed", success: false };
     }
 
+    console.log("✅ Sign-up successful:", result.user);
     return { data: { user: result.user as UserResponse }, success: true };
   } catch (error: unknown) {
-    return { error: `Sign up failed: ${error}`, success: false };
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("❌ Sign-up error:", error, errorMessage);
+    return { error: `Sign up failed: ${errorMessage}`, success: false };
   }
 }
 

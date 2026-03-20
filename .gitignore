@@ -42,3 +42,10 @@ next-env.d.ts
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# TODO: Remove this files later on
+
+.agents
+.agent
+bruno
+skills-lock.json

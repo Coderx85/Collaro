@@ -15,38 +15,38 @@ export default async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check if route is protected
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route),
-  );
+  // // Check if route is protected
+  // const isProtectedRoute = protectedRoutes.some((route) =>
+  //   pathname.startsWith(route),
+  // );
 
-  // Check if route is public auth route
-  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+  // // Check if route is public auth route
+  // const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
 
-  // Check if route is explicitly public
-  const isPublicRoute = publicRoutes.includes(pathname);
+  // // Check if route is explicitly public
+  // const isPublicRoute = publicRoutes.includes(pathname);
 
-  // If public route, allow access
-  if (isPublicRoute) {
-    return NextResponse.next();
-  }
+  // // If public route, allow access
+  // if (isPublicRoute) {
+  //   return NextResponse.next();
+  // }
 
-  // Get session
-  const session = await authClient.getSession({
-    fetchOptions: {
-      headers: await headers(),
-    },
-  });
+  // // Get session
+  // const session = await authClient.getSession({
+  //   fetchOptions: {
+  //     headers: await headers(),
+  //   },
+  // });
 
-  // Redirect to login if accessing protected route without session
-  if (isProtectedRoute && !session) {
-    return NextResponse.redirect(new URL("/auth/sign-in", req.url));
-  }
+  // // Redirect to login if accessing protected route without session
+  // if (isProtectedRoute && !session) {
+  //   return NextResponse.redirect(new URL("/auth/sign-in", req.url));
+  // }
 
-  // Redirect to workspace if authenticated user tries to access auth routes
-  if (isAuthRoute && session) {
-    return NextResponse.redirect(new URL("/workspace", req.url));
-  }
+  // // Redirect to workspace if authenticated user tries to access auth routes
+  // if (isAuthRoute && session) {
+  //   return NextResponse.redirect(new URL("/workspace", req.url));
+  // }
 
   return NextResponse.next();
 }

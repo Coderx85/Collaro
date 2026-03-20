@@ -76,7 +76,6 @@ export default function RegisterPage() {
           password: value.password,
           name: value.name,
           userName: value.userName,
-          confirmPassword: value.confirmPassword,
         });
 
         if (!signUpResult.success && signUpResult.error) {

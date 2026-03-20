@@ -49,6 +49,11 @@ export const CreateUserSchema = createInsertSchema(usersTable, {
   userName: z.string().min(6, "User Name is required"),
   name: z.string().min(6, "Name is required"),
   email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email is required"),
+  // Exclude auto-generated fields from the schema
+  createdAt: () => z.never().optional(),
+  updatedAt: () => z.never().optional(),
+  emailVerified: () => z.never().optional(),
+  id: () => z.never().optional(),
 })
   .extend({
     confirmPassword: z.string().min(6, "Must be at least 6 characters long"),
@@ -56,12 +61,6 @@ export const CreateUserSchema = createInsertSchema(usersTable, {
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
-  })
-  .omit({
-    createdAt: true,
-    updatedAt: true,
-    emailVerified: true,
-    id: true,
   });
 
 export const CreateWorkspaceSchema = createInsertSchema(workspacesTable);
@@ -77,10 +76,10 @@ export const UpdateWorkspaceSchema = createUpdateSchema(workspacesTable, {
     ),
   logo: z.string().url("Logo must be a valid URL").optional(),
   updatedAt: z.date().optional(),
-}).omit({
-  id: true,
-  createdAt: true,
-  createdBy: true,
+  // Exclude auto-generated fields from the schema
+  id: () => z.never().optional(),
+  createdAt: () => z.never().optional(),
+  createdBy: () => z.never().optional(),
 });
 
 export const SelectUserSchema = createSelectSchema(usersTable, {
@@ -95,9 +94,9 @@ export const SelectCallMember = createSelectSchema(membersTable);
 export const UpdateMeetingSchema = createUpdateSchema(workspaceMeetingTable, {
   status: z.enum(MeetingStatus),
   endAt: z.date(),
-}).omit({
-  meetingId: true,
-  workspaceId: true,
-  hostedBy: true,
-  createdAt: true,
+  // Exclude auto-generated fields from the schema
+  meetingId: () => z.never().optional(),
+  workspaceId: () => z.never().optional(),
+  hostedBy: () => z.never().optional(),
+  createdAt: () => z.never().optional(),
 });
