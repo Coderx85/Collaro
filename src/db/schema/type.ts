@@ -10,6 +10,9 @@ import {
   pgParticipantStatus,
   pgUserRole,
   pgMeetingStatus,
+  pgJoinRequestStatus,
+  notificationsTable,
+  joinRequestsTable,
 } from "./schema";
 
 // Drizzle-Zod schema creators
@@ -39,10 +42,12 @@ export type SelectWorkspaceType = typeof workspacesTable.$inferSelect;
 export type SelectUserType = typeof usersTable.$inferSelect;
 export type SelectParticipantType =
   typeof meetingParticipantsTable.$inferSelect;
+export type SelectNotificationType = typeof notificationsTable.$inferSelect;
 
 export const UserRole = pgUserRole.enumValues;
 export const MeetingStatus = pgMeetingStatus.enumValues;
 export const ParticipantStatus = pgParticipantStatus.enumValues;
+export const JoinRequestStatus = pgJoinRequestStatus.enumValues;
 
 export const CreateUserSchema = createInsertSchema(usersTable, {
   password: z.string().min(6),
@@ -50,18 +55,18 @@ export const CreateUserSchema = createInsertSchema(usersTable, {
   name: z.string().min(6, "Name is required"),
   email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email is required"),
 })
+  .omit({
+    createdAt: true,
+    updatedAt: true,
+    emailVerified: true,
+    id: true,
+  })
   .extend({
     confirmPassword: z.string().min(6, "Must be at least 6 characters long"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
-  })
-  .omit({
-    createdAt: true,
-    updatedAt: true,
-    emailVerified: true,
-    id: true,
   });
 
 export const CreateWorkspaceSchema = createInsertSchema(workspacesTable);
@@ -101,3 +106,10 @@ export const UpdateMeetingSchema = createUpdateSchema(workspaceMeetingTable, {
   hostedBy: true,
   createdAt: true,
 });
+
+export const SelectJoinRequestSchema = createSelectSchema(
+  joinRequestsTable,
+).strict();
+export type SelectJoinRequestType = z.infer<typeof SelectJoinRequestSchema>;
+
+export const SelectNotificationSchema = createSelectSchema(notificationsTable);

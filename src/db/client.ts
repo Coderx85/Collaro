@@ -2,6 +2,7 @@ import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
 import * as Basicschema from "./schema/schema";
 import * as AuthSchema from "./schema/auth-schema";
+import * as rel from "./schema/relation";
 import { config } from "@/lib/config";
 
 let createDB;
@@ -9,6 +10,7 @@ let createDB;
 const schema = {
   ...Basicschema,
   ...AuthSchema,
+  ...rel,
 };
 
 const sql = neon(config.database);

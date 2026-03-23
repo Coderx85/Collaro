@@ -12,10 +12,17 @@ import * as t from "drizzle-orm/pg-core";
 
 // Define user_role enum first
 export const pgUserRole = pgEnum("user_role", ["owner", "admin", "member"]);
+
 export const pgMeetingStatus = pgEnum("meeting_status", [
   "scheduled",
   "active",
   "completed",
+]);
+
+export const pgJoinRequestStatus = pgEnum("join_request_status", [
+  "pending",
+  "approved",
+  "rejected",
 ]);
 
 export const pgParticipantStatus = pgEnum("participant_status", [
@@ -65,7 +72,6 @@ export const workspacesTable = pgTable(
 );
 
 // Members Table
-
 export const membersTable = pgTable(
   "members",
   {
@@ -170,4 +176,66 @@ export const meetingParticipantsTable = pgTable(
       .on(table.meetingId, table.memberId),
     t.index("meeting_participants_meeting_id_idx").on(table.meetingId),
   ],
+);
+
+// Join Requests table - tracks workspace join requests
+export const joinRequestsTable = pgTable(
+  "join_requests",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => usersTable.id, {
+        onDelete: "cascade",
+      }),
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspacesTable.id, {
+        onDelete: "cascade",
+      }),
+    status: pgJoinRequestStatus("status").default("pending").notNull(),
+    requestedAt: timestamp("requested_at").notNull().defaultNow(),
+    respondedAt: timestamp("responded_at"),
+    respondedBy: uuid("responded_by").references(() => usersTable.id, {
+      onDelete: "set null",
+    }),
+  },
+  (table) => [
+    t
+      .uniqueIndex("join_requests_user_workspace_pending_unique_idx")
+      .on(table.userId, table.workspaceId, table.status)
+      .where(sql`status = 'pending'`),
+    t.index("join_requests_workspace_id_idx").on(table.workspaceId),
+    t.index("join_requests_status_idx").on(table.status),
+    t.index("join_requests_user_id_idx").on(table.userId),
+  ],
+);
+
+const notificationTypes = ["join_request", "meeting_invite", "general"] as const;
+
+export const pgNotificationType = pgEnum("notification_type", notificationTypes);
+
+export const notificationsTable = pgTable("notifications", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => usersTable.id, {
+      onDelete: "cascade",
+    }),
+  workspaceId: uuid("workspace_id")
+    .notNull()
+    .references(() => workspacesTable.id, {
+      onDelete: "cascade",
+    }),
+  type: pgNotificationType("notification_type").default("general").notNull(),
+  message: text("message").notNull(),
+  status: text("status").default("unread").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  readAt: timestamp("read_at"),
+  }, 
+  (table) => [
+    t.index("notifications_user_id_idx").on(table.userId),
+    t.index("notifications_workspace_id_idx").on(table.workspaceId),
+    t.index("notifications_status_idx").on(table.status),
+  ]
 );

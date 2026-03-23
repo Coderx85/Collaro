@@ -15,6 +15,13 @@
       "when": 1767273569713,
       "tag": "0001_boring_scorpion",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774290223553,
+      "tag": "0002_warm_susan_delgado",
+      "breakpoints": true
     }
   ]
 }
