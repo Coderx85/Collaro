@@ -5,6 +5,7 @@ import {
   membersTable,
   usersTable,
   workspaceMeetingTable,
+  joinRequestsTable,
 } from "@/db/schema/schema";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth-config";
@@ -121,7 +122,7 @@ export async function updateWorkspace(
 }
 
 // Helper to get current authenticated user
-async function getCurrentAuthUser() {
+export async function getCurrentAuthUser() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -484,6 +485,110 @@ export async function getActiveMeetingForWorkspace(workspaceSlug: string) {
         error instanceof Error ? error.message : "An unknown error occurred"
       }`,
       success: false,
+    };
+  }
+}
+
+export async function sendJoinWorkspaceRequest(
+  workspaceSlug: string,
+  workspaceName: string,
+): Promise<APIResponse<{ workspaceName: string }>> {
+  try {
+    console.log("[sendJoinWorkspaceRequest] input:", {
+      workspaceSlug,
+      workspaceName,
+    });
+
+    const authUser = await getCurrentAuthUser();
+
+    if (!authUser) {
+      return { error: "User not authenticated", success: false };
+    }
+
+    // First check if workspace exists with this slug
+    const workspace = await db
+      .select()
+      .from(workspacesTable)
+      .where(eq(workspacesTable.slug, workspaceSlug))
+      .execute();
+
+    if (!workspace || workspace.length === 0) {
+      return { error: "Workspace not found", success: false };
+    }
+
+    const workspaceId = workspace[0].id;
+
+    console.log("[sendJoinWorkspaceRequest] workspace found:", {
+      id: workspaceId,
+      slug: workspace[0].slug,
+      name: workspace[0].name,
+    });
+
+    // Check if user is already a member
+    const existingMember = await db
+      .select()
+      .from(membersTable)
+      .where(
+        and(
+          eq(membersTable.userId, authUser.id),
+          eq(membersTable.workspaceId, workspaceId),
+        ),
+      )
+      .execute();
+
+    if (existingMember && existingMember.length > 0) {
+      return { error: "You are already a member of this workspace", success: false };
+    }
+
+    // Check if request already exists
+    const existingRequest = await db
+      .select()
+      .from(joinRequestsTable)
+      .where(
+        and(
+          eq(joinRequestsTable.userId, authUser.id),
+          eq(joinRequestsTable.workspaceId, workspaceId),
+          eq(joinRequestsTable.status, "pending"),
+        ),
+      )
+      .execute();
+
+    if (existingRequest && existingRequest.length > 0) {
+      return { error: "You have already sent a request to join this workspace", success: false };
+    }
+
+    const [res] = await db
+      .insert(joinRequestsTable)
+      .values({
+        userId: authUser.id || "",
+        workspaceId: workspaceId,
+        status: "pending",
+        requestedAt: new Date(),
+      })
+      .returning()
+      .execute();
+
+    console.log("[sendJoinWorkspaceRequest] inserted join request:", res?.id);
+
+    if (!res) {
+      return {
+        success: false,
+        error: `Failed to create join request in DB for workspace: ${workspaceName}`,
+      };
+    }
+
+    return {
+      success: true,
+      data: {
+        workspaceName: workspace[0].name,
+      },
+    };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: `Failed to send join request: ${
+        error instanceof Error ? error.message : "An unknown error occurred"
+      }`,
     };
   }
 }
