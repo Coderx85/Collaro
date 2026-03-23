@@ -18,6 +18,7 @@ import {
 } from "@/lib/auth-client";
 import { OrgSettingsForm } from "./_components/org-settings-form";
 import { DangerZone } from "./_components/danger-zone";
+import { PendingJoinRequests } from "../../../_components/pending-join-requests";
 
 export default async function OrgSettingsPage({
   params,
@@ -97,6 +98,14 @@ export default async function OrgSettingsPage({
             />
           </CardContent>
         </Card>
+      )}
+
+      {/* Pending Join Requests */}
+      {(userRole === "owner" || userRole === "admin") && (
+        <>
+          <Separator />
+          <PendingJoinRequests workspaceId={activeOrg.id} />
+        </>
       )}
 
       {/* Danger Zone - Only for Owner */}
