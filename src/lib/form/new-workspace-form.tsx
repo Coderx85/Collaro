@@ -15,6 +15,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { IconLink, IconLoader2, IconBriefcase } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { NewWorkspaceFormSchema } from "@/types";
 
 const NewWorkspaceForm = () => {
@@ -65,86 +73,113 @@ const NewWorkspaceForm = () => {
         e.preventDefault();
         form.handleSubmit();
       }}
-      className="space-y-4 min-w-lg mx-auto"
+      className="w-full max-w-md relative z-10"
     >
-      <FieldGroup>
-        <form.Field name="name">
-          {(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name} className="text-slate-200">
-                  Name
-                </FieldLabel>
-                <div className="relative">
-                  <IconBriefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    type="text"
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    aria-invalid={isInvalid}
-                    placeholder="Workspace Name"
-                    className="pl-10 bg-white/5 border-white/20 text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary"
-                  />
-                </div>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
-        </form.Field>
+      <Card className="backdrop-blur-xl bg-white/50 dark:bg-white/5 shadow-2xl">
+        <CardHeader className="space-y-4 text-center">
+          <CardTitle className="text-2xl font-bold text-secondary">
+            Create Workspace
+          </CardTitle>
+          <CardDescription className="text-sm text-muted-foreground">
+            Choose a name and a URL-friendly slug for your workspace.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <FieldGroup>
+            <form.Field name="name">
+              {(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel
+                      htmlFor={field.name}
+                      className="text-foreground dark:text-foreground"
+                    >
+                      Name
+                    </FieldLabel>
+                    <div className="relative">
+                      <IconBriefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground dark:text-foreground" />
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        type="text"
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        aria-invalid={isInvalid}
+                        placeholder="Workspace Name"
+                        className="pl-10"
+                      />
+                    </div>
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
+            </form.Field>
 
-        <form.Field name="slug">
-          {(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name} className="text-slate-200">
-                  Workspace Slug
-                </FieldLabel>
-                <div className="relative">
-                  <IconLink className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    type="text"
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    aria-invalid={isInvalid}
-                    placeholder="workspace-slug"
-                    className="pl-10 bg-white/5 border-white/20 text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary"
-                  />
-                </div>
-                <FieldDescription className="text-slate-400">
-                  This will be the URL of your workspace.
-                </FieldDescription>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
-        </form.Field>
-      </FieldGroup>
+            <form.Field name="slug">
+              {(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel
+                      htmlFor={field.name}
+                      className="text-foreground dark:text-foreground"
+                    >
+                      Workspace Slug
+                    </FieldLabel>
+                    <div className="relative">
+                      <IconLink className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground dark:text-foreground" />
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        type="text"
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        aria-invalid={isInvalid}
+                        placeholder="workspace-slug"
+                        className="pl-10"
+                      />
+                    </div>
+                    <FieldDescription className="text-muted-foreground">
+                      This will be the URL of your workspace.
+                    </FieldDescription>
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
+            </form.Field>
+          </FieldGroup>
 
-      <Button
-        type="submit"
-        disabled={isPending}
-        className="w-full mt-5"
-        variant={"secondary"}
-      >
-        {isPending ? (
-          <>
-            <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
-            Creating...
-          </>
-        ) : (
-          <>Create Workspace</>
-        )}
-      </Button>
+          <Button
+            type="submit"
+            disabled={isPending}
+            className="w-full"
+            variant={"secondary"}
+          >
+            {isPending ? (
+              <>
+                <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating...
+              </>
+            ) : (
+              <>Create Workspace</>
+            )}
+          </Button>
+        </CardContent>
+        <CardFooter className="flex flex-col gap-2 text-center">
+          <p className="text-sm text-default-foreground">
+            You can update the name and slug later in workspace settings.
+          </p>
+        </CardFooter>
+      </Card>
     </form>
   );
 };
