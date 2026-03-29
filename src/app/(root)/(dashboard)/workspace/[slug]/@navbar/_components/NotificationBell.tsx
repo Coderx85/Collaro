@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import { useSession } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,21 +12,17 @@ import { format } from "date-fns";
 import { useRouter, useParams } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 import type {
   INotification,
   NotificationProps,
   WorkspaceNotificationProps,
 } from "@/types";
 import {
-  getNotifications,
-  markNotificationAsRead,
-} from "@/action/notifications.actions";
+  markNotificationAsReadAction,
+} from "@/action/notification";
 import { FaBell } from "react-icons/fa";
 import { useToast } from "@/components/ui/use-toast";
 import { getUserNotificationsAction } from "@/action/notification/general-notification.actions";
-
-type CombinedNotification = NotificationProps | WorkspaceNotificationProps;
 
 const NotificationBell = () => {
   const [notifications, setNotifications] = useState<INotification[]>([]);
@@ -37,9 +33,7 @@ const NotificationBell = () => {
   const router = useRouter();
   const params = useParams();
   const workspaceSlug = params?.slug as string;
-  const client = useStreamVideoClient();
   const { toast } = useToast();
-  const eventSourceRef = useRef<EventSource | null>(null);
 
   // Fetch workspace notifications
   const fetchWorkspaceNotifications = useCallback(async () => {
@@ -47,8 +41,6 @@ const NotificationBell = () => {
 
     try {
       setIsLoading(true);
-      // Note: This is a simplified fetch; in real implementation,
-      // we'd need to get the workspace ID first
       const response = await getUserNotificationsAction(user.id);
 
       if (!response.success) {
@@ -68,78 +60,9 @@ const NotificationBell = () => {
     }
   }, [user, workspaceSlug]);
 
-  // Handle scheduled meeting notifications from Stream
-  // const handleMeetingEvent = useCallback((event: any) => {
-  //   console.log("Meeting event received:", event);
-
-  //   // Only handle scheduled meetings, not instant ones
-  //   if (event.call?.custom?.scheduled === true && event.created_at) {
-  //     // Add a temporary notification for the scheduled meeting
-  //     const newNotification: NotificationProps = {
-  //       id: Date.now(),
-  //       title: "Meeting Scheduled",
-  //       message:
-  //         event.call.custom.description || "A new meeting has been scheduled",
-  //       meetingId: event.call.id,
-  //       scheduledFor: event.call.starts_at,
-  //       isRead: false,
-  //       type: "meeting",
-  //       createdAt: new Date().toISOString(),
-  //     };
-
-  //     setNotifications((prev) => [newNotification, ...prev]);
-  //   }
-  // }, []);
-
-  // Fetch notifications and subscribe to SSE on component mount and when user changes
-  // useEffect(() => {
-  //   if (user && open) {
-  //     fetchWorkspaceNotifications();
-  //     const unsubscribe = subscribeToRealTimeNotifications();
-  //     return () => {
-  //       if (unsubscribe) unsubscribe();
-  //     };
-  //   }
-  // }, [
-  //   user,
-  //   open,
-  //   fetchWorkspaceNotifications,
-  //   subscribeToRealTimeNotifications,
-  // ]);
-
-  // Set up Stream event listeners
-  // useEffect(() => {
-  //   if (!client || !user) return;
-
-  //   // Register event handlers for call and meeting notifications
-  //   const callCreatedUnsubscribe = client.on("call.created", handleCallEvent);
-  //   const callUpdatedUnsubscribe = client.on(
-  //     "call.updated",
-  //     handleMeetingEvent,
-  //   );
-  //   const callRingUnsubscribe = client.on("call.ring", handleCallEvent);
-
-  //   // Cleanup function to unregister event handlers
-  //   return () => {
-  //     callCreatedUnsubscribe();
-  //     callUpdatedUnsubscribe();
-  //     callRingUnsubscribe();
-  //   };
-  // }, [client, user, handleCallEvent, handleMeetingEvent]);
-
-  // Cleanup SSE connection on unmount
-  // useEffect(() => {
-  //   return () => {
-  //     if (eventSourceRef.current) {
-  //       eventSourceRef.current.close();
-  //       eventSourceRef.current = null;
-  //     }
-  //   };
-  // }, []);
-
   const handleMarkAsRead = async (notification: INotification) => {
     try {
-      await markNotificationAsRead(notification.id);
+      await markNotificationAsReadAction(notification.id);
     } catch (error) {
       toast({
         title: "Error",
@@ -158,8 +81,6 @@ const NotificationBell = () => {
       router.push(`/meeting/${notification.meetingId}`);
       setOpen(false);
     } else if ("actionUrl" in notification && notification.actionUrl) {
-      // Workspace notification with action URL
-      // router.push(notification.);
       setOpen(false);
     }
   };;
