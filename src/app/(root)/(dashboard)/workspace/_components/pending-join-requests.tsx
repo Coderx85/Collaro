@@ -23,12 +23,11 @@ import {
   getPendingJoinRequests,
   approveJoinRequest,
   rejectJoinRequest,
-  type PendingRequest as JoinRequest,
   getCurrentAuthUser,
 } from "@/action/workspace";
+import type { PendingRequest as JoinRequest } from "@/types";
 import { Clock, CheckCircle, XCircle, Loader } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { auth } from "@/lib/auth-config";
 
 interface PendingJoinRequestsProps {
   workspaceId: string;
@@ -126,9 +125,9 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
     setProcessingIds((prev) => new Set([...prev, requestId]));
     try {
       console.log("[handleReject] Getting user session...");
-      const data = await auth.api.getSession()
+      const authUser = await getCurrentAuthUser();
 
-      if (!data?.user?.id) {
+      if (!authUser?.id) {
         console.error("[handleReject] User not authenticated");
         toast({
           title: "Error",
@@ -136,11 +135,14 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
           variant: "destructive",
         });
 
-        return ;
+        return;
       }
 
-      console.log("[handleReject] Rejecting request:", { requestId, userId: data.user.id });
-      const result = await rejectJoinRequest(requestId, data.user.id);
+      console.log("[handleReject] Rejecting request:", {
+        requestId,
+        userId: authUser.id,
+      });
+      const result = await rejectJoinRequest(requestId, authUser.id);
       console.log("[handleReject] Result:", result);
       
       if (result.success) {
