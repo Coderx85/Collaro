@@ -436,7 +436,7 @@ import { data } from "@/constant/sidebar-items";
 
 // Utilities
 import { usePathname, useRouter } from "next/navigation";
-import { useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 ```

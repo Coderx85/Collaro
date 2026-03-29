@@ -8,7 +8,7 @@ import {
   joinRequestsTable,
 } from "@/db/schema/schema";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
+import { auth } from "@/lib/auth";
 import { and, eq, isNull } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { canDeleteWorkspace } from "@/lib/workspace-auth";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import {
   Popover,

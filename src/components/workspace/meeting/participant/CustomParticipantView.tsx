@@ -17,7 +17,7 @@ import {
   IconVideoOff,
 } from "@tabler/icons-react";
 import { useWorkspaceStore } from "@/store/workspace";
-import { useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth";
 
 /**
  * Custom VideoPlaceholder - shown when participant's video is off

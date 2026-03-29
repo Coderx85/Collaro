@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth";
 import { StreamCall, StreamTheme } from "@stream-io/video-react-sdk";
 import { useParams } from "next/navigation";
 import { Loader } from "lucide-react";

@@ -8,7 +8,7 @@ import {
   useListOrganizations,
   useActiveOrganization,
   authClient,
-} from "@/lib/auth-client";
+} from "@/lib/auth";
 import { ThemeToggle } from "@/components/navigation/theme-toggle";
 import MobileNav from "./_components/MobileNav";
 import NotificationBell from "./_components/NotificationBell";

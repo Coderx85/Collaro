@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import {

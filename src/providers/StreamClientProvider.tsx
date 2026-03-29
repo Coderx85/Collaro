@@ -2,7 +2,7 @@
 
 import { type ReactNode, useEffect, useState } from "react";
 import { StreamVideoClient, StreamVideo } from "@stream-io/video-react-sdk";
-import { useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth";
 import { tokenProvider } from "@/action";
 import Loader from "@/components/Loader";
 

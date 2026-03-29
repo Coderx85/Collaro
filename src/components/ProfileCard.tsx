@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { authClient, useSession } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useEffect, useState } from "react";
 

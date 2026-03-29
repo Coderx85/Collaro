@@ -23,7 +23,7 @@ import {
   IconNotification,
   IconUserCircle,
 } from "@tabler/icons-react";
-import { authClient, useSession } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 
 const Navbar = () => {

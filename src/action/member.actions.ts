@@ -1,7 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
+import { auth } from "@/lib/auth/auth-config";
 import type { APIResponse, TOrganizationMember } from "@/types";
 type MemberResponse = APIResponse<TOrganizationMember>;
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth";
 import { type Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
 
 export const useGetCalls = () => {

@@ -7,7 +7,7 @@ import {
   useCall,
   useCallStateHooks,
 } from "@stream-io/video-react-sdk";
-import { useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth";
 import { motion } from "motion/react";
 import { checkWorkspaceMeetingAcces } from "@/action";
 import { usePathname } from "next/navigation";

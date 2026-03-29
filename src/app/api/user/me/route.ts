@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
+import { auth } from "@/lib/auth";
 import { db } from "@/db/client";
 import { membersTable, workspacesTable } from "@/db/schema/schema";
 import { usersTable } from "@/db/schema/schema";

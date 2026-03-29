@@ -28,7 +28,7 @@ The `tokenProvider` function in `src/action/stream.actions.ts` is a Next.js Serv
 
 import { StreamClient } from "@stream-io/node-sdk";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
+import { auth } from "@/lib/auth";
 
 const STREAM_API_KEY = process.env.NEXT_PUBLIC_STREAM_API_KEY;
 const STREAM_API_SECRET = process.env.STREAM_SECRET_KEY;
@@ -77,7 +77,7 @@ The `StreamVideoProvider` in `src/providers/StreamClientProvider.tsx` initialize
 
 import { type ReactNode, useEffect, useState } from "react";
 import { StreamVideoClient, StreamVideo } from "@stream-io/video-react-sdk";
-import { useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth";
 import { tokenProvider } from "@/action";
 import Loader from "@/components/Loader";
 

@@ -8,7 +8,7 @@ import {
   workspacesTable,
 } from "@/db/schema/schema";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
+import { auth } from "@/lib/auth";
 import { and, eq, gt } from "drizzle-orm";
 import { inngest } from "@/lib/inngest";
 import type { APIResponse } from "@/types/api";

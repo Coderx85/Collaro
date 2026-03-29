@@ -57,7 +57,7 @@ Collaro is a modern video conferencing and workspace management application buil
 
 ### Authentication
 - Implemented using **Better Auth**.
-- Configuration located in `src/lib/auth.ts` and `src/lib/auth-client.ts`.
+- Configuration located in `src/lib/auth.ts` and `src/lib/auth.ts`.
 
 ### UI Components
 - **Shadcn/UI:** Used for base components (`src/components/ui`).

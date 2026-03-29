@@ -2,8 +2,7 @@ import NewWorkspaceForm from "@/lib/form/new-workspace-form";
 
 const NewWorksapceFormPage = () => {
   return (
-    <div className="flex h-full flex-col py-15 items-center justify-center rounded-sm w-full">
-      <h1 className="text-xl font-bold">New Workspace</h1>
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
       <NewWorkspaceForm />
     </div>
   );

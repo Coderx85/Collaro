@@ -25,7 +25,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth";
 import { config } from "@/lib/config";
 
 export function NavUser({

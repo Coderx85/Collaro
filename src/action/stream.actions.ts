@@ -2,7 +2,7 @@
 
 import { StreamClient } from "@stream-io/node-sdk";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
+import { auth } from "@/lib/auth";
 
 const STREAM_API_KEY = process.env.NEXT_PUBLIC_STREAM_API_KEY;
 const STREAM_API_SECRET = process.env.STREAM_SECRET_KEY;

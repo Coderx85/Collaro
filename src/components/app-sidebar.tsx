@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth";
 import Loader from "./Loader";
 import Logo from "./navigation/Logo";
 import Link from "next/link";

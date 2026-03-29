@@ -1,7 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
+import { auth } from "@/lib/auth";
 import { db } from "@/db/client";
 import { membersTable, usersTable } from "@/db/schema/schema";
 import { eq, and } from "drizzle-orm";

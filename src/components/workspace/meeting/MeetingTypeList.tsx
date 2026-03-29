@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import { useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import HomeCard from "../calls/HomeCard";

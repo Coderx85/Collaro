@@ -4,7 +4,7 @@ import { db } from "@/db/client";
 import { workspacesTable, membersTable, usersTable } from "@/db/schema/schema";
 import type { APIResponse, UserResponse } from "@/types";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth-config";
+import { auth } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { config } from "@/lib/config";

@@ -16,7 +16,7 @@ import {
   acceptInvitation,
   getInvitationById,
 } from "@/action/invitation.actions";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth";
 
 interface AcceptInviteFormProps {
   invitationId: string;

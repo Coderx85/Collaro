@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import { useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth";
 import { useWorkspaceStore } from "@/store/workspace";
 import { Button } from "@/components/ui/button";
 import { PhoneCall } from "lucide-react";
