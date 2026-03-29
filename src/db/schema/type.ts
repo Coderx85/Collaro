@@ -107,9 +107,15 @@ export const UpdateMeetingSchema = createUpdateSchema(workspaceMeetingTable, {
   createdAt: true,
 });
 
-export const SelectJoinRequestSchema = createSelectSchema(
-  joinRequestsTable,
-).strict();
+export const SelectJoinRequestSchema =
+  createSelectSchema(joinRequestsTable).strict();
 export type SelectJoinRequestType = z.infer<typeof SelectJoinRequestSchema>;
 
 export const SelectNotificationSchema = createSelectSchema(notificationsTable);
+
+export const createNotificationSchema = createInsertSchema(notificationsTable, {
+  type: z.string().min(1, "Type is required"),
+  message: z.string().min(1, "Message is required"),
+  userId: z.string().min(1, "User ID is required"),
+  workspaceId: z.string().min(1, "Workspace ID is required"),
+});

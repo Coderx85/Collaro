@@ -229,13 +229,13 @@ export const notificationsTable = pgTable("notifications", {
     }),
   type: pgNotificationType("notification_type").default("general").notNull(),
   message: text("message").notNull(),
-  status: text("status").default("unread").notNull(),
+  read: boolean("read_status").default(false).notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   readAt: timestamp("read_at"),
   }, 
   (table) => [
     t.index("notifications_user_id_idx").on(table.userId),
     t.index("notifications_workspace_id_idx").on(table.workspaceId),
-    t.index("notifications_status_idx").on(table.status),
+    t.index("notifications_read_status_idx").on(table.read),
   ]
 );

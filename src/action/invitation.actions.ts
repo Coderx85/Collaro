@@ -12,7 +12,7 @@ import { auth } from "@/lib/auth-config";
 import { and, eq, gt } from "drizzle-orm";
 import { inngest } from "@/lib/inngest";
 import type { APIResponse } from "@/types/api";
-import { getWorkspace } from "./workspace.actions";
+import { getWorkspace } from "./workspace/workspace.actions";
 import { getCurrentUser } from "./user.actions";
 
 interface CreateInvitationParams {
