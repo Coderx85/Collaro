@@ -4,9 +4,7 @@ import {
   inferOrgAdditionalFields,
   organizationClient,
 } from "better-auth/client/plugins";
-import { config } from "./config";
-import type { auth } from "./auth-config";
-// import { ac, roles } from "./permission";
+import type { auth } from "./index";
 
 export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000",

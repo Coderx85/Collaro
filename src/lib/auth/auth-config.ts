@@ -4,7 +4,7 @@ import * as authSchema from "@/db/schema/auth-schema";
 import { schema } from "@/db";
 import { db } from "@/db/client";
 import { nextCookies } from "better-auth/next-js";
-import { config } from "./config";
+import { config } from "../config";
 import { organization, username } from "better-auth/plugins";
 // import { ac, roles } from "./permission";
 
