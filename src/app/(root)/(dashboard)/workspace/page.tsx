@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
   Empty,
@@ -10,8 +11,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { IconBuildingSkyscraper } from "@tabler/icons-react";
-import { JoinWorkspaceForm } from "./_components/join-workspace-form";
+import { IconArrowRight, IconBuildingSkyscraper } from "@tabler/icons-react";
 import { Separator } from "@/components/ui/separator";
 
 const WorkspacePage = async () => {
@@ -54,32 +54,24 @@ const WorkspacePage = async () => {
 
       {/* Create Workspace Section */}
       <div className="space-y-6">
-        <div className="flex flex-col gap-2">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-            Your Workspaces
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Workspaces you have created or are a member of
-          </p>
-        </div>
-
         {org.length > 0 ? (
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
             {org.map((org) => (
               <Link href={`/workspace/${org.slug}`} key={org.id}>
-                <Card className="group h-full w-full cursor-pointer border border-border/70 bg-card/80 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:bg-card">
-                  <CardHeader className="pb-2">
+                <Card className="group relative h-full w-full cursor-pointer overflow-hidden rounded-2xl border border-border/60 bg-linear-to-br from-background/70 via-card/90 to-muted/60 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10">
+                  <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-white/10 via-transparent to-primary/15 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  <CardHeader className="relative z-10 pb-2">
                     <CardTitle className="text-lg font-semibold text-foreground transition-transform duration-300 group-hover:scale-[1.02]">
                       {org.name}
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2">
+                  <CardContent className="relative z-10 space-y-2">
                     {org.logo && (
                       <p className="text-sm text-muted-foreground transition-colors duration-300 group-hover:text-primary">
                         {org.logo}
                       </p>
                     )}
-                    <div className="inline-flex items-center rounded-full border border-border/70 bg-background/70 px-3 py-1 text-xs font-semibold text-muted-foreground transition-colors duration-300 group-hover:border-primary/40 group-hover:text-primary">
+                    <div className="inline-flex items-center rounded-full border border-border/70 bg-background/70 px-3 py-1 text-xs font-semibold text-muted-foreground shadow-sm backdrop-blur transition-colors duration-300 group-hover:border-primary/40 group-hover:text-primary">
                       {org.slug}
                     </div>
                   </CardContent>
@@ -89,8 +81,9 @@ const WorkspacePage = async () => {
 
             {/* Create New Workspace Card */}
             <Link href="/workspace/new">
-              <Card className="group flex min-h-[210px] h-full w-full cursor-pointer items-center justify-center border-2 border-dashed border-border bg-card/60 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:bg-primary/5">
-                <CardContent className="text-center">
+              <Card className="group relative flex min-h-[210px] h-full w-full cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-border/80 bg-linear-to-br from-card/70 via-background/70 to-primary/10 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10">
+                <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-primary/15 via-transparent to-secondary/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                <CardContent className="relative z-10 text-center">
                   <div className="flex flex-col items-center gap-3">
                     <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-300 group-hover:scale-105">
                       <IconBuildingSkyscraper className="size-7" />
@@ -138,17 +131,33 @@ const WorkspacePage = async () => {
 
       {/* Join Workspace Section */}
       <div className="space-y-6">
-        <div>
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-            Join a Workspace
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Request to join an existing workspace
-          </p>
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+              Join a Workspace
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Request to join an existing workspace
+            </p>
+          </div>
+          <Button asChild variant="secondary" className="gap-2">
+            <Link href="/workspace/join">
+              Open Join Form
+              <IconArrowRight className="size-4" />
+            </Link>
+          </Button>
         </div>
 
-        <div className="max-w-2xl rounded-2xl border border-border bg-card/80 p-6 shadow-sm">
-          <JoinWorkspaceForm />
+        <div className="relative max-w-2xl overflow-hidden rounded-2xl border border-border/60 bg-linear-to-br from-background/70 via-card/90 to-muted/60 p-6 shadow-sm">
+          <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-primary/10 via-transparent to-secondary/15 opacity-60" />
+          <div className="relative z-10 space-y-2">
+            <p className="text-sm text-muted-foreground">
+              Provide the workspace name and slug to send a request to the owner.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              You will be notified when access is approved.
+            </p>
+          </div>
         </div>
       </div>
     </div>
