@@ -41,7 +41,7 @@ export async function getNotifications(
     if (status && status !== "all") {
       whereConditions = and(
         whereConditions,
-        eq(notificationsTable.status, status),
+        eq(notificationsTable.read, true),
       )!;
     }
 
@@ -55,7 +55,7 @@ export async function getNotifications(
     // Get unread count
     const unreadCondition = and(
       eq(notificationsTable.userId, user.id),
-      eq(notificationsTable.status, "unread"),
+      eq(notificationsTable.read, false),
       workspaceId ? eq(notificationsTable.workspaceId, workspaceId) : undefined,
     );
 
@@ -131,7 +131,7 @@ export async function markNotificationAsRead(
     const [updated] = await db
       .update(notificationsTable)
       .set({
-        status: "read",
+        read: true,
         readAt: new Date(),
       })
       .where(eq(notificationsTable.id, notificationId))
@@ -168,14 +168,14 @@ export async function markAllNotificationsAsRead(
     const updated = await db
       .update(notificationsTable)
       .set({
-        status: "read",
+        read: true,
         readAt: new Date(),
       })
       .where(
         and(
           eq(notificationsTable.userId, user.id),
           eq(notificationsTable.workspaceId, workspaceId),
-          eq(notificationsTable.status, "unread"),
+          eq(notificationsTable.read, false),
         ),
       )
       .returning();
@@ -234,7 +234,7 @@ export async function archiveNotification(
     await db
       .update(notificationsTable)
       .set({
-        status: "archived",
+        read: true,
       })
       .where(eq(notificationsTable.id, notificationId));
 
@@ -269,7 +269,7 @@ export async function getUnreadNotificationCount(
 
     let whereCondition = and(
       eq(notificationsTable.userId, user.id),
-      eq(notificationsTable.status, "unread"),
+      eq(notificationsTable.read, false),
     );
 
     if (workspaceId) {
