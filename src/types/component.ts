@@ -82,7 +82,7 @@ export interface FeatureCard {
 }
 
 export interface NotificationProps {
-  id: number;
+  id: number | string;
   title: string;
   message: string;
   meetingId?: string;
@@ -91,4 +91,26 @@ export interface NotificationProps {
   isRead: boolean;
   type: string;
   createdAt: string;
+}
+
+export interface WorkspaceNotificationProps {
+  id: string;
+  userId: string;
+  workspaceId: string;
+  type:
+    | "join_request_sent"
+    | "join_request_approved"
+    | "join_request_rejected"
+    | "member_joined"
+    | "member_left"
+    | "member_removed"
+    | "workspace_settings_changed";
+  title: string;
+  message: string;
+  status: "unread" | "read" | "archived";
+  relatedEntityId?: string;
+  relatedEntityType?: "join_request" | "member" | "workspace";
+  actionUrl?: string;
+  createdAt: Date;
+  readAt?: Date;
 }

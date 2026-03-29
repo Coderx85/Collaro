@@ -37,4 +37,14 @@ export interface TOrganizationMember {
   updatedAt: Date;
 }
 
+export interface PendingRequest {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  userFullName: string;
+  status: string;
+  requestedAt: Date;
+}
+
 export type Call = z.infer<typeof SelectCallSchema>;
