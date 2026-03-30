@@ -81,8 +81,7 @@ export async function loginAction(email: string, password: string) {
     const sessionToken = result.token;
     const authHeaders = {
       cookie: `better-auth.session_token=${sessionToken}`,
-      origin:
-        process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000",
+      origin: config.betterAuthUrl,
     };
 
     // Check workspaces

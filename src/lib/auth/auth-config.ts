@@ -10,7 +10,7 @@ import { organization, username } from "better-auth/plugins";
 
 export const auth = betterAuth({
   secret: config.betterSecret,
-  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000",
+  baseURL: config.betterAuthUrl,
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
@@ -85,21 +85,6 @@ export const auth = betterAuth({
   advanced: {
     database: {
       generateId: "uuid",
-    },
-  },
-  databaseHooks: {
-    session: {
-      create: {
-        // before: async (session) => {
-        //   const organization = await getActiveOrganization(session.user.id);
-        //   return (
-        //     data: {
-        //       ...session,
-        //       activeOrganisation: organization.id,
-        //     }
-        //   );
-        // },
-      },
     },
   },
 });
