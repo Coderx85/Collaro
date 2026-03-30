@@ -1,4 +1,4 @@
-"user server";
+"use server";
 
 import { db } from "@/db/client";
 import { notificationsTable } from "@/db/schema/schema";
