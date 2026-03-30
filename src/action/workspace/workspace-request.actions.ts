@@ -10,36 +10,41 @@ export async function getPendingJoinRequests(
   try {
     console.log("[getPendingJoinRequests] orgId:", orgId);
 
-    const joinRequests = await db.query.joinRequestsTable.findMany({
-      where: and(
-        eq(schema.joinRequestsTable.workspaceId, orgId),
-        eq(schema.joinRequestsTable.status, "pending"),
-      ),
-      with: {
-        user: true,
-      },
-    });
+    const joinRequests = await db
+      .select({
+        id: schema.joinRequestsTable.id,
+        userId: schema.joinRequestsTable.userId,
+        status: schema.joinRequestsTable.status,
+        requestedAt: schema.joinRequestsTable.requestedAt,
+        userName: schema.usersTable.userName,
+        userFullName: schema.usersTable.name,
+        userEmail: schema.usersTable.email,
+      })
+      .from(schema.joinRequestsTable)
+      .innerJoin(
+        schema.usersTable,
+        eq(schema.joinRequestsTable.userId, schema.usersTable.id),
+      )
+      .where(
+        and(
+          eq(schema.joinRequestsTable.workspaceId, orgId),
+          eq(schema.joinRequestsTable.status, "pending"),
+        ),
+      );
 
     console.log(
       "[getPendingJoinRequests] matched pending rows:",
       joinRequests.length,
     );
 
-    const pendingRequests: PendingRequest[] = joinRequests.flatMap((req) => {
-      if (!req.user) {
-        console.log(
-          "[getPendingJoinRequests] skip row with missing user:",
-          req.id,
-        );
-        return [];
-      }
-
+    const pendingRequests: PendingRequest[] = joinRequests.map((req) => {
+      const displayName = req.userFullName || req.userName || "";
       return {
         id: req.id,
         userId: req.userId,
-        userName: req.user.name || req.user.userName || "",
-        userEmail: req.user.email || "",
-        userFullName: req.user.name || req.user.userName || "",
+        userName: req.userName || displayName,
+        userEmail: req.userEmail || "",
+        userFullName: displayName,
         status: req.status,
         requestedAt: req.requestedAt,
       };
@@ -69,12 +74,20 @@ async function updateJoinRequestStatus(
   status: "approved" | "rejected",
 ): Promise<APIResponse<{ userName: string }>> {
   try {
-    const joinRequest = await db.query.joinRequestsTable.findFirst({
-      where: eq(schema.joinRequestsTable.id, requestId),
-      with: {
-        user: true,
-      },
-    });
+    const [joinRequest] = await db
+      .select({
+        id: schema.joinRequestsTable.id,
+        userName: schema.usersTable.userName,
+        userFullName: schema.usersTable.name,
+      })
+      .from(schema.joinRequestsTable)
+      .innerJoin(
+        schema.usersTable,
+        eq(schema.joinRequestsTable.userId, schema.usersTable.id),
+      )
+      .where(eq(schema.joinRequestsTable.id, requestId))
+      .limit(1)
+      .execute();
 
     if (!joinRequest) {
       return { success: false, error: "Join request not found" };
@@ -95,11 +108,7 @@ async function updateJoinRequestStatus(
       return { success: false, error: "Failed to update join request status" };
     }
 
-    if (!joinRequest.user) {
-      return { success: false, error: "Join request user not found" };
-    }
-
-    const userName = joinRequest.user.name || joinRequest.user.userName || "";
+    const userName = joinRequest.userFullName || joinRequest.userName || "";
 
     if (!userName) {
       return { success: false, error: "Join request user name missing" };
