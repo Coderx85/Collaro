@@ -5,7 +5,12 @@ import { APIResponse, INotification } from "@/types";
 
 export const markNotificationAsReadAction = async (notificationId: string): Promise<APIResponse<null>> => {
   try {
-    await db.update(notificationsTable).set({ read: true }).where(eq(notificationsTable.id, notificationId)).execute();
+    await db
+      .update(notificationsTable)
+      .set({ read: true })
+      .where(eq(notificationsTable.id, notificationId))
+      .execute();
+
     return { success: true, data: null };
   } catch (error: unknown) {
     return { error: `Failed to mark notification as read: ${error}`, success: false };
@@ -14,7 +19,11 @@ export const markNotificationAsReadAction = async (notificationId: string): Prom
 
 export const getUserNotificationsAction = async (workspaceId: string): Promise<APIResponse<INotification[]>> => {
   try {
-    const user = await db.select().from(notificationsTable).where(eq(notificationsTable.workspaceId, workspaceId)).execute();
+    const user = await db
+      .select()
+      .from(notificationsTable)
+      .where(eq(notificationsTable.workspaceId, workspaceId))
+      .execute();
 
     if (!user) return { error: "Failed to get notifications", success: false };
 

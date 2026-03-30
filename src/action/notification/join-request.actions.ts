@@ -5,6 +5,8 @@ import { auth } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import type { APIResponse } from "@/types";
+import { addMember } from "../member.actions";
+import { getUser } from "../user.actions";
 
 interface ApproveJoinRequestInput {
   requestId: string;
@@ -25,48 +27,6 @@ export async function approveJoinRequestAction({
   responderId,
 }: ApproveJoinRequestInput): Promise<APIResponse<ApproveJoinRequestResult>> {
   try {
-    // Get the join request with user and workspace details
-    const [joinRequest] = await db
-      .select({
-        id: schema.joinRequestsTable.id,
-        userId: schema.joinRequestsTable.userId,
-        workspaceId: schema.joinRequestsTable.workspaceId,
-        status: schema.joinRequestsTable.status,
-        userName: schema.usersTable.userName,
-        userFullName: schema.usersTable.name,
-        workspaceSlug: schema.workspacesTable.slug,
-      })
-      .from(schema.joinRequestsTable)
-      .innerJoin(
-        schema.usersTable,
-        eq(schema.joinRequestsTable.userId, schema.usersTable.id)
-      )
-      .innerJoin(
-        schema.workspacesTable,
-        eq(schema.joinRequestsTable.workspaceId, schema.workspacesTable.id)
-      )
-      .where(eq(schema.joinRequestsTable.id, requestId))
-      .limit(1)
-      .execute();
-
-    if (!joinRequest) {
-      return { success: false, error: "Join request not found" };
-    }
-
-    if (joinRequest.status !== "pending") {
-      return { success: false, error: "Join request has already been processed" };
-    }
-
-    // Add user to the organization using Better Auth API
-    await auth.api.addMember({
-      headers: await headers(),
-      body: {
-        organizationId: joinRequest.workspaceId,
-        userId: joinRequest.userId,
-        role: "member",
-      },
-    });
-
     // Update join request status to approved
     const [updatedRequest] = await db
       .update(schema.joinRequestsTable)
@@ -83,13 +43,35 @@ export async function approveJoinRequestAction({
       return { success: false, error: "Failed to update join request status" };
     }
 
-    const userName = joinRequest.userFullName || joinRequest.userName || "User";
+    const memberResult = await addMember({
+      userId: updatedRequest.userId,
+      workspaceId: updatedRequest.workspaceId,
+      role: "member",
+    });
+
+    if (!memberResult.success || !memberResult.data) {
+      return { success: false, error: "Failed to add member to workspace" };
+    }
+
+    // user - org relationship
+
+    const member = await db.query.membersTable.findFirst({
+      where: eq(schema.membersTable.userId, updatedRequest.userId),
+      with: {
+        user: true,
+        workspace: true,
+      }
+    });
+
+    if (!member) {
+      return { success: false, error: "Member not found after approval" };
+    }
 
     return {
       success: true,
       data: {
-        userName,
-        workspaceSlug: joinRequest.workspaceSlug,
+        userName: member.user.userName,
+        workspaceSlug: member.workspace.slug,
       },
     };
   } catch (error: unknown) {
