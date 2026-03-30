@@ -19,12 +19,11 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
+import { getPendingJoinRequests, getCurrentAuthUser } from "@/action/workspace";
 import {
-  getPendingJoinRequests,
-  approveJoinRequest,
-  rejectJoinRequest,
-  getCurrentAuthUser,
-} from "@/action/workspace";
+  approveJoinRequestAction,
+  rejectJoinRequestAction,
+} from "@/action/notification";
 import type { PendingRequest as JoinRequest } from "@/types";
 import { Clock, CheckCircle, XCircle, Loader } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -88,7 +87,10 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
         return;
       }
 
-      const result = await approveJoinRequest(requestId, auth.id);
+      const result = await approveJoinRequestAction({
+        requestId,
+        responderId: auth.id,
+      });
       
       if (result.success) {
         setRequests((prev) => prev.filter((req) => req.id !== requestId));
@@ -142,7 +144,10 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
         requestId,
         userId: authUser.id,
       });
-      const result = await rejectJoinRequest(requestId, authUser.id);
+      const result = await rejectJoinRequestAction({
+        requestId,
+        responderId: authUser.id,
+      });
       console.log("[handleReject] Result:", result);
       
       if (result.success) {

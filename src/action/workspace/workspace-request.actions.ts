@@ -126,6 +126,10 @@ async function updateJoinRequestStatus(
   }
 }
 
+/**
+ * @deprecated Use `approveJoinRequestAction` from `@/action/notification` instead.
+ * This function only updates status but does NOT add the member to the organization.
+ */
 export async function approveJoinRequest(
   requestId: string,
   userId: string,
@@ -133,6 +137,9 @@ export async function approveJoinRequest(
   return updateJoinRequestStatus(requestId, userId, "approved");
 }
 
+/**
+ * @deprecated Use `rejectJoinRequestAction` from `@/action/notification` instead.
+ */
 export async function rejectJoinRequest(
   requestId: string,
   userId: string,
