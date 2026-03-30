@@ -29,3 +29,18 @@ export const joinRequestsRelations = relations(
     }),
   })
 );
+
+export const membersRelations = relations(
+  schema.membersTable, ({ one, many }) => ({
+    workspace: 
+      one(schema.workspacesTable, {
+        fields: [schema.membersTable.workspaceId],
+        references: [schema.workspacesTable.id],
+      }),
+    user: one(schema.usersTable, {
+      fields: [schema.membersTable.userId],
+      references: [schema.usersTable.id],
+    }),
+    notifications: many(schema.notificationsTable),
+  })
+);

@@ -119,3 +119,13 @@ export const createNotificationSchema = createInsertSchema(notificationsTable, {
   userId: z.string().min(1, "User ID is required"),
   workspaceId: z.string().min(1, "Workspace ID is required"),
 });
+
+export const createMemberSchema = createInsertSchema(membersTable, {
+  id: z.string(),
+  userId: z.string().min(1, "User ID is required"),
+  workspaceId: z.string().min(1, "Workspace ID is required"),
+  role: z.enum(UserRole),
+  createdAt: z.date(),
+}).omit({
+  updatedAt: true,
+});
