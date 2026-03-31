@@ -25,6 +25,8 @@ import {
 } from "@/components/ui/card";
 import { NewWorkspaceFormSchema } from "@/types";
 import { convertToSlug } from "../../lib/text-formatter";
+import Link from "next/link";
+import { routeConfig } from "@/lib/routeConfig";
 
 export function NewWorkspaceForm() {
   const router = useRouter();
@@ -181,9 +183,12 @@ export function NewWorkspaceForm() {
           </Button>
         </CardContent>
         <CardFooter className="flex flex-col gap-2 text-center relative">
-          <p className="text-sm text-default-foreground">
-            You can update the name and slug later in workspace settings.
-          </p>
+          <Link
+            href={routeConfig.workspace.join}
+            className="text-primary hover:underline"
+          >
+            Join an existing workspace
+          </Link>
         </CardFooter>
       </Card>
     </form>

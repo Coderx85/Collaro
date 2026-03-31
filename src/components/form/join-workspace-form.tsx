@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -28,6 +29,8 @@ import { LogIn, Loader } from "lucide-react";
 import { convertToSlug } from "@/lib/text-formatter";
 import { Field, FieldError, FieldGroup, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { validators } from "tailwind-merge";
+import Link from "next/link";
+import { routeConfig } from "@/lib/routeConfig";
 
 const joinWorkspaceSchema = z.object({
   workspaceName: z
@@ -177,7 +180,31 @@ export function JoinWorkspaceForm() {
               }}
             </form.Field>
           </FieldGroup>
+
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader className="animate-spin mr-2" />
+                Sending Request...
+              </>
+            ) : (
+              <>
+                <LogIn className="mr-2" />
+                Join Workspace
+              </>
+            )}
+          </Button>
         </CardContent>
+        <CardFooter className="text-center text-sm text-muted-foreground">
+          If you want to create a new workspace instead,{" "}
+          <Link href={routeConfig.workspace.new} className="text-primary hover:underline">
+            Create Workspace
+          </Link>
+        </CardFooter>
       </Card>
     </form>
   );
