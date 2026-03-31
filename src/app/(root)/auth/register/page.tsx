@@ -144,17 +144,6 @@ export default function RegisterPage() {
     setCurrentStep(1);
   };
 
-  const StepIndicator = () => (
-    <div className="flex items-center justify-center gap-2 mb-4">
-      <div
-        className={`h-2 w-2 rounded-full transition-all ${currentStep === 1 ? "bg-primary w-8" : "bg-slate-400"}`}
-      />
-      <div
-        className={`h-2 w-2 rounded-full transition-all ${currentStep === 2 ? "bg-primary w-8" : "bg-slate-400"}`}
-      />
-    </div>
-  );
-
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
       <Card className="w-full max-w-md relative z-10 backdrop-blur-4xl backdrop-blur-xl bg-white/50 dark:bg-white/5 shadow-2xl">
