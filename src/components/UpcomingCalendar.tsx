@@ -53,7 +53,7 @@ export function UpcomingCalendar() {
   const totalMeetings = upcomingCalls.length;
 
   return (
-    <div className="relative flex min-h-[100dvh] flex-col overflow-hidden px-6 pb-12 pt-6 md:pt-4 md:pb-8">
+    <div className="relative flex min-h-dvh flex-col overflow-hidden px-6 pb-12 pt-6 md:px-4 md:pt-4 md:pb-8">
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -top-32 right-[-6rem] h-96 w-96 rounded-full bg-primary/8 blur-[160px]" />
         <div className="absolute bottom-[-6rem] left-0 h-96 w-96 rounded-full bg-secondary/8 blur-[160px]" />
@@ -62,7 +62,7 @@ export function UpcomingCalendar() {
 
       <div className="mx-auto w-full max-w-6xl flex-1 space-y-8 gap-3">
         {/* Shared Header */}
-        <section className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/40 p-6 backdrop-blur-sm md:p-8">
+        <section className="relative overflow-hidden rounded-2xl border-2 border-border/50 bg-card/40 borde p-6 backdrop-blur-sm md:p-8">
           <div className="relative grid gap-6 md:grid-cols-[1.3fr_1fr] md:items-center">
             <div className="space-y-3">
               <span className="inline-flex items-center gap-2 rounded-full bg-muted/60 px-3 py-1 text-[11px] font-medium text-muted-foreground">

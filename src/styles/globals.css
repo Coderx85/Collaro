@@ -502,7 +502,7 @@
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.3355 0.0171 97.8686);
-  --card: oklch(0.9793 0.0029 84.5589);
+  --card: oklch(0.95 0.02 150);
   --card-foreground: oklch(0.2174 0.0019 106.5582);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.2593 0.011 99.3258);
@@ -569,7 +569,7 @@
 .dark {
   --background: oklch(0.2679 0.0036 106.6427);
   --foreground: oklch(0.8037 0.0084 98.9092);
-  --card: oklch(0.2679 0.0036 106.6427);
+  --card: oklch(0.3 0.015 150);
   --card-foreground: oklch(0.9793 0.0029 84.5589);
   --popover: oklch(0.3085 0.0035 106.6039);
   --popover-foreground: oklch(0.9186 0.0013 106.4256);
