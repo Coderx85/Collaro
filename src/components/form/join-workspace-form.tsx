@@ -19,13 +19,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
+import { useForm } from "@tanstack/react-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { sendJoinWorkspaceRequest } from "@/action/workspace";
 import { useToast } from "@/components/ui/use-toast";
 import { LogIn, Loader } from "lucide-react";
 import { convertToSlug } from "@/lib/text-formatter";
+import { Field, FieldError, FieldGroup, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { validators } from "tailwind-merge";
 
 const joinWorkspaceSchema = z.object({
   workspaceName: z
@@ -48,145 +50,135 @@ export function JoinWorkspaceForm() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const form = useForm<JoinWorkspaceFormData>({
-    resolver: zodResolver(joinWorkspaceSchema),
+  const form = useForm({
     defaultValues: {
       workspaceName: "",
       workspaceSlug: "",
     },
-  });
+    validators: {
+      onSubmit: joinWorkspaceSchema
+    },
+    onSubmit: async ({ value }) => {
+      setIsLoading(true);
+      try {
+        const result = await sendJoinWorkspaceRequest(value.workspaceSlug, value.workspaceName);
 
-  async function onSubmit(data: JoinWorkspaceFormData) {
-    setIsLoading(true);
-    try {
-      const result = await sendJoinWorkspaceRequest(data.workspaceSlug, data.workspaceName);
-
-      if (result.success) {
+        if (!result.success) {
+          toast({
+            title: "Error",
+            description: result.error || "Failed to send join request",
+            variant: "destructive",
+          });
+          return;
+        } 
+        
         toast({
           title: "Success!",
           description: `Your request to join "${result.data?.workspaceName}" has been sent to the workspace owner.`,
         });
-        form.reset();
-      } else {
+        
+      } catch (error) {
         toast({
           title: "Error",
-          description: result.error || "Failed to send join request",
+          description:
+            error instanceof Error
+              ? error.message
+              : "An unexpected error occurred",
           variant: "destructive",
         });
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
     }
-  }
+  });
 
   return (
-    <Card className="overflow-hidden border-border bg-card/80 shadow-sm">
-      <div className="relative">
-        <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-primary/10 via-transparent to-secondary/15" />
-        <CardHeader className="relative space-y-2">
-          <div className="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-            <LogIn className="h-4 w-4" />
+    <form 
+      onSubmit={(e) => {
+        e.preventDefault();
+        form.handleSubmit();
+      }} 
+      className="w-full max-w-md relative z-10"
+    >
+      <Card className="relative backdrop-blur-xl bg-card/80 shadow-lg overflow-hidden">
+        <CardHeader className="space-y-4 text-center relative">
+          <CardTitle className="text-2xl font-bold text-secondary">
             Join Workspace
-          </div>
-          <CardTitle className="text-2xl font-semibold tracking-tight">
-            Request access in minutes
           </CardTitle>
-          <CardDescription className="text-sm text-muted-foreground">
+          <CardDescription className="text-sm text-muted-foreground">Choose labels and a slug to create your workspace.
             Provide the workspace name and slug so the owner can approve your
-            request quickly.
           </CardDescription>
         </CardHeader>
-      </div>
-      <CardContent className="space-y-6">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="workspaceName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">
-                    Workspace Name
-                  </FormLabel>
-                  <FormControl>
+        <CardContent className="space-y-6">
+          <FieldGroup>
+            <form.Field name="workspaceName">
+              {(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel
+                      htmlFor={field.name}
+                      className="text-foreground dark:text-foreground"
+                    >
+                      Workspace Name
+                    </FieldLabel>
                     <Input
-                      placeholder="e.g., My Amazing Workspace"
-                      {...field}
+                      id={field.name}
+                      name={field.name}
+                      type="text"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
                       onChange={(e) => {
-                        field.onChange(e.target.value)
-                        // Auto-generate slug from name 
-                        const generatedSlug = convertToSlug(e.target.value)
-                        form.setValue("workspaceSlug", generatedSlug)
+                        field.handleChange(e.target.value);
+
+                        // Auto-generate slug based on the name
+                        const generatedSlug = convertToSlug(e.target.value);
+                        field.form.setFieldValue("workspaceSlug", generatedSlug);
                       }}
-                      disabled={isLoading}
-                      className="h-11"
+                      aria-invalid={isInvalid}
+                      placeholder="Workspace Name"
                     />
-                  </FormControl>
-                  <FormDescription className="text-xs text-muted-foreground">
-                    The exact name of the workspace you want to join
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
+            </form.Field>
 
-            <FormField
-              control={form.control}
-              name="workspaceSlug"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">
-                    Workspace Slug
-                  </FormLabel>
-                  <FormControl>
+            <form.Field name="workspaceSlug">
+              {(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel
+                      htmlFor={field.name}
+                      className="text-foreground dark:text-foreground"
+                    >
+                      Workspace Slug
+                    </FieldLabel>
                     <Input
-                      placeholder="e.g., my-amazing-workspace"
-                      {...field}
-                      onChange={(e) => field.onChange(e.target.value)}
-                      disabled={isLoading}
-                      className="h-11"
+                      id={field.name}
+                      name={field.name}
+                      type="text"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      placeholder="Workspace Slug"
                     />
-                  </FormControl>
-                  <FormDescription className="text-xs text-muted-foreground">
-                    The URL-friendly identifier of the workspace (lowercase,
-                    numbers, and hyphens only)
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full"
-              >
-              {isLoading ? (
-                <>
-                  <Loader className="mr-2 h-4 w-4 animate-spin" />
-                  Sending Request...
-                </>
-              ) : (
-                <>
-                  <LogIn className="mr-2 h-4 w-4" />
-                  Request to Join
-                </>
-              )}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
+            </form.Field>
+          </FieldGroup>
+        </CardContent>
+      </Card>
+    </form>
   );
 }
