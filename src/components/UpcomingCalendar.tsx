@@ -4,16 +4,15 @@ import * as React from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { useGetCalls } from "@/hooks/useGetCalls";
 import { Call } from "@stream-io/video-react-sdk";
-import CallList from "./CallList";
+import {CallList} from "./workspace/calls";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { IconCalendarEvent, IconCalendarCheck } from "@tabler/icons-react";
 
 export function UpcomingCalendar() {
   const { upcomingCalls, isLoading } = useGetCalls();
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
-    new Date(),
-  );
+  const date = new Date();
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(date);
   const [filterByDate, setFilterByDate] = React.useState<string>("");
 
   const meetingsByDay = upcomingCalls.reduce(
@@ -54,14 +53,14 @@ export function UpcomingCalendar() {
   const totalMeetings = upcomingCalls.length;
 
   return (
-    <div className="relative flex min-h-[100dvh] flex-col overflow-hidden px-6 pb-12 pt-6 md:px-10 md:pt-8">
+    <div className="relative flex min-h-[100dvh] flex-col overflow-hidden px-6 pb-12 pt-6 md:pt-4 md:pb-8">
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -top-32 right-[-6rem] h-96 w-96 rounded-full bg-primary/8 blur-[160px]" />
         <div className="absolute bottom-[-6rem] left-0 h-96 w-96 rounded-full bg-secondary/8 blur-[160px]" />
         <div className="absolute top-1/2 left-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/5 blur-[140px]" />
       </div>
 
-      <div className="mx-auto w-full max-w-6xl flex-1 space-y-8">
+      <div className="mx-auto w-full max-w-6xl flex-1 space-y-8 gap-3">
         {/* Shared Header */}
         <section className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/40 p-6 backdrop-blur-sm md:p-8">
           <div className="relative grid gap-6 md:grid-cols-[1.3fr_1fr] md:items-center">
@@ -70,7 +69,7 @@ export function UpcomingCalendar() {
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
                 {totalMeetings} upcoming {totalMeetings === 1 ? "meeting" : "meetings"}
               </span>
-              <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+              <h1 className="text-3xl font-semibold tracking-tight text-secondary md:text-4xl">
                 Meeting Calendar
               </h1>
               <p className="max-w-md text-sm text-muted-foreground">
@@ -143,7 +142,7 @@ export function UpcomingCalendar() {
                   nav_button_previous: "absolute left-1",
                   nav_button_next: "absolute right-1",
                   table: "w-full border-collapse space-y-1",
-                  head_row: "flex",
+                  head_row: "flex pb-2",
                   head_cell: "text-muted-foreground w-8 font-normal text-[0.8rem]",
                   row: "flex w-full mt-2",
                   cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 rounded-md",

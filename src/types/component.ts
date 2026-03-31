@@ -1,5 +1,6 @@
 import type { IconType } from "react-icons/lib";
 import type { TUserRole } from "./action";
+import { ComponentType } from "react";
 
 export interface CalendarExportProps {
   meetingId: string;
@@ -21,7 +22,7 @@ export interface CalendarExportProps {
 export interface MeetingCardProps {
   title: string;
   date: string;
-  icon: string;
+  icon: ComponentType<{ className?: string }>;
   isPreviousMeeting?: boolean;
   buttonIcon1?: string;
   buttonText?: string;
@@ -54,7 +55,7 @@ export type SidebarLink = {
   route: string;
   label: string;
   details: string;
-  component: React.ComponentType<{ selected: boolean; className?: string }>;
+  component: ComponentType<{ selected: boolean; className?: string }>;
   adminRoute: boolean;
 };
 

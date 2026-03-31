@@ -23,11 +23,12 @@ const MeetingCard = ({
   location,
 }: MeetingCardProps) => {
   const { toast } = useToast();
+  const IconDisplay = icon;
 
   return (
-    <section className="flex min-h-[230px] w-full flex-col justify-between rounded-[14px] bg-zinc-950/90 dark:bg-dark-1 px-5 py-8 xl:max-w-[550px]">
+    <section className="flex min-h-[230px] w-full flex-col justify-between rounded-xl bg-card dark:bg-card px-5 py-8 xl:max-w-[550px]">
       <article className="flex flex-col gap-5">
-        <Image src={icon} alt="upcoming" width={28} height={28} />
+          <IconDisplay className="h-10 w-10 text-white" />  
         <div className="flex justify-between">
           <div className="flex flex-col gap-2">
             <h1 className="text-2xl font-bold text-white">{title}</h1>
@@ -35,13 +36,14 @@ const MeetingCard = ({
           </div>
         </div>
       </article>
-      <article className={cn("flex justify-center relative", {})}>
+      <article className={cn("flex justify-center relative")}>
         {!isPreviousMeeting && (
           <div className="flex gap-2 flex-wrap">
             <Button onClick={handleClick} className="rounded bg-blue px-6">
               {buttonIcon1 && (
                 <Image src={buttonIcon1} alt="feature" width={20} height={20} />
-              )}
+                )
+              }
               &nbsp; {buttonText}
             </Button>
             <Button
@@ -51,7 +53,7 @@ const MeetingCard = ({
                   title: "Link Copied",
                 });
               }}
-              className="bg-dark-4 px-6"
+              className="bg-dark-4 px-6 "
             >
               <Image
                 src="/icons/copy.svg"
