@@ -24,8 +24,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { NewWorkspaceFormSchema } from "@/types";
+import { convertToSlug } from "../../lib/text-formatter";
 
-const NewWorkspaceForm = () => {
+export function NewWorkspaceForm() {
   const router = useRouter();
 
   const [isPending, setPending] = useState<boolean>(false);
@@ -49,10 +50,9 @@ const NewWorkspaceForm = () => {
           return;
         }
 
-        toast.success("Workspace created successfully");
+        toast.success("Workspace created successfully", { description: "Your workspace is ready to collaborate.", });
         router.push(`/workspace/${result.data.slug}`);
       } catch (error: unknown) {
-        // Handle permission denied errors
         if (error instanceof Error && error.message.includes("permission")) {
           toast.error(
             "You don't have permission to create a workspace. Contact your admin.",
@@ -75,12 +75,12 @@ const NewWorkspaceForm = () => {
       }}
       className="w-full max-w-md relative z-10"
     >
-      <Card className="backdrop-blur-xl bg-white/50 dark:bg-white/5 shadow-2xl">
-        <CardHeader className="space-y-4 text-center">
+      <Card className="relative backdrop-blur-xl bg-card/80 shadow-lg overflow-hidden">
+        <CardHeader className="space-y-4 text-center relative">
           <CardTitle className="text-2xl font-bold text-secondary">
             Create Workspace
           </CardTitle>
-          <CardDescription className="text-sm text-muted-foreground">
+          <CardDescription className="text-sm text-muted-foreground">Choose labels and a slug to create your workspace.
             Choose a name and a URL-friendly slug for your workspace.
           </CardDescription>
         </CardHeader>
@@ -106,7 +106,13 @@ const NewWorkspaceForm = () => {
                         type="text"
                         value={field.state.value}
                         onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
+                        onChange={(e) => {
+                          field.handleChange(e.target.value);
+
+                          // Auto-generate slug based on the name
+                          const generatedSlug = convertToSlug(e.target.value);
+                          field.form.setFieldValue("slug", generatedSlug);
+                        }}
                         aria-invalid={isInvalid}
                         placeholder="Workspace Name"
                         className="pl-10"
@@ -140,7 +146,7 @@ const NewWorkspaceForm = () => {
                         type="text"
                         value={field.state.value}
                         onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
+                        onChange={(e) => {field.handleChange(e.target.value)}}
                         aria-invalid={isInvalid}
                         placeholder="workspace-slug"
                         className="pl-10"
@@ -161,7 +167,7 @@ const NewWorkspaceForm = () => {
           <Button
             type="submit"
             disabled={isPending}
-            className="w-full"
+            className="w-full transition-transform active:scale-95"
             variant={"secondary"}
           >
             {isPending ? (
@@ -174,7 +180,7 @@ const NewWorkspaceForm = () => {
             )}
           </Button>
         </CardContent>
-        <CardFooter className="flex flex-col gap-2 text-center">
+        <CardFooter className="flex flex-col gap-2 text-center relative">
           <p className="text-sm text-default-foreground">
             You can update the name and slug later in workspace settings.
           </p>
@@ -183,5 +189,3 @@ const NewWorkspaceForm = () => {
     </form>
   );
 };
-
-export default NewWorkspaceForm;

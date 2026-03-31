@@ -25,13 +25,35 @@ const MeetingCard = ({
   const { toast } = useToast();
   const IconDisplay = icon;
 
+  const MAX_TITLE_LENGTH = 85;
+
+  /**
+   * Truncate text to a specified maximum length and add ellipsis if it exceeds that length.
+   * 
+   * @param text The text to be truncated.
+   * @param maxLength The maximum length of the text before truncation occurs.
+   * @returns The truncated text with an ellipsis if it exceeds the maximum length. 
+   * 
+   * @example 
+   * truncateText("This is a long meeting title that needs to be truncated", 20);
+   * // Returns: "This is a long meeti..."
+   */
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length > maxLength) {
+      return text.slice(0, maxLength) + "...";
+    }
+    return text;
+  };
+
   return (
     <section className="flex h-[250px] w-[500px] flex-col justify-between rounded-xl bg-card dark:bg-card px-5 py-8 transition-transform duration-200 transform hover:scale-105">
       <article className="flex flex-col gap-5">
           <IconDisplay className="text-white" />  
         <div className="flex justify-between">
           <div className="flex flex-col gap-2">
-            <h1 className="text-2xl font-bold text-white truncate max-w-full">{title}</h1>
+            <h1 className="text-xl font-bold text-white truncate max-w-full">
+              {truncateText(title, MAX_TITLE_LENGTH)}
+            </h1>
             <p className="text-sm font-normal text-white line-clamp-2">{date}</p>
           </div>
         </div>

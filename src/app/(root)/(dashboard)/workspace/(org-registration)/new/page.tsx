@@ -1,4 +1,4 @@
-import NewWorkspaceForm from "@/lib/form/new-workspace-form";
+import { NewWorkspaceForm } from "@/components/form";
 
 const NewWorksapceFormPage = () => {
   return (

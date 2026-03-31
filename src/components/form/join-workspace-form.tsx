@@ -25,6 +25,7 @@ import * as z from "zod";
 import { sendJoinWorkspaceRequest } from "@/action/workspace";
 import { useToast } from "@/components/ui/use-toast";
 import { LogIn, Loader } from "lucide-react";
+import { convertToSlug } from "@/lib/text-formatter";
 
 const joinWorkspaceSchema = z.object({
   workspaceName: z
@@ -90,7 +91,7 @@ export function JoinWorkspaceForm() {
   return (
     <Card className="overflow-hidden border-border bg-card/80 shadow-sm">
       <div className="relative">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-secondary/15" />
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-primary/10 via-transparent to-secondary/15" />
         <CardHeader className="relative space-y-2">
           <div className="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
             <LogIn className="h-4 w-4" />
@@ -120,6 +121,12 @@ export function JoinWorkspaceForm() {
                     <Input
                       placeholder="e.g., My Amazing Workspace"
                       {...field}
+                      onChange={(e) => {
+                        field.onChange(e.target.value)
+                        // Auto-generate slug from name 
+                        const generatedSlug = convertToSlug(e.target.value)
+                        form.setValue("workspaceSlug", generatedSlug)
+                      }}
                       disabled={isLoading}
                       className="h-11"
                     />
@@ -144,6 +151,7 @@ export function JoinWorkspaceForm() {
                     <Input
                       placeholder="e.g., my-amazing-workspace"
                       {...field}
+                      onChange={(e) => field.onChange(e.target.value)}
                       disabled={isLoading}
                       className="h-11"
                     />

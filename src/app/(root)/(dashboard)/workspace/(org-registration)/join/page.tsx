@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { JoinWorkspaceForm } from "../_components/join-workspace-form";
+import { JoinWorkspaceForm } from "@/components/form";
 
 const JoinWorkspacePage = () => {
   return (
