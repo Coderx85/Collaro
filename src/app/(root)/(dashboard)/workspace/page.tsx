@@ -33,13 +33,14 @@ const WorkspacePage = async () => {
   const workspaceCount = workspaces.length;
 
   return (
-    <div className="relative overflow-hidden px-6 pb-12 pt-6 md:px-10 md:pt-8">
+    <div className="relative flex min-h-[100dvh] flex-col overflow-hidden px-6 pb-12 pt-6 md:px-10 md:pt-8">
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-32 right-[-6rem] h-64 w-64 rounded-full bg-primary/8 blur-[120px]" />
-        <div className="absolute bottom-[-6rem] left-0 h-64 w-64 rounded-full bg-secondary/8 blur-[120px]" />
+        <div className="absolute -top-32 right-[-6rem] h-96 w-96 rounded-full bg-primary/8 blur-[160px]" />
+        <div className="absolute bottom-[-6rem] left-0 h-96 w-96 rounded-full bg-secondary/8 blur-[160px]" />
+        <div className="absolute top-1/2 left-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/5 blur-[140px]" />
       </div>
 
-      <div className="mx-auto w-full max-w-6xl space-y-8">
+      <div className="mx-auto w-full max-w-6xl flex-1 space-y-8">
         <section className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/40 p-6 backdrop-blur-sm md:p-8">
           <div className="relative grid gap-6 md:grid-cols-[1.3fr_1fr] md:items-center">
             <div className="space-y-3">
