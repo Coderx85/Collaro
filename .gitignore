@@ -47,3 +47,4 @@ next-env.d.ts
 .agents
 .agent
 bruno
+skills-lock.json
