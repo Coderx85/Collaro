@@ -86,6 +86,31 @@ export const auth = betterAuth({
     database: {
       generateId: "uuid",
     },
+    hooks: {
+      member: {
+        after: async (ctx: { adapter: any }, members: any[]) => {
+          const extendedMembers = await Promise.all(
+            members.map(async (member) => {
+              const user = await ctx.adapter.findUnique({
+                model: 'user',
+                where: { id: member.userId }
+              });
+              return {
+                ...member,
+                user: {
+                  id: user.id,
+                  name: user.name,
+                  email: user.email,
+                  userName: user.userName,
+                  createdAt: user.createdAt,
+                },
+              };
+            })
+          );
+          return extendedMembers;
+        },
+      },
+    },
   },
 });
 

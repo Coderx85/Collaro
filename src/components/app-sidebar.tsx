@@ -17,7 +17,7 @@ import Loader from "./Loader";
 import Logo from "./navigation/Logo";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getMember } from "@/action/member.actions";
+import { getMemberByIdAndSlug } from "@/action/member";
 import { usePathname } from "next/navigation";
 
 export function AppSidebar({
@@ -28,8 +28,8 @@ export function AppSidebar({
   const [role, setRole] = useState<"owner" | "admin" | "member">("member");
 
   useEffect(() => {
-    const fetchMemberRoel = async () => {
-      const res = await getMember(
+    const fetchMemberRole = async () => {
+      const res = await getMemberByIdAndSlug(
         pathname.split("/")[2],
         session?.user?.id || "",
       );
@@ -38,7 +38,7 @@ export function AppSidebar({
 
       setRole(role);
     };
-    fetchMemberRoel();
+    fetchMemberRole();
   }, [session, pathname]);
 
   if (!session || !pathname.includes("workspace")) return null;

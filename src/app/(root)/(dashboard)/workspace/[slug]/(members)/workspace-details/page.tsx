@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/dal";
-import { getMember } from "@/action/member.actions";
+import { getMemberByIdAndSlug } from "@/action/member";
 import { InviteMemberDialog } from "@/components/workspace/members/InviteMemberDialog";
 import { TOrganizationMember } from "@/types";
 import MembersTable from "@/components/workspace/meeting/charts/members-table";
@@ -40,7 +40,7 @@ export default async function OrgDetailsPage({
     throw new Error("Organization not found");
   }
 
-  const orgMember = await getMember(slug, user.id);
+  const orgMember = await getMemberByIdAndSlug(slug, user.id);
 
   if (!orgMember || !orgMember.success || !orgMember?.data) {
     throw new Error("Organization member not found");
