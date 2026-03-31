@@ -11,10 +11,12 @@ import { Input } from "@/components/ui/input";
 import type { Call, CallRecording } from "@stream-io/video-react-sdk";
 import { FaSearch } from "react-icons/fa";
 import { getFormattedDate } from "@/hooks/getFormatDate";
+import { IconX, IconLoader2 } from "@tabler/icons-react";
+import { Loader2 } from "lucide-react";
 
 const MAX_CARDS = 6;
 
-const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
+const CallList = ({ type, selectedDate: externalSelectedDate }: { type: "ended" | "upcoming" | "recordings"; selectedDate?: string }) => {
   const router = useRouter();
   const { endedCalls, upcomingCalls, callRecordings, isLoading } =
     useGetCalls();
@@ -24,6 +26,12 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedDate, setSelectedDate] = useState<string>("");
+
+  useEffect(() => {
+    if (externalSelectedDate !== undefined) {
+      setSelectedDate(externalSelectedDate);
+    }
+  }, [externalSelectedDate]);
 
   const clearSearch = () => {
     setSearchTerm("");
@@ -160,28 +168,20 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
 
   return (
     <>
-      <h1 className="mb-5 text-4xl capitalize font-bold bg-linear-to-r from-[#FF0080] to-[#FF8C00] bg-clip-text text-transparent">
-        {type === "ended"
-          ? "Previous Meetings"
-          : type === "upcoming"
-            ? "Upcoming Meetings"
-            : "Recordings"}
-      </h1>
-
       {/* SearchBox */}
-      <div className="mb-4 flex w-full group gap-2">
-        <div className="relative flex w-4/5">
+      <div className="mb-6 flex w-full group gap-3">
+        <div className="relative flex flex-1">
           <Input
             ref={searchInputRef}
             type="text"
             placeholder="Search meetings..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+            className="w-full rounded-xl border-border/50 bg-background/60 pr-10 transition-[border-color] duration-150 focus:border-primary/50 focus:ring-0"
           />
           {!isSearching && !searchTerm && (
-            <div className="absolute right-3 top-2">
-              <FaSearch className="text-gray-500 backdrop-blur-lg" />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <FaSearch className="size-4" />
             </div>
           )}
           {searchTerm && !isSearching && (
@@ -190,35 +190,17 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
               onClick={clearSearch}
               type={"button"}
               size={"icon"}
-              className="absolute right-1 backdrop-blur-3xl top-1 hover:bg-transparent dark:bg-transparent text-white rounded-sm px-2 align-middle hover:text-gray-700 dark:text-gray-200 dark:hover:text-gray-200"
+              variant="ghost"
+              className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 rounded-full text-muted-foreground transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:text-foreground active:scale-[0.95]"
               aria-label="Clear search"
             >
-              ✕
+              <IconX className="size-3.5" />
             </Button>
           )}
           {isSearching && (
-            <div className="absolute right-1 top-1 animate-spin backdrop-blur-lg ">
-              ⏳
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <Loader2 className="size-4 animate-spin" />
             </div>
-          )}
-        </div>
-        <div className="relative flex w-1/5">
-          <Input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="px-4 py-2 border w-full rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-          />
-          {selectedDate && (
-            <Button
-              onClick={() => setSelectedDate("")}
-              type={"button"}
-              size={"icon"}
-              className="absolute right-1 top-1 hover:bg-transparent dark:bg-transparent text-white rounded-sm px-2 align-middle hover:text-gray-700 dark:text-gray-200 dark:hover:text-gray-200"
-              aria-label="Clear date filter"
-            >
-              ✕
-            </Button>
           )}
         </div>
       </div>
@@ -228,7 +210,7 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
           {Array.from({ length: 4 }).map((_, index) => (
             <div
               key={index}
-              className="w-full h-[250px] bg-zinc-950/90 dark:bg-dark-1 animate-pulse rounded-lg"
+              className="w-full h-[250px] bg-muted animate-pulse rounded-2xl"
             />
           ))}
         </div>
@@ -273,7 +255,7 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
                 />
               ))
             ) : (
-              <h1 className="text-2xl font-bold text-black/85 dark:text-white">
+              <h1 className="text-2xl font-semibold text-foreground">
                 {getNoCallsMessage()}
               </h1>
             )}
