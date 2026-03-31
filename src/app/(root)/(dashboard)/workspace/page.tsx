@@ -41,7 +41,7 @@ const WorkspacePage = async () => {
       </div>
 
       <div className="mx-auto w-full max-w-6xl flex-1 space-y-8">
-        <section className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/40 p-6 backdrop-blur-sm md:p-8">
+        <section className="relative overflow-hidden rounded-2xl border p-6 md:p-8">
           <div className="relative grid gap-6 md:grid-cols-[1.3fr_1fr] md:items-center">
             <div className="space-y-3">
               <span className="inline-flex items-center gap-2 rounded-full bg-muted/60 px-3 py-1 text-[11px] font-medium text-muted-foreground">
