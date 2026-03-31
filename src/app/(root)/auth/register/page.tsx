@@ -34,6 +34,7 @@ import {
 } from "@tabler/icons-react";
 import { signUpAction } from "@/action";
 import { type RegisterFormValues, registerSchema } from "@/types/form";
+import { routeConfig } from "@/lib/routeConfig";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -439,7 +440,7 @@ export default function RegisterPage() {
           <p className="text-sm text-default-foreground">
             Already have an account?{" "}
             <Link
-              href="/auth/login"
+              href={routeConfig.auth.signIn}
               className="text-primary-foreground dark:text-green-600/85 hover:text-secondary/80 font-medium transition-colors"
             >
               Sign in

@@ -25,7 +25,7 @@ const MeetingCard = ({
   const { toast } = useToast();
   const IconDisplay = icon;
 
-  const MAX_TITLE_LENGTH = 85;
+  const MAX_TITLE_LENGTH = 40;
 
   /**
    * Truncate text to a specified maximum length and add ellipsis if it exceeds that length.

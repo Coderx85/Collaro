@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { config } from "@/lib/config";
 import { LoginForm } from "@/components/form";
+import { routeConfig } from "@/lib/routeConfig";
 
 export default function LoginPage() {
   return (
@@ -30,7 +31,7 @@ export default function LoginPage() {
           <p className="text-sm text-default-foreground">
             Don&apos;t have an account?{" "}
             <Link
-              href={config.SIGN_UP}
+              href={routeConfig.auth.signUp}
               className="text-primary-foreground dark:text-green-600/85 hover:text-secondary/80 font-medium transition-colors"
             >
               Sign up

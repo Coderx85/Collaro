@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,27 +10,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "@tanstack/react-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { sendJoinWorkspaceRequest } from "@/action/workspace";
 import { useToast } from "@/components/ui/use-toast";
 import { LogIn, Loader } from "lucide-react";
 import { convertToSlug } from "@/lib/text-formatter";
-import { Field, FieldError, FieldGroup, FieldDescription, FieldLabel } from "@/components/ui/field";
-import { validators } from "tailwind-merge";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import Link from "next/link";
 import { routeConfig } from "@/lib/routeConfig";
+import { IconArrowLeft } from "@tabler/icons-react";
 
 const joinWorkspaceSchema = z.object({
   workspaceName: z
@@ -46,8 +36,6 @@ const joinWorkspaceSchema = z.object({
       "Workspace slug can only contain lowercase letters, numbers, and hyphens",
     ),
 });
-
-type JoinWorkspaceFormData = z.infer<typeof joinWorkspaceSchema>;
 
 export function JoinWorkspaceForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -104,6 +92,17 @@ export function JoinWorkspaceForm() {
       className="w-full max-w-md relative z-10"
     >
       <Card className="relative backdrop-blur-xl bg-card/80 shadow-lg overflow-hidden">
+        <Button
+          variant="outline"
+          size="sm"
+          className="absolute top-4 left-4"
+          asChild
+        >
+          <Link href={routeConfig.workspace.base} className="flex items-center gap-1 text-primary">
+            <IconArrowLeft className="h-4 w-4 text-primary"/>
+            Back
+          </Link>
+        </Button>
         <CardHeader className="space-y-4 text-center relative">
           <CardTitle className="text-2xl font-bold text-secondary">
             Join Workspace
