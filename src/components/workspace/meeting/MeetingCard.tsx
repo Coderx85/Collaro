@@ -26,20 +26,20 @@ const MeetingCard = ({
   const IconDisplay = icon;
 
   return (
-    <section className="flex min-h-[230px] w-full flex-col justify-between rounded-xl bg-card dark:bg-card px-5 py-8 xl:max-w-[550px]">
+    <section className="flex h-[250px] w-[500px] flex-col justify-between rounded-xl bg-card dark:bg-card px-5 py-8 transition-transform duration-200 transform hover:scale-105">
       <article className="flex flex-col gap-5">
           <IconDisplay className="text-white" />  
         <div className="flex justify-between">
           <div className="flex flex-col gap-2">
-            <h1 className="text-2xl font-bold text-white">{title}</h1>
-            <p className="text-base font-normal text-white">{date}</p>
+            <h1 className="text-2xl font-bold text-white truncate max-w-full">{title}</h1>
+            <p className="text-sm font-normal text-white line-clamp-2">{date}</p>
           </div>
         </div>
       </article>
       <article className={cn("flex justify-center relative")}>
         {!isPreviousMeeting && (
           <div className="flex gap-2 flex-wrap">
-            <Button onClick={handleClick} className="rounded bg-blue px-6">
+            <Button onClick={handleClick} className="rounded bg-blue px-6 transition-transform duration-150 transform active:scale-95 hover:scale-105">
               {buttonIcon1 && (
                 <Image src={buttonIcon1} alt="feature" width={20} height={20} />
                 )
@@ -53,7 +53,7 @@ const MeetingCard = ({
                   title: "Link Copied",
                 });
               }}
-              className="bg-dark-4 px-6 "
+              className="bg-dark-4 px-6 transition-transform duration-150 transform active:scale-95 hover:scale-105"
             >
               <Image
                 src="/icons/copy.svg"
@@ -74,7 +74,7 @@ const MeetingCard = ({
                 meetingLink={link}
                 variant="outline"
                 size="default"
-                className="bg-dark-4 border-dark-3 hover:bg-dark-3"
+                className="bg-dark-4 border-dark-3 hover:bg-dark-3 hover:shadow-lg transition-shadow duration-200"
               />
             )}
           </div>
