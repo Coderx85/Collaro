@@ -1,4 +1,4 @@
-import CallList from "@/components/CallList";
+import { CallList} from "@/components/workspace/calls";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
