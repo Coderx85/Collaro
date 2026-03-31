@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import type { APIResponse } from "@/types";
-import { addMember } from "../member.actions";
+import { addMember } from "../member/general-member.actions";
 import { getUser } from "../user.actions";
 
 interface ApproveJoinRequestInput {
