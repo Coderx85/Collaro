@@ -13,7 +13,7 @@ import { useForm } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { UpdateWorkspaceSchema } from "@/db/schema/type";
 import { updateWorkspace } from "@/action/workspace/workspace.actions";
 
@@ -100,10 +100,7 @@ export function OrgSettingsForm({
         });
 
         if (result.success) {
-          toast({
-            title: "Workspace Updated",
-            description: "Workspace settings have been updated successfully.",
-          });
+          toast.success("Workspace settings updated successfully");
 
           if (value.slug !== initialSlug) {
             router.push(`/workspace/${value.slug}/workspace-settings`);
@@ -111,11 +108,7 @@ export function OrgSettingsForm({
             router.refresh();
           }
         } else {
-          toast({
-            title: "Error",
-            description: result.error || "Failed to update workspace settings.",
-            variant: "destructive",
-          });
+          toast.error(result.error || "Failed to update workspace settings");
         }
       } finally {
         setIsSaving(false);

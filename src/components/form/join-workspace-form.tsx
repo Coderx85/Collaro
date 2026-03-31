@@ -21,6 +21,7 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field
 import Link from "next/link";
 import { routeConfig } from "@/lib/routeConfig";
 import { IconArrowLeft } from "@tabler/icons-react";
+import { toast } from "sonner";
 
 const joinWorkspaceSchema = z.object({
   workspaceName: z
@@ -39,7 +40,6 @@ const joinWorkspaceSchema = z.object({
 
 export function JoinWorkspaceForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm({
     defaultValues: {
@@ -55,28 +55,14 @@ export function JoinWorkspaceForm() {
         const result = await sendJoinWorkspaceRequest(value.workspaceSlug, value.workspaceName);
 
         if (!result.success) {
-          toast({
-            title: "Error",
-            description: result.error || "Failed to send join request",
-            variant: "destructive",
-          });
+          toast.error(result.error || "Failed to send join request");
           return;
         } 
         
-        toast({
-          title: "Success!",
-          description: `Your request to join "${result.data?.workspaceName}" has been sent to the workspace owner.`,
-        });
+        toast.success(`Your request to join "${result.data?.workspaceName}" has been sent to the workspace owner.`);
         
       } catch (error) {
-        toast({
-          title: "Error",
-          description:
-            error instanceof Error
-              ? error.message
-              : "An unexpected error occurred",
-          variant: "destructive",
-        });
+        toast.error("An unexpected error occurred");
       } finally {
         setIsLoading(false);
       }

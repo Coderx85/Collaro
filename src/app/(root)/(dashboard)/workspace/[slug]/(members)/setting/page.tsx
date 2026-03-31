@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { Loader2, Save } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FaTools } from "react-icons/fa";
@@ -43,10 +43,7 @@ export default function SettingsPage() {
     // Simulating API request
     setTimeout(() => {
       setIsSaving(false);
-      toast({
-        title: "Profile updated",
-        description: "Your profile has been updated successfully.",
-      });
+      toast.success("Profile updated successfully");
     }, 1000);
   }
 

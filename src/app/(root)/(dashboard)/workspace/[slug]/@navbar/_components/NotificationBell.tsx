@@ -23,6 +23,7 @@ import {
 import { FaBell } from "react-icons/fa";
 import { useToast } from "@/components/ui/use-toast";
 import { getUserNotificationsAction } from "@/action/notification/general-notification.actions";
+import { toast } from "sonner";
 
 const NotificationBell = () => {
   const [notifications, setNotifications] = useState<INotification[]>([]);
@@ -33,7 +34,6 @@ const NotificationBell = () => {
   const router = useRouter();
   const params = useParams();
   const workspaceSlug = params?.slug as string;
-  const { toast } = useToast();
 
   // Fetch workspace notifications
   const fetchWorkspaceNotifications = useCallback(async () => {
@@ -44,11 +44,7 @@ const NotificationBell = () => {
       const response = await getUserNotificationsAction(user.id);
 
       if (!response.success) {
-        toast({
-          title: "Error",
-          description: response.error || "Failed to fetch notifications",
-          variant: "destructive",
-        });
+        toast.error("Failed to fetch notifications.");
         return;
       }
 
@@ -64,11 +60,7 @@ const NotificationBell = () => {
     try {
       await markNotificationAsReadAction(notification.id);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to mark notification as read",
-        variant: "destructive",
-      });
+      toast.error("Failed to mark notification as read");
     }
   };
 

@@ -3,9 +3,9 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
 import type { MeetingCardProps } from "@/types";
 import { CalendarExport } from "../../CalendarExport";
+import { toast } from "sonner";
 
 const MeetingCard = ({
   icon,
@@ -22,7 +22,6 @@ const MeetingCard = ({
   description,
   location,
 }: MeetingCardProps) => {
-  const { toast } = useToast();
   const IconDisplay = icon;
 
   const MAX_TITLE_LENGTH = 40;
@@ -71,9 +70,7 @@ const MeetingCard = ({
             <Button
               onClick={() => {
                 navigator.clipboard.writeText(link);
-                toast({
-                  title: "Link Copied",
-                });
+                toast.success("Link Copied");
               }}
               className="bg-dark-4 px-6 transition-transform duration-150 transform active:scale-95 hover:scale-105"
             >

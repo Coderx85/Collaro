@@ -27,6 +27,8 @@ import {
 import type { PendingRequest as JoinRequest } from "@/types";
 import { Clock, CheckCircle, XCircle, Loader } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import { toast } from "sonner";
 
 interface PendingJoinRequestsProps {
   workspaceId: string;
@@ -34,9 +36,16 @@ interface PendingJoinRequestsProps {
 
 export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
   const [requests, setRequests] = useState<JoinRequest[]>([]);
+  const [selectedRoles, setSelectedRoles] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
-  const { toast } = useToast();
+
+  const handleRoleChange = (requestId: string, role: string) => {
+    setSelectedRoles((prev) => ({
+      ...prev,
+      [requestId]: role,
+    }));
+  };
 
   useEffect(() => {
     async function fetchRequests() {
@@ -46,24 +55,13 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
           setRequests(result.data.requests);
         } else if (!result.success) {
           console.error("[PendingJoinRequests] Failed to fetch:", result.error);
-          toast({
-            title: "Error",
-            description: result.error || "Failed to fetch join requests",
-            variant: "destructive",
-          });
+          toast.success("No pending join requests found.");
         } else {
-          console.log("[PendingJoinRequests] No requests returned");
+          console.error("[PendingJoinRequests] Unexpected result:", result);  
         }
       } catch (error) {
-        console.error("[PendingJoinRequests] Exception:", error);
-        toast({
-          title: "Error",
-          description:
-            error instanceof Error
-              ? error.message
-              : "An unexpected error occurred",
-          variant: "destructive",
-        });
+        toast.error("An error occurred while fetching join requests.");
+        console.error("[PendingJoinRequests] Error fetching requests:", error);
       } finally {
         setIsLoading(false);
       }
@@ -79,11 +77,7 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
   
       if (!auth?.id) {
         console.error("[handleApprove] User not authenticated");
-        toast({
-          title: "Error",
-          description: "User not authenticated",
-          variant: "destructive",
-        });
+        toast.error("User not authenticated"  );
         return;
       }
 
@@ -94,26 +88,14 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
       
       if (result.success) {
         setRequests((prev) => prev.filter((req) => req.id !== requestId));
-        toast({
-          title: "Success",
-          description: `Request approved for ${result.data?.userName}`,
-        });
+        toast.success(`Request approved for ${result.data?.userName}`);
       } else {
         console.error("[handleApprove] Failed:", result.error);
-        toast({
-          title: "Error",
-          description: result.error || "Failed to approve request",
-          variant: "destructive",
-        });
+        toast.error(result.error || "Failed to approve request");
       }
     } catch (error) {
       console.error("[handleApprove] Exception:", error);
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "An unexpected error occurred",
-        variant: "destructive",
-      });
+      toast.error("An unexpected error occurred");
     } finally {
       setProcessingIds((prev) => {
         const next = new Set(prev);
@@ -131,19 +113,11 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
 
       if (!authUser?.id) {
         console.error("[handleReject] User not authenticated");
-        toast({
-          title: "Error",
-          description: "User not authenticated",
-          variant: "destructive",
-        });
+        toast.error("User not authenticated");
 
         return;
       }
 
-      console.log("[handleReject] Rejecting request:", {
-        requestId,
-        userId: authUser.id,
-      });
       const result = await rejectJoinRequestAction({
         requestId,
         responderId: authUser.id,
@@ -152,26 +126,14 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
       
       if (result.success) {
         setRequests((prev) => prev.filter((req) => req.id !== requestId));
-        toast({
-          title: "Success",
-          description: `Request rejected for ${result.data?.userName}`,
-        });
+        toast.success(`Request rejected for ${result.data?.userName}`);
       } else {
         console.error("[handleReject] Failed:", result.error);
-        toast({
-          title: "Error",
-          description: result.error || "Failed to reject request",
-          variant: "destructive",
-        });
+        toast.error(result.error || "Failed to reject request");
       }
     } catch (error) {
       console.error("[handleReject] Exception:", error);
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "An unexpected error occurred",
-        variant: "destructive",
-      });
+      toast.error("An unexpected error occurred");
     } finally {
       setProcessingIds((prev) => {
         const next = new Set(prev);
@@ -227,6 +189,7 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
                   <TableHead>User</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Requested</TableHead>
+                  <TableHead>Role</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -247,11 +210,27 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
                         })}
                       </span>
                     </TableCell>
+                    <TableCell>
+                      <form onSubmit={
+                        (e) => e.preventDefault()
+                      } className="w-full">
+                        <Select
+                          value={selectedRoles[request.id]}
+                          onValueChange={(value) => handleRoleChange(request.id, value)}
+                        >
+                          <SelectTrigger className="w-full">Select Role</SelectTrigger>  
+                          <SelectContent>
+                            <SelectItem value="member">Member</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </form>
+                    </TableCell>
                     <TableCell className="text-right space-x-2">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleApprove(request.id)}
+                        onClick={() => {handleApprove(request.id)}}
                         disabled={processingIds.has(request.id)}
                         className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950"
                       >

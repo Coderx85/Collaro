@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { deleteWorkspace } from "@/action/workspace/workspace.actions";
 import { useRouter } from "next/navigation";
 
@@ -35,11 +35,7 @@ export function DangerZone({ workspaceId, workspaceName }: DangerZoneProps) {
 
   async function handleDeleteWorkspace() {
     if (!isConfirmValid) {
-      toast({
-        title: "Invalid Confirmation",
-        description: "Please type the workspace name correctly to confirm.",
-        variant: "destructive",
-      });
+      toast.error("Workspace name does not match. Please type the exact workspace name to confirm.");
       return;
     }
 
@@ -49,25 +45,14 @@ export function DangerZone({ workspaceId, workspaceName }: DangerZoneProps) {
       const result = await deleteWorkspace(workspaceId);
 
       if (result.success) {
-        toast({
-          title: "Workspace Deleted",
-          description: "The workspace has been permanently deleted.",
-        });
+        toast.success("Workspace Deleted")
         setIsDialogOpen(false);
         router.push("/");
       } else {
-        toast({
-          title: "Error",
-          description: result.error || "Failed to delete workspace.",
-          variant: "destructive",
-        });
+        toast.error(result.error || "Failed to delete workspace.");
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred.",
-        variant: "destructive",
-      });
+      toast.error("An unexpected error occurred.");
     } finally {
       setIsDeleting(false);
     }

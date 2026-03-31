@@ -1,7 +1,7 @@
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import {toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -37,7 +37,6 @@ const RazorpaySubscription: React.FC<RazorpaySubscriptionProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [processingPayment, setProcessingPayment] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
     // Load Razorpay script
@@ -89,11 +88,7 @@ const RazorpaySubscription: React.FC<RazorpaySubscriptionProps> = ({
       if (data.data?.subscription?.short_url) {
         window.open(data.data.subscription.short_url, "_blank");
 
-        toast({
-          title: "Subscription Created",
-          description: "Please complete the payment in the new tab",
-          duration: 5000,
-        });
+        toast.success("Subscription created. Please complete the payment in the opened window.");
 
         // Wait a bit before considering it successful
         setTimeout(() => {
@@ -108,15 +103,11 @@ const RazorpaySubscription: React.FC<RazorpaySubscriptionProps> = ({
       }
     } catch (error) {
       console.error("Subscription error:", error);
-      toast({
-        title: "Subscription Failed",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to create subscription",
-        variant: "destructive",
-        duration: 5000,
-      });
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to create subscription"
+      );
 
       if (onError) {
         onError(error);
@@ -173,8 +164,7 @@ const RazorpaySubscription: React.FC<RazorpaySubscriptionProps> = ({
               );
             }
 
-            toast({
-              title: "Payment Successful",
+            toast.success("Payment Successful", {
               description: "Your subscription is now active",
               duration: 5000,
             });
@@ -190,15 +180,11 @@ const RazorpaySubscription: React.FC<RazorpaySubscriptionProps> = ({
             }
           } catch (error) {
             console.error("Payment verification error:", error);
-            toast({
-              title: "Payment Verification Failed",
-              description:
-                error instanceof Error
-                  ? error.message
-                  : "Unknown error occurred",
-              variant: "destructive",
-              duration: 5000,
-            });
+            toast.error(
+              error instanceof Error
+                ? error.message
+                : "Payment verification failed"
+            );
 
             setProcessingPayment(false);
 
@@ -208,8 +194,7 @@ const RazorpaySubscription: React.FC<RazorpaySubscriptionProps> = ({
         modal: {
           ondismiss: () => {
             setProcessingPayment(false);
-            toast({
-              title: "Payment Cancelled",
+            toast.error("Payment Cancelled", {
               description: "You closed the payment window",
               duration: 3000,
             });
@@ -221,15 +206,11 @@ const RazorpaySubscription: React.FC<RazorpaySubscriptionProps> = ({
       rzp.open();
     } catch (error) {
       console.error("Manual payment error:", error);
-      toast({
-        title: "Payment Failed",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to initialize payment",
-        variant: "destructive",
-        duration: 5000,
-      });
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to initialize payment"
+      );
 
       if (onError) {
         onError(error);

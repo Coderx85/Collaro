@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { useGetCallById } from "@/hooks/useGetCallById";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 const Table = ({
   title,
@@ -32,7 +32,6 @@ const PersonalRoom = () => {
   const { data: session } = useSession();
   const user = session?.user;
   const client = useStreamVideoClient();
-  const { toast } = useToast();
   const meetingId = user?.id;
 
   const { call } = useGetCallById(meetingId!);
@@ -76,9 +75,7 @@ const PersonalRoom = () => {
           className="bg-dark-3 dark:bg-white/85 hover:dark:bg-white dark:text-primary"
           onClick={() => {
             navigator.clipboard.writeText(meetingLink);
-            toast({
-              title: "Link Copied",
-            });
+            toast.success("Invitation link copied to clipboard");
           }}
         >
           Copy Invitation
