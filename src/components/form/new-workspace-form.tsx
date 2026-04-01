@@ -83,7 +83,6 @@ export function NewWorkspaceForm() {
           variant="outline"
           size="sm"
           className="absolute top-4 left-4"
-          asChild
         >
           <Link href={routeConfig.workspace.base} className="flex items-center gap-1 text-primary">
             <IconArrowLeft className="h-4 w-4 text-primary"/>
@@ -182,7 +181,6 @@ export function NewWorkspaceForm() {
             type="submit"
             disabled={isPending}
             className="w-full transition-transform active:scale-95"
-            variant={"secondary"}
           >
             {isPending ? (
               <>
@@ -197,7 +195,7 @@ export function NewWorkspaceForm() {
         <CardFooter className="flex flex-col gap-2 text-center relative">
           <Link
             href={routeConfig.workspace.join}
-            className="text-primary hover:underline"
+            className="text-secondary-foreground hover:underline"
           >
             Join an existing workspace
           </Link>

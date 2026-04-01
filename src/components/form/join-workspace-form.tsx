@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "@tanstack/react-form";
 import * as z from "zod";
 import { sendJoinWorkspaceRequest } from "@/action/workspace";
-import { useToast } from "@/components/ui/use-toast";
 import { LogIn, Loader } from "lucide-react";
 import { convertToSlug } from "@/lib/text-formatter";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -82,7 +81,6 @@ export function JoinWorkspaceForm() {
           variant="outline"
           size="sm"
           className="absolute top-4 left-4"
-          asChild
         >
           <Link href={routeConfig.workspace.base} className="flex items-center gap-1 text-primary">
             <IconArrowLeft className="h-4 w-4 text-primary"/>
@@ -167,7 +165,7 @@ export function JoinWorkspaceForm() {
           </FieldGroup>
 
           <Button
-            type="submit"
+            variant={"default"}
             className="w-full"
             disabled={isLoading}
           >
@@ -184,9 +182,9 @@ export function JoinWorkspaceForm() {
             )}
           </Button>
         </CardContent>
-        <CardFooter className="text-center text-sm text-muted-foreground">
+        <CardFooter className="text-center text-sm text-muted-foreground flex flex-col gap-2">
           If you want to create a new workspace instead,{" "}
-          <Link href={routeConfig.workspace.new} className="text-primary hover:underline">
+          <Link href={routeConfig.workspace.new} className="text-secondary-foreground hover:underline">
             Create Workspace
           </Link>
         </CardFooter>
