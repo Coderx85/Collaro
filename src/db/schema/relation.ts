@@ -44,3 +44,31 @@ export const membersRelations = relations(
     notifications: many(schema.notificationsTable),
   })
 );
+
+export const privateMeetingsRelations = relations(
+  schema.privateMeetingsTable, ({ one }) => ({
+    host: one(schema.usersTable, {
+      fields: [schema.privateMeetingsTable.hostedBy],
+      references: [schema.usersTable.userName],
+    }),
+  })
+);
+
+export const workspaceMeetingRelations = relations(
+  schema.workspaceMeetingTable, ({ one, many }) => ({
+    workspace: one(schema.workspacesTable, {
+      fields: [schema.workspaceMeetingTable.workspaceId],
+      references: [schema.workspacesTable.id],
+    }),
+    participants: many(schema.meetingParticipantsTable),
+  }),
+);
+
+export const participantsRelations = relations(
+  schema.meetingParticipantsTable, ({ one, many }) => ({
+    meeting: one(schema.workspaceMeetingTable, {
+      fields: [schema.meetingParticipantsTable.meetingId],
+      references: [schema.workspaceMeetingTable.meetingId],
+    }),
+  })
+);

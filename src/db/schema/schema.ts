@@ -9,6 +9,9 @@ import {
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm/sql";
 import * as t from "drizzle-orm/pg-core";
+import { TMeetingId, TParticipantId, TWorkspaceId } from "@/modules/meeting";
+import { TMemberId } from "@/modules/member";
+import { TUserId } from "@/modules/user";
 
 // Define user_role enum first
 export const pgUserRole = pgEnum("user_role", ["owner", "admin", "member"]);
@@ -36,7 +39,7 @@ export const pgParticipantStatus = pgEnum("participant_status", [
 export const usersTable = pgTable(
   "users",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
+    id: uuid("id").defaultRandom().primaryKey().$type<TUserId>(),
     name: text("name").notNull(),
     userName: text("user_name").notNull().unique(),
     password: text("password"),
@@ -55,13 +58,13 @@ export const usersTable = pgTable(
 export const workspacesTable = pgTable(
   "workspaces",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
+    id: uuid("id").defaultRandom().primaryKey().$type<TWorkspaceId>(),
     name: text("name").notNull().unique(),
     slug: text("slug").notNull().unique(),
     logo: text("logo").default(""),
-    createdBy: text("created_by").references(() => usersTable.userName, {
+    createdBy: uuid("created_by").references(() => usersTable.id, {
       onDelete: "set null",
-    }),
+    }).$type<TUserId>(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").$onUpdate(() => sql`CURRENT_TIMESTAMP`),
   },
@@ -129,15 +132,17 @@ export const invitationTable = pgTable(
 export const workspaceMeetingTable = pgTable(
   "workspace_meetings",
   {
-    meetingId: uuid("meeting_id").defaultRandom().primaryKey(),
+    meetingId: uuid("meeting_id").$type<TMeetingId>().defaultRandom().primaryKey(),
     workspaceId: uuid("workspace_id")
+      .$type<TWorkspaceId>()  
       .notNull()
       .references(() => workspacesTable.id, {
         onDelete: "cascade",
       }),
-    hostedBy: text("hosted_by")
+    hostedBy: uuid("hosted_by")
+      .$type<TMemberId>()
       .notNull()
-      .references(() => usersTable.userName, {
+      .references(() => membersTable.id, {
         onDelete: "set null",
       }),
     status: pgMeetingStatus().notNull().default("scheduled"),
@@ -151,17 +156,40 @@ export const workspaceMeetingTable = pgTable(
   ],
 );
 
+export const privateMeetingsTable = pgTable(
+  "private_meetings",
+  {
+    meetingId: uuid("meeting_id").$type<TMeetingId>().defaultRandom().primaryKey(),
+    hostedBy: uuid("hosted_by").$type<TUserId>().notNull().references(() => usersTable.id, {
+      onDelete: "set null",
+    }),
+    status: pgMeetingStatus().notNull().default("scheduled"),
+    description: text("description").default("Instant Meeting"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    endAt: timestamp("end_at"),
+  },
+  (table) => [
+    t
+      .uniqueIndex("private_meetings_hosted_by_unique_idx")
+      .on(table.hostedBy),
+    t.index("private_meetings_hosted_by_idx").on(table.hostedBy),
+  ]
+)
+
 // Meeting participants table - tracks which members join which meetings
 export const meetingParticipantsTable = pgTable(
   "meeting_participants",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
+    id: uuid("id").defaultRandom().primaryKey().$type<TParticipantId>(),
+    name: text("name").notNull(),
     meetingId: uuid("meeting_id")
+      .$type<TMeetingId>()
       .notNull()
       .references(() => workspaceMeetingTable.meetingId, {
         onDelete: "cascade",
       }),
     memberId: uuid("member_id")
+      .$type<TMemberId>()
       .notNull()
       .references(() => membersTable.id, {
         onDelete: "cascade",
