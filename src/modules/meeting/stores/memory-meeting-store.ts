@@ -71,6 +71,15 @@ export class MemoryMeetingStore implements IMeetingStore<TUserId> {
 const localWorkspaceMeetingStore: IMeetingDTO<TMemberId>[] = [];
 
 export class MemoryWorkspaceMeetingStore implements IMeetingStore<TMemberId> {
+  private static instance: MemoryWorkspaceMeetingStore;
+
+  public static getInstance(): MemoryWorkspaceMeetingStore {
+    if (!MemoryWorkspaceMeetingStore.instance) {
+      MemoryWorkspaceMeetingStore.instance = new MemoryWorkspaceMeetingStore();
+    }
+    return MemoryWorkspaceMeetingStore.instance;
+  }
+  
   /**
    * Checks if a meeting exists with the given ID
    * @param id The ID of the meeting to check

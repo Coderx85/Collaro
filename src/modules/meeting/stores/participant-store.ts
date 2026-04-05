@@ -10,6 +10,15 @@ import { eq } from "drizzle-orm";
 const localStorage: IParticipantDTO[] = [];
 
 export class ParticipantStore implements IParticipantStore {
+  private static instance: ParticipantStore;
+
+  public static getInstance(): ParticipantStore {
+    if (!ParticipantStore.instance) {
+      ParticipantStore.instance = new ParticipantStore();
+    }
+    return ParticipantStore.instance;
+  }
+
   member: IMember = new Member();
   meetingStore: IMeetingStore<TMemberId> = new MemoryWorkspaceMeetingStore();
 
