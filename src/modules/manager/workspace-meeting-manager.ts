@@ -6,8 +6,8 @@ import { IWorkspaceDTO } from "@collaro/workspace/interface";
 
 export class WorkspaceMeetingManager {
   manager: IWorkspaceMemberManager = new WorkspaceMemberManager();
-  participantStore: IParticipantStore = new ParticipantStore();
-  meetingStore: IMeetingStore<TMemberId> = new MemoryWorkspaceMeetingStore();
+  participantStore: IParticipantStore = ParticipantStore.getInstance();
+  meetingStore: IMeetingStore<TMemberId> = MemoryWorkspaceMeetingStore.getInstance();
   
   private async checkMemberAccessToMeeting(meetingId: TMeetingId, memberId: TMemberId): Promise<boolean> {
     const meeting = await this.getMeeting(meetingId);
