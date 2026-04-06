@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth-server";
 import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/dal";
 import { getMemberByIdAndSlug } from "@/action/member";
@@ -15,7 +15,7 @@ import { redirect } from "next/navigation";
 import {
   canRoleDeleteOrganization,
   canRoleUpdateOrganization,
-} from "@/lib/auth";
+} from "@/lib/auth/auth-server";
 import { OrgSettingsForm } from "./_components/org-settings-form";
 import { DangerZone } from "./_components/danger-zone";
 import { PendingJoinRequests } from "../../../_components/pending-join-requests";

@@ -8,7 +8,7 @@ import {
   Clock,
   ArrowRight,
 } from "lucide-react";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth-server";
 import {
   getInvitationById,
   acceptInvitation,

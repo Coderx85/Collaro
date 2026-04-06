@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth-server";
 import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/dal";
 import { getMemberByIdAndSlug } from "@/action/member";

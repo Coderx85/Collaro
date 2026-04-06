@@ -72,3 +72,20 @@ export const participantsRelations = relations(
     }),
   })
 );
+
+export const notificationsRelations = relations(
+  schema.notificationsTable, ({ one }) => ({
+    member: one(schema.membersTable, {
+      fields: [schema.notificationsTable.memberId],
+      references: [schema.membersTable.id],
+    }),
+    user: one(schema.usersTable, {
+      fields: [schema.notificationsTable.userId],
+      references: [schema.usersTable.id],
+    }),
+    workspace: one(schema.workspacesTable, {
+      fields: [schema.notificationsTable.workspaceId],
+      references: [schema.workspacesTable.id],
+    }),
+  })
+);

@@ -20,6 +20,7 @@ export const pgMeetingStatus = pgEnum("meeting_status", [
   "scheduled",
   "active",
   "completed",
+  "cancelled",
 ]);
 
 export const pgJoinRequestStatus = pgEnum("join_request_status", [
@@ -78,20 +79,21 @@ export const workspacesTable = pgTable(
 export const membersTable = pgTable(
   "members",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
+    id: uuid("id").defaultRandom().primaryKey().$type<TMemberId>(),
+    name: text("name").notNull(),
     userId: uuid("user_id")
       .notNull()
       .references(() => usersTable.id, {
         onDelete: "cascade",
-      }),
+      }).$type<TUserId>(),
     workspaceId: uuid("workspace_id")
       .notNull()
       .references(() => workspacesTable.id, {
         onDelete: "cascade",
-      }),
+      }).$type<TWorkspaceId>(),
     role: pgUserRole().notNull().default("member"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at"),
   },
   (table) => [
     t
@@ -110,7 +112,7 @@ export const invitationTable = pgTable(
       .notNull()
       .references(() => workspacesTable.id, {
         onDelete: "cascade",
-      }),
+      }).$type<TWorkspaceId>(),
     email: text("email").notNull(),
     role: pgUserRole().notNull().default("member"),
     status: text("status").default("pending").notNull(),
@@ -145,7 +147,7 @@ export const workspaceMeetingTable = pgTable(
       .references(() => membersTable.id, {
         onDelete: "set null",
       }),
-    status: pgMeetingStatus().notNull().default("scheduled"),
+    status: pgMeetingStatus().notNull().default("active"),
     description: text("description").default("Instant Meeting"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     endAt: timestamp("end_at"),
@@ -255,6 +257,11 @@ export const notificationsTable = pgTable("notifications", {
     .references(() => workspacesTable.id, {
       onDelete: "cascade",
     }),
+  memberId: uuid("member_id")
+    .notNull()
+    .references(() => membersTable.id, {
+      onDelete: "cascade",
+    }),
   type: pgNotificationType("notification_type").default("general").notNull(),
   message: text("message").notNull(),
   read: boolean("read_status").default(false).notNull(),
@@ -264,6 +271,7 @@ export const notificationsTable = pgTable("notifications", {
   (table) => [
     t.index("notifications_user_id_idx").on(table.userId),
     t.index("notifications_workspace_id_idx").on(table.workspaceId),
+    t.index("notifications_member_id_idx").on(table.memberId),
     t.index("notifications_read_status_idx").on(table.read),
   ]
 );

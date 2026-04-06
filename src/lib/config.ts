@@ -1,4 +1,5 @@
 export const config = {
+  environment: process.env.NODE_ENV || "development",
   betterAuthUrl:
     process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
     process.env.NEXT_PUBLIC_BASE_URL ||

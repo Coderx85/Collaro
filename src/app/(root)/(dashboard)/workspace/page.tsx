@@ -3,7 +3,7 @@ import { Space_Grotesk } from "next/font/google";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth-server";
 import {
   IconArrowRight,
   IconBuildingSkyscraper,

@@ -1,4 +1,4 @@
-import { auth } from "./lib/auth";
+import { auth } from "./lib/auth/auth-server";
 import { config as appConfig } from "@/lib/config";
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";

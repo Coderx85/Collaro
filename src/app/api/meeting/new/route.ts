@@ -6,7 +6,7 @@ import {
   meetingParticipantsTable,
 } from "@/db/schema/schema";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth-server";
 import { eq } from "drizzle-orm";
 import { NextResponse, type NextRequest } from "next/server";
 import type { APIResponse } from "@/types";

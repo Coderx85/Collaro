@@ -4,7 +4,7 @@ import { db, schema } from "@/db";
 import { and, eq } from "drizzle-orm";
 import type { APIResponse, PendingRequest } from "@/types";
 import { TWorkspaceDTO } from "@/types/workspace.types";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth-server";
 import { headers } from "next/headers";
 
 export async function getWorkspaceBySlug(workspaceSlug: string): Promise<APIResponse<TWorkspaceDTO>> {

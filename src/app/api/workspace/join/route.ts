@@ -3,7 +3,7 @@ import { workspacesTable, membersTable } from "@/db/schema/schema";
 import { usersTable } from "@/db/schema/schema";
 import type { APIResponse, CreateWorkspaceResponse } from "@/types";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth-server";
 import { and, eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 

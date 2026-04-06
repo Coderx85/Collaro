@@ -1,6 +1,6 @@
 import { db } from "../db/client";
 import { workspacesTable } from "../db/schema/schema";
-import { auth } from "./auth";
+import { auth } from "./auth/auth-server";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";

@@ -79,17 +79,16 @@ export function NewWorkspaceForm() {
       className="w-full max-w-md relative z-10"
     >
       <Card className="relative backdrop-blur-xl bg-card/80 shadow-lg overflow-hidden">
-        <Link href={routeConfig.workspace.base} className="flex items-center gap-1 text-primary">
-          <Button
-            variant="outline"
-            size="sm"
-            className="absolute top-4 left-4"
-            asChild
-          >
-            <IconArrowLeft className="h-4 w-4 text-primary"/>
-            Back
-          </Button>
-          </Link>
+       <Link href={routeConfig.workspace.base}>
+           <Button
+             variant="outline"
+             size="sm"
+             className="absolute top-4 left-4 flex items-center gap-2"
+           >
+             <IconArrowLeft className="h-4 w-4"/>
+             Back
+           </Button>
+           </Link>
         <CardHeader className="space-y-4 text-center relative">
           <CardTitle className="text-2xl font-bold text-secondary">
             Create Workspace

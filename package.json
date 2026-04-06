@@ -126,6 +126,7 @@
     "babel-plugin-react-compiler": "^1.0.0",
     "husky": "^9.1.7",
     "inngest-cli": "^1.15.3",
+    "postgres": "^3.4.9",
     "tailwindcss": "^4.1.18",
     "typescript": "^5"
   },

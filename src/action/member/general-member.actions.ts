@@ -1,7 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth/auth-config";
+import { auth } from "@/lib/auth/auth-server";
 import type { APIResponse, TInviteMemberRole, TOrganizationMember, TUserRole } from "@/types";
 import { db } from "@/db";
 import { createMemberSchema } from "@/db/schema/type";

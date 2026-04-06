@@ -4,7 +4,7 @@ import {
   type CreateUserType,
   type CreateWorkspaceType,
 } from "@/db/schema/type";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth-server";
 import { config } from "@/lib/config";
 import { sql } from "drizzle-orm";
 import { authSchema, schema } from ".";

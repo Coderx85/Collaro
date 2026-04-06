@@ -1,7 +1,7 @@
 "use server";
 
 import { db, schema } from "@/db";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth-server";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import type { APIResponse } from "@/types";

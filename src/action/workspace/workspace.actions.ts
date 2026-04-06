@@ -5,7 +5,7 @@ import {
   workspaceMeetingTable,
 } from "@/db/schema/schema";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth-server";
 import { and, eq, isNull } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { canDeleteWorkspace } from "@/lib/workspace-auth";

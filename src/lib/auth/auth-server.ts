@@ -123,3 +123,22 @@ export const auth = betterAuth({
 
 export type Session = typeof auth.$Infer.Session;
 export type User = typeof auth.$Infer.Session.user;
+
+// Permission helper functions (server-side versions)
+export function canRoleDeleteOrganization(
+  role: "owner" | "admin" | "member" | undefined,
+): boolean {
+  const validRoles = ["owner", "admin", "member"];
+  if (!role || !validRoles.includes(role)) return false;
+  // Only owner can delete
+  return role === "owner";
+}
+
+export function canRoleUpdateOrganization(
+  role: "owner" | "admin" | "member" | undefined,
+): boolean {
+  const validRoles = ["owner", "admin", "member"];
+  if (!role || !validRoles.includes(role)) return false;
+  // Owner and admin can update
+  return role === "owner" || role === "admin";
+}
