@@ -3,15 +3,17 @@ import {
   text,
   boolean,
   timestamp,
-  uuid,
   varchar,
   pgEnum,
+  char,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm/sql";
 import * as t from "drizzle-orm/pg-core";
 import { TMeetingId, TParticipantId, TWorkspaceId } from "@/modules/meeting";
 import { TMemberId } from "@/modules/member";
 import { TUserId } from "@/modules/user";
+import { ID } from "@/modules/utils/generate";
+import { uuid } from "zod";
 
 // Define user_role enum first
 export const pgUserRole = pgEnum("user_role", ["owner", "admin", "member"]);
@@ -40,7 +42,7 @@ export const pgParticipantStatus = pgEnum("participant_status", [
 export const usersTable = pgTable(
   "users",
   {
-    id: uuid("id").defaultRandom().primaryKey().$type<TUserId>(),
+    id: text("id").$defaultFn(() => ID.userId() as unknown as string).primaryKey().$type<TUserId>(),
     name: text("name").notNull(),
     userName: text("user_name").notNull().unique(),
     password: text("password"),
@@ -59,11 +61,11 @@ export const usersTable = pgTable(
 export const workspacesTable = pgTable(
   "workspaces",
   {
-    id: uuid("id").defaultRandom().primaryKey().$type<TWorkspaceId>(),
+    id: text("id").$defaultFn(() => ID.workspaceId() as unknown as string).primaryKey().$type<TWorkspaceId>(),
     name: text("name").notNull().unique(),
     slug: text("slug").notNull().unique(),
     logo: text("logo").default(""),
-    createdBy: uuid("created_by").references(() => usersTable.id, {
+    createdBy: text("created_by").references(() => usersTable.id, {
       onDelete: "set null",
     }).$type<TUserId>(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -79,14 +81,14 @@ export const workspacesTable = pgTable(
 export const membersTable = pgTable(
   "members",
   {
-    id: uuid("id").defaultRandom().primaryKey().$type<TMemberId>(),
+    id: text("id").primaryKey().$type<TMemberId>(),
     name: text("name").notNull(),
-    userId: uuid("user_id")
+    userId: text("user_id")
       .notNull()
       .references(() => usersTable.id, {
         onDelete: "cascade",
       }).$type<TUserId>(),
-    workspaceId: uuid("workspace_id")
+    workspaceId: text("workspace_id")
       .notNull()
       .references(() => workspacesTable.id, {
         onDelete: "cascade",
@@ -107,8 +109,8 @@ export const membersTable = pgTable(
 export const invitationTable = pgTable(
   "invitation",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
-    workspaceId: uuid("workspace_id")
+    id: text("id").default(sql`gen_random_uuid()::text`).primaryKey(),
+    workspaceId: text("workspace_id")
       .notNull()
       .references(() => workspacesTable.id, {
         onDelete: "cascade",
@@ -118,7 +120,7 @@ export const invitationTable = pgTable(
     status: text("status").default("pending").notNull(),
     expiresAt: timestamp("expires_at").notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
-    inviterId: uuid("inviter_id")
+    inviterId: text("inviter_id")
       .notNull()
       .references(() => usersTable.id, {
         onDelete: "cascade",
@@ -134,14 +136,14 @@ export const invitationTable = pgTable(
 export const workspaceMeetingTable = pgTable(
   "workspace_meetings",
   {
-    meetingId: uuid("meeting_id").$type<TMeetingId>().defaultRandom().primaryKey(),
-    workspaceId: uuid("workspace_id")
+    meetingId: text("meeting_id").$type<TMeetingId>().primaryKey(),
+    workspaceId: text("workspace_id")
       .$type<TWorkspaceId>()  
       .notNull()
       .references(() => workspacesTable.id, {
         onDelete: "cascade",
       }),
-    hostedBy: uuid("hosted_by")
+    hostedBy: text("hosted_by")
       .$type<TMemberId>()
       .notNull()
       .references(() => membersTable.id, {
@@ -161,8 +163,8 @@ export const workspaceMeetingTable = pgTable(
 export const privateMeetingsTable = pgTable(
   "private_meetings",
   {
-    meetingId: uuid("meeting_id").$type<TMeetingId>().defaultRandom().primaryKey(),
-    hostedBy: uuid("hosted_by").$type<TUserId>().notNull().references(() => usersTable.id, {
+    meetingId: text("meeting_id").$type<TMeetingId>().primaryKey(),
+    hostedBy: text("hosted_by").$type<TUserId>().notNull().references(() => usersTable.id, {
       onDelete: "set null",
     }),
     status: pgMeetingStatus().notNull().default("scheduled"),
@@ -182,15 +184,15 @@ export const privateMeetingsTable = pgTable(
 export const meetingParticipantsTable = pgTable(
   "meeting_participants",
   {
-    id: uuid("id").defaultRandom().primaryKey().$type<TParticipantId>(),
+    id: text("id").primaryKey().$type<TParticipantId>(),
     name: text("name").notNull(),
-    meetingId: uuid("meeting_id")
+    meetingId: text("meeting_id")
       .$type<TMeetingId>()
       .notNull()
       .references(() => workspaceMeetingTable.meetingId, {
         onDelete: "cascade",
       }),
-    memberId: uuid("member_id")
+    memberId: text("member_id")
       .$type<TMemberId>()
       .notNull()
       .references(() => membersTable.id, {
@@ -212,13 +214,13 @@ export const meetingParticipantsTable = pgTable(
 export const joinRequestsTable = pgTable(
   "join_requests",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
-    userId: uuid("user_id")
+    id: text("id").default(sql`gen_random_uuid()::text`).primaryKey(),
+    userId: text("user_id")
       .notNull()
       .references(() => usersTable.id, {
         onDelete: "cascade",
       }),
-    workspaceId: uuid("workspace_id")
+    workspaceId: text("workspace_id")
       .notNull()
       .references(() => workspacesTable.id, {
         onDelete: "cascade",
@@ -226,7 +228,7 @@ export const joinRequestsTable = pgTable(
     status: pgJoinRequestStatus("status").default("pending").notNull(),
     requestedAt: timestamp("requested_at").notNull().defaultNow(),
     respondedAt: timestamp("responded_at"),
-    respondedBy: uuid("responded_by").references(() => usersTable.id, {
+    respondedBy: text("responded_by").references(() => usersTable.id, {
       onDelete: "set null",
     }),
   },
@@ -246,18 +248,18 @@ const notificationTypes = ["join_request", "meeting_invite", "general"] as const
 export const pgNotificationType = pgEnum("notification_type", notificationTypes);
 
 export const notificationsTable = pgTable("notifications", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("user_id")
+  id: text("id").default(sql`gen_random_uuid()::text`).primaryKey(),
+  userId: text("user_id")
     .notNull()
     .references(() => usersTable.id, {
       onDelete: "cascade",
     }),
-  workspaceId: uuid("workspace_id")
+  workspaceId: text("workspace_id")
     .notNull()
     .references(() => workspacesTable.id, {
       onDelete: "cascade",
     }),
-  memberId: uuid("member_id")
+  memberId: text("member_id")
     .notNull()
     .references(() => membersTable.id, {
       onDelete: "cascade",

@@ -1,6 +1,6 @@
 {
-  "id": "446c2ba3-da14-4198-ae72-dfe4486ed74c",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "b1bf8d25-7689-48d8-946b-34660de2efb3",
+  "prevId": "446c2ba3-da14-4198-ae72-dfe4486ed74c",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -255,7 +255,8 @@
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()::text"
         },
         "workspace_id": {
           "name": "workspace_id",
@@ -378,7 +379,8 @@
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()::text"
         },
         "user_id": {
           "name": "user_id",
@@ -809,7 +811,8 @@
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()::text"
         },
         "user_id": {
           "name": "user_id",

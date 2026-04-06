@@ -6,7 +6,7 @@ import { db } from "@/db/client";
 import { nextCookies } from "better-auth/next-js";
 import { config } from "../config";
 import { organization, username } from "better-auth/plugins";
-// import { ac, roles } from "./permission";
+import { TUserId } from "@/modules/user/interface";
 
 export const auth = betterAuth({
   secret: config.betterSecret,
@@ -24,6 +24,7 @@ export const auth = betterAuth({
     },
   }),
   emailAndPassword: {
+    autoSignIn: true,
     enabled: true,
     minPasswordLength: 6,
   },
@@ -81,12 +82,15 @@ export const auth = betterAuth({
   ],
   user: {
     additionalFields: {
-      userName: {
+      "id": {
         type: "string",
-        required: false,
+        required: true,
         unique: true,
+        transform: {
+          input: (value) => value as unknown as TUserId,
+        },
         input: true,
-      },
+      }
     },
   },
   advanced: {
