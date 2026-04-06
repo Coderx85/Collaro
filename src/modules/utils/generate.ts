@@ -3,46 +3,43 @@ import { TMemberId } from "@collaro/member";
 import { TUserId } from "@collaro/user";
 import { v7 } from "uuid";
 
-function generateId<T>(): T {
+function generateId<T>(prefix: string): T {
   const createdAt = new Date().getTime();
   const str = v7({ msecs: createdAt });
-  return str as unknown as T;
+
+  const result = `${prefix || ""}${str}`.slice(0, 32);
+  return result as unknown as T;
 }
 
 export class ID {
   static userId(): TUserId {
     const prefix = "usr_";
-    const id = generateId<TUserId>();
-    const result = `${prefix}${id}`.slice(0, 32);
-    return result as unknown as TUserId;
+    const id = generateId<TUserId>(prefix);
+    return id;
   }
 
   static workspaceId(): TWorkspaceId {
     const prefix = "wks_";
-    const id = generateId<TWorkspaceId>();
-    const result = `${prefix}${id}`.slice(0, 32);
-    return result as unknown as TWorkspaceId;
+    const id = generateId<TWorkspaceId>(prefix);
+    return id;
   }
 
   static memberId(): TMemberId {
     const prefix = "mbr_";
-    const id = generateId<TMemberId>();
-    const result = `${prefix}${id}`.slice(0, 32);
-    return result as unknown as TMemberId;
+    const id = generateId<TMemberId>(prefix);
+    return id;
   }
 
   static meetingId(): TMeetingId {
     const prefix = "mtg_";
-    const id = generateId<TMeetingId>();
-    const result = `${prefix}${id}`.slice(0, 32);
-    return result as unknown as TMeetingId;
+    const id = generateId<TMeetingId>(prefix);
+    return id;
   }
   
   static participantId(): TParticipantId {
     const prefix = "prt_";
-    const id = generateId<TParticipantId>();
-    const result = `${prefix}${id}`.slice(0, 32);
-    return result as unknown as TParticipantId;
+    const id = generateId<TParticipantId>(prefix);
+    return id;
   }
 }
 
