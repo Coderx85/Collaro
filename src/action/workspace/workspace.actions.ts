@@ -2,10 +2,7 @@
 import { db } from "@/db/client";
 import {
   workspacesTable,
-  membersTable,
-  usersTable,
   workspaceMeetingTable,
-  joinRequestsTable,
 } from "@/db/schema/schema";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
@@ -16,44 +13,42 @@ import { getCurrentUser } from "@/lib/session";
 import type { APIResponse } from "@/types/api";
 import type { z } from "zod";
 import { NewWorkspaceFormSchema, type TUserRole } from "@/types";
+import { TUserId } from "@/modules/user";
+import { IMemberDTO, TMemberId, workspaceMemberManager } from "@/modules/member";
+import { IWorkspaceDTO, TWorkspaceId } from "@/modules/workspace";
+import { workspaceMeetingManager, WorkspaceMeetingManager } from "@/modules/manager";
 
 type NewWorkspaceFormSchemaType = z.infer<typeof NewWorkspaceFormSchema>;
 
+/**
+ * Create a new workspace
+ * Only authenticated users can create workspaces
+ * @param workspaceData 
+ * @returns APIResponse with workspace details or error message
+ * @requires authentication
+ */
 export async function createWorkspace(
   workspaceData: NewWorkspaceFormSchemaType,
 ): Promise<APIResponse<NewWorkspaceFormSchemaType>> {
   try {
     const user = await getCurrentUser();
-
+    
     if (!user) {
       redirect("/sign-in");
     }
 
-    const [res] = await db
-      .insert(workspacesTable)
-      .values({
-        createdAt: new Date(),
-        createdBy: user.userName || "",
-        name: workspaceData.name,
-        slug: workspaceData.slug,
-        logo: workspaceData.logo || "",
-      })
-      .returning();
+    const workspace = await workspaceMemberManager.createWorkspace({
+      name: workspaceData.name,
+      slug: workspaceData.slug,
+      logoUrl: workspaceData.logo || "",
+      ownerId: user.id as unknown as TUserId,
+      description: "",
+    })
 
-    const [addMember] = await db
-      .insert(membersTable)
-      .values({
-        createdAt: new Date(),
-        userId: user.id || "",
-        workspaceId: res.id,
-        role: "owner",
-      })
-      .returning();
-
-    if (!res || !addMember) {
+    if (!workspace) {
       return {
         success: false,
-        error: `Failed to create workspace in DB with Name: ${workspaceData.name}`,
+        error: "Failed to create workspace",
       };
     }
 
@@ -78,6 +73,11 @@ export async function createWorkspace(
 /**
  * Update a workspace's details
  * Only owners and admins can update workspaces
+ * @param workspaceId - ID of the workspace to update
+ * @param data - Object containing the updated workspace details (name, slug, logo)
+ * @returns APIResponse with updated workspace details or error message
+ * @requires authentication and appropriate permissions
+ * @permission Only workspace owners and admins can update workspace details
  */
 export async function updateWorkspace(
   workspaceId: string,
@@ -130,74 +130,31 @@ export async function getCurrentAuthUser() {
 }
 
 // This function is used to get the users of a workspace
-export async function getWorkspaceUsers(workspaceId: string) {
-  const authUser = await getCurrentAuthUser();
-  if (!authUser) {
-    return { message: "User not found" };
-  }
+export async function getWorkspaceUsers(workspaceId: TWorkspaceId): Promise<APIResponse<{ member: IMemberDTO }[]>> {
+  try {
+    const members = await workspaceMemberManager.listMembers(workspaceId);
 
-  // Check if user belongs to this workspace
-  const [membership] = await (
-    await db
-  )
-    .select()
-    .from(membersTable)
-    .where(
-      and(
-        eq(membersTable.userId, authUser.id),
-        eq(membersTable.workspaceId, workspaceId),
-      ),
-    )
-    .execute();
-
-  if (!membership)
     return {
-      message: "You don't have access to this workspace",
-      success: false,
+      success: true,
+      data: members.map((member) => ({ member })),
     };
-
-  // Get all members of the workspace
-  const members = await db
-    .select({
-      id: membersTable.id,
-      userId: membersTable.userId,
-      role: membersTable.role,
-      joinedAt: membersTable.createdAt,
-      userName: usersTable.userName,
-      name: usersTable.name,
-      email: usersTable.email,
-    })
-    .from(membersTable)
-    .innerJoin(usersTable, eq(membersTable.userId, usersTable.id))
-    .where(eq(membersTable.workspaceId, workspaceId))
-    .execute();
-
-  return { data: members, success: true };
+  } catch (error: unknown) {
+    throw new Error(`Failed to get workspace users: ${error instanceof Error ? error.message : String(error)}`);
+  }
 }
 
-// This function is used to validate if a user belongs to a workspace
-export async function validateWorkspaceAccess(workspaceId: string) {
-  const authUser = await getCurrentAuthUser();
-  if (!authUser) {
-    redirect("/sign-in");
+export async function validateWorkspaceAccess(workspaceId: TWorkspaceId, memberId: TMemberId) {
+  try {
+    const acess = workspaceMemberManager.validateMember(workspaceId, memberId);
+ 
+    if (!acess) {
+      throw new Error("Access denied: User does not belong to this workspace.");
+    }
+    
+    return acess;
+  } catch (error: unknown) {
+    throw new Error(`Failed to validate workspace access: ${error instanceof Error ? error.message : String(error)}`);
   }
-
-  const [membership] = await db
-    .select()
-    .from(membersTable)
-    .where(
-      and(
-        eq(membersTable.userId, authUser.id),
-        eq(membersTable.workspaceId, workspaceId),
-      ),
-    )
-    .execute();
-
-  if (!membership) {
-    redirect("/unauthorized");
-  }
-
-  return;
 }
 
 /*
@@ -205,37 +162,34 @@ export async function validateWorkspaceAccess(workspaceId: string) {
  * `authUser` - authenticated user.
  * This function is used to get the workspace details with members.
  */
-
 export async function getWorkspace(workspaceSlug: string) {
   try {
-    const authUser = await getCurrentAuthUser();
-    if (!authUser) {
-      return { message: "User not authenticated" };
-    }
-
-    const workspace = await auth.api.listOrganizations({
-      query: {
-        slug: workspaceSlug,
-      },
+    const res = await auth.api.checkOrganizationSlug({
       headers: await headers(),
-    });
+      body: {
+        slug: workspaceSlug,
+      }
+    })
 
-    if (!workspace || !(workspace.length > 0)) {
+    if (!res || !res.status) {
       return { message: "Workspace not found", success: false };
     }
 
-    const [member] = await db
-      .select()
-      .from(membersTable)
-      .where(
-        and(
-          eq(membersTable.userId, authUser.id),
-          eq(membersTable.workspaceId, workspaceSlug),
-        ),
-      )
-      .execute();
+    const workspaceData = await auth.api.getFullOrganization({
+      headers: await headers(),
+      query: {
+        organizationSlug: workspaceSlug,
+      }
+    });
 
-    const data = { ...workspace, member };
+    const data = {
+      ...workspaceData,
+      members: workspaceData?.members.map((member) => ({
+        id: member.id,
+        name: member.name,
+      })),
+    };
+    
     return { data, success: true };
   } catch (error: unknown) {
     return { error: `Failed to get workspace:: \n ${error}`, success: false };
@@ -243,48 +197,62 @@ export async function getWorkspace(workspaceSlug: string) {
 }
 
 // This function is used to get all workspaces
-export async function getAllWorkspaces() {
+export async function getAllWorkspaces(): Promise<APIResponse<IWorkspaceDTO[] | null>> {
   const user = await getCurrentUser();
 
-  const data = db.query.workspacesTable.findMany({
-    where: (workspace, { eq, inArray }) =>
-      inArray(
-        workspace.id,
-        db
-          .select({
-            workspaceId: membersTable.workspaceId,
-          })
-          .from(membersTable)
-          .where(eq(membersTable.userId, user.id ?? "")),
-      ),
-  });
+  if(!user) {
+    return {
+      error: "User not authenticated",
+      success: false,
+    }
+  }
 
-  return data;
+  const workspaces = await workspaceMemberManager.listUserWorkspaces(user?.id as unknown as TUserId);
+
+  if (!workspaces) {
+    return {
+      error: "Failed to fetch workspaces for the user",
+      success: false,
+    };
+  }
+
+  if (workspaces.length === 0) {
+    return {
+      data: [],
+      success: true,
+    };
+  }
+
+  const dto: IWorkspaceDTO[] = workspaces.map((w) => ({
+    id: w.id,
+    createdAt: w.createdAt,
+    description: w.description,
+    logoUrl: w.logoUrl,
+    name: w.name,
+    ownerId: w.ownerId,
+    slug: w.slug,
+    updatedAt: w.updatedAt,
+  }));
+
+  return { data: dto, success: true };
 }
 
 // This function is used to update the role of a user in a workspace
 export async function updateUserRole(
-  userId: string,
-  workspaceId: string,
+  memberId: TMemberId,
+  workspaceId: TWorkspaceId,
   role: TUserRole,
 ): Promise<APIResponse<{ role: string }>> {
   try {
-    const updatedMember = await db
-      .update(membersTable)
-      .set({ role })
-      .where(
-        and(
-          eq(membersTable.userId, userId),
-          eq(membersTable.workspaceId, workspaceId),
-        ),
-      )
-      .returning();
+    await workspaceMemberManager.updateMemberRole(workspaceId, memberId, role);
 
-    if (updatedMember && updatedMember.length > 0) {
-      return { data: { role: updatedMember[0].role }, success: true };
-    } else {
-      return { error: "Member not found", success: false };
-    }
+    return {
+      success: true,
+      data: {
+        role,
+      },
+    };
+  
   } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : "An unknown error occurred";
@@ -296,13 +264,9 @@ export async function updateUserRole(
 }
 
 // New function to fetch and set workspace details from the DB
-export async function getWorkspaceById(workspaceId: string) {
+export async function getWorkspaceById(workspaceId: TWorkspaceId) {
   try {
-    const [workspace] = await db
-      .select()
-      .from(workspacesTable)
-      .where(eq(workspacesTable.id, workspaceId))
-      .execute();
+    const workspace = await workspaceMemberManager.findWorkspaceById(workspaceId);
 
     if (!workspace) {
       return { message: "Workspace not found", success: false };
@@ -312,44 +276,6 @@ export async function getWorkspaceById(workspaceId: string) {
   } catch (error: unknown) {
     return {
       error: `Failed to fetch workspace by id: ${error}`,
-      success: false,
-    };
-  }
-}
-
-export async function setWorkspaceFromDB() {
-  try {
-    const authUser = await getCurrentAuthUser();
-    if (!authUser) {
-      return { error: "User not found", success: false };
-    }
-
-    // Get user's workspace membership
-    const [membership] = await db
-      .select()
-      .from(membersTable)
-      .where(eq(membersTable.userId, authUser.id))
-      .limit(1)
-      .execute();
-
-    if (!membership) {
-      return { error: "User does not belong to any workspace", success: false };
-    }
-
-    const [workspace] = await db
-      .select()
-      .from(workspacesTable)
-      .where(eq(workspacesTable.id, membership.workspaceId))
-      .execute();
-
-    if (!workspace) {
-      return { error: "Workspace not found", success: false };
-    }
-
-    return { data: workspace, success: true };
-  } catch (error: unknown) {
-    return {
-      error: `Failed to fetch workspace from DB: ${error}`,
       success: false,
     };
   }
@@ -426,53 +352,23 @@ export async function deleteWorkspace(
   }
 }
 
-export async function createWorkspaceFormAction(
-  _prevState: APIResponse<{ name: string; slug: string; logo: string }> | null,
-  formData: FormData,
-): Promise<APIResponse<{ name: string; slug: string; logo: string }>> {
-  const parsed = NewWorkspaceFormSchema.safeParse({
-    name: formData.get("name"),
-    slug: formData.get("slug"),
-  });
-
-  if (!parsed.success) {
-    return {
-      success: false,
-      error: "Invalid form data",
-    };
-  }
-
-  const result = await createWorkspace(parsed.data);
-
-  if (result.success) {
-    redirect(`/workspace/${result.data.slug}`);
-  }
-
-  return result;
-}
-
+/**
+ * Get the active meeting for a workspace by its slug.
+ * @param workspaceSlug The slug of the workspace to get the active meeting for.
+ * @returns An API response containing the active meeting details or an error message.
+ * @requires authentication
+ */
 export async function getActiveMeetingForWorkspace(workspaceSlug: string) {
   try {
-    const [workspace] = await db
-      .select()
-      .from(workspacesTable)
-      .where(eq(workspacesTable.slug, workspaceSlug))
-      .execute();
+    const workspace = await workspaceMemberManager.findWorkspaceBySlug(workspaceSlug);
 
     if (!workspace) {
       return { message: "Workspace not found", success: false };
     }
 
-    const [activeMeeting] = await db
-      .select()
-      .from(workspaceMeetingTable)
-      .where(
-        and(
-          eq(workspaceMeetingTable.workspaceId, workspace.id),
-          isNull(workspaceMeetingTable.endAt),
-        ),
-      )
-      .execute();
+    const activeMeeting = await workspaceMeetingManager.listWorkspaceMeetings(workspace.id, {
+      status: "active"
+    });
 
     if (!activeMeeting) {
       return { message: "No active meeting found", success: false };
@@ -488,5 +384,3 @@ export async function getActiveMeetingForWorkspace(workspaceSlug: string) {
     };
   }
 }
-
-
