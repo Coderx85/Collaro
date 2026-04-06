@@ -19,16 +19,16 @@ const displayFont = Space_Grotesk({
 
 const WorkspacePage = async () => {
   let workspaceLoadError = false;
-  let workspaces: Awaited<ReturnType<typeof auth.api.listOrganizations>> = [];
 
-  try {
-    workspaces = await auth.api.listOrganizations({
-      headers: await headers(),
-    });
-  } catch (error) {
+  const workspaces = await auth.api.listOrganizations({
+    headers: await headers(),
+  }).catch((error) => {
+    console.error("Error fetching workspaces:", error);
     workspaceLoadError = true;
-    console.error("Failed to load workspaces", error);
-  }
+    return [];
+  });
+
+  console.log("Fetched workspaces:", workspaces);
 
   const workspaceCount = workspaces.length;
 

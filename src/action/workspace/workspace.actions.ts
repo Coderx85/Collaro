@@ -29,7 +29,7 @@ type NewWorkspaceFormSchemaType = z.infer<typeof NewWorkspaceFormSchema>;
  */
 export async function createWorkspace(
   workspaceData: NewWorkspaceFormSchemaType,
-): Promise<APIResponse<NewWorkspaceFormSchemaType>> {
+): Promise<APIResponse<IWorkspaceDTO>> {
   try {
     const user = await getCurrentUser();
     
@@ -57,7 +57,12 @@ export async function createWorkspace(
       data: {
         name: workspaceData.name,
         slug: workspaceData.slug,
-        logo: workspaceData.logo || "",
+        logoUrl: workspaceData.logo || "",
+        ownerId: workspace.ownerId,
+        description: "",
+        id: workspace.id,
+        createdAt: workspace.createdAt,
+        updatedAt: workspace.updatedAt,
       },
     };
   } catch (error: unknown) {

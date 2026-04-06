@@ -9,6 +9,7 @@ import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { config } from "@/lib/config";
 import type { RegisterFormValues } from "@/types";
+import { TUserId } from "@/modules/user";
 
 // Helper to get current authenticated user
 export async function getCurrentUser() {
@@ -19,8 +20,10 @@ export async function getCurrentUser() {
   if (!session?.user) {
     redirect(config.SIGN_IN);
   }
+
+  const sessionId = session.user.id as unknown as TUserId;
   const dbUser = await db.query.usersTable.findFirst({
-    where: eq(usersTable.id, session.user.id),
+    where: eq(usersTable.id, sessionId),
   });
 
   if (!dbUser) {
@@ -42,10 +45,10 @@ export async function signUpAction({
   try {
     const result = await auth.api.signUpEmail({
       body: {
-        email,
-        password,
         name,
+        email,
         userName,
+        password,
       },
       headers: await headers(),
     });
@@ -54,7 +57,7 @@ export async function signUpAction({
       return { error: "Sign up failed", success: false };
     }
 
-    return { data: { user: result.user as UserResponse }, success: true };
+    return { data: { user: result.user as unknown as UserResponse }, success: true };
   } catch (error: unknown) {
     return { error: `Sign up failed: ${error}`, success: false };
   }
