@@ -13,7 +13,7 @@ export enum MeetingType {
   private = "Private Meeting",
 }
 
-export type meetingStatus = "Scheduled" | "Ongoing" | "Completed" | "Cancelled";
+export type meetingStatus = "scheduled" | "active" | "completed" | "cancelled";
 
 export type TParicipants<T> = Record<string, T>;
 

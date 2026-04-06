@@ -1,5 +1,5 @@
 import { IMember, IMemberDTO, TMemberId } from "@collaro/member";
-import { IMeetingDTO, meetingStatus, TMeetingId, TWorkspaceId } from "..";
+import { IMeetingDTO, meetingStatus, TeamMeetingDTO, TMeetingId, TWorkspaceId } from "..";
 import { Input } from "@collaro/utils/omit";
 import { BRAND } from "@/modules/utils/brand";
 
@@ -7,7 +7,7 @@ export interface IMeetingStore<T> {
   checkMeetingExists(id: TMeetingId): Promise<boolean>;
   save(meeting: IMeetingDTO<T>): Promise<void>;
   findById(id: TMeetingId): Promise<IMeetingDTO<T> | null>;
-  update(id: TMeetingId, meeting: Partial<IMeetingDTO<T>>): Promise<void>;
+  update(id: TMeetingId, meeting: Partial<IMeetingDTO<T>>): Promise<IMeetingDTO<T>>;
   updateStatus(id: TMeetingId, status: meetingStatus): Promise<void>;
   delete(id: TMeetingId): Promise<void>;
 }
@@ -35,7 +35,7 @@ export interface IParticipantStore {
   meetingStore: IMeetingStore<TMemberId>;
 
   addParticipant(participant: Input<IParticipantDTO>): Promise<void>;
-  removeParticipant(meetingId: TMeetingId): Promise<void>;
+  removeParticipant(meetingId: TMeetingId, memberId: TMemberId): Promise<void>;
   listParticipants(meetingId: TMeetingId): Promise<IParticipantDTO[]>;
   endMeetingForParticipants(meetingId: TMeetingId): Promise<void>;
 }

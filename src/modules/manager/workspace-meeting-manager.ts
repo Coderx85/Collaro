@@ -1,3 +1,4 @@
+import { TWorkspaceDTO } from "@/types/workspace.types";
 import { IMeetingStore, IParticipantDTO, IParticipantStore, IWorkspaceMeetingDTO, MemoryWorkspaceMeetingStore, ParticipantStore, TeamMeetingDTO, TMeetingId } from "@collaro/meeting";
 import { IMemberDTO, IWorkspaceMemberManager, TMemberId, WorkspaceMemberManager } from "@collaro/member";
 import { ID } from "@collaro/utils/generate";
@@ -5,10 +6,24 @@ import { Input } from "@collaro/utils/omit";
 import { IWorkspaceDTO } from "@collaro/workspace/interface";
 
 export class WorkspaceMeetingManager {
-  manager: IWorkspaceMemberManager = new WorkspaceMemberManager();
+  manager: IWorkspaceMemberManager = WorkspaceMemberManager.getInstance();
   participantStore: IParticipantStore = ParticipantStore.getInstance();
-  meetingStore: IMeetingStore<TMemberId> = MemoryWorkspaceMeetingStore.getInstance();
-  
+  meetingStore = MemoryWorkspaceMeetingStore.getInstance();
+
+  static instance: WorkspaceMeetingManager;
+  static getInstance(): WorkspaceMeetingManager {
+    if (!WorkspaceMeetingManager.instance) {
+      WorkspaceMeetingManager.instance = new WorkspaceMeetingManager();
+    }
+    return WorkspaceMeetingManager.instance;
+  }
+
+  private constructor() {
+    if(WorkspaceMeetingManager.instance) {
+      throw new Error("Use WorkspaceMeetingManager.getInstance() to get an instance of this class.");
+    }
+  }
+
   private async checkMemberAccessToMeeting(meetingId: TMeetingId, memberId: TMemberId): Promise<boolean> {
     const meeting = await this.getMeeting(meetingId);
     if (!meeting) {
@@ -75,7 +90,7 @@ export class WorkspaceMeetingManager {
     }
   }
 
-  async joinMeeting(meetingId: TMeetingId, memberId: TMemberId): Promise<void> {
+  async joinMeeting(meetingId: TMeetingId, memberId: TMemberId): Promise<IParticipantDTO> {
     try {
       // Check if meeting exists
       const checkExists = await this.checkMemberAccessToMeeting(meetingId, memberId);
@@ -103,10 +118,22 @@ export class WorkspaceMeetingManager {
         [member.name]: memberId
       };
   
-      await this.meetingStore.update(meetingId, { 
+      const updatedMeeting = await this.meetingStore.update(meetingId, { 
         participants: updatedParticipants }
       );
       
+      const participantDTO: IParticipantDTO = {
+        id: ID.participantId(),
+        role: member.role,
+        status: "joined",
+        leaveAt: null,
+        meetingId,
+        memberId,
+        name: member.name,
+        joinedAt: new Date(),
+      }
+
+      return participantDTO;
     } catch (error) {
       console.error("Error joining meeting:", error);
       throw error;
@@ -134,7 +161,7 @@ export class WorkspaceMeetingManager {
     }
     
     await this.meetingStore.update(meetingId, { 
-      status: "Completed",
+      status: "completed",
       endTime: new Date(),
      });
 
@@ -144,4 +171,15 @@ export class WorkspaceMeetingManager {
   async listParticipants(meetingId: TMeetingId): Promise<IParticipantDTO[]> {
     return await this.participantStore.listParticipants(meetingId);
   }
+
+  async listWorkspaceMeetings(workspaceId: TWorkspaceDTO["id"], query: {
+    status?: TeamMeetingDTO["status"];
+    hostedBy?: TMemberId;
+    paricipantId?: TMemberId;
+  }): Promise<TeamMeetingDTO[]> {
+    const meetings = await this.meetingStore.findWorkspaceMeetings(workspaceId, query);
+    return meetings;
+  }
 }
+
+export const workspaceMeetingManager = WorkspaceMeetingManager.getInstance();

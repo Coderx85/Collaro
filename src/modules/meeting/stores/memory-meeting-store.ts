@@ -1,21 +1,10 @@
 import { IMeetingDTO, IWorkspaceMeetingDTO, TMeetingId, TWorkspaceId, TeamMeetingDTO, meetingStatus } from "../interface";
-import { IMeetingStore } from ".";
+import { IMeetingStore, IParticipantDTO } from ".";
 import { TUserId } from "@collaro/user";
 import { TMemberId } from "@collaro/member";
 import { db } from "@/db";
 import { privateMeetingsTable, workspaceMeetingTable } from "@/db/schema/schema";
-import { ID } from "@/modules/utils/generate";
 import { and, eq } from "drizzle-orm";
-
-const mapMeetingStatus = (status: meetingStatus): "scheduled" | "active" | "completed" => {
-  const statusMap: Record<meetingStatus, "scheduled" | "active" | "completed"> = {
-    "Scheduled": "scheduled",
-    "Ongoing": "active",
-    "Completed": "completed",
-    "Cancelled": "completed",
-  };
-  return statusMap[status];
-};
 
 export class MemoryMeetingStore implements IMeetingStore<TUserId> {
   private meetings: IMeetingDTO<TUserId>[] = [];
@@ -42,12 +31,28 @@ export class MemoryMeetingStore implements IMeetingStore<TUserId> {
     return Promise.resolve(meeting);
   }
 
-  update(id: TMeetingId, meeting: Partial<IMeetingDTO<TUserId>>): Promise<void> {
-    const index = this.meetings.findIndex((m) => m.id === id);
-    if (index !== -1) {
-      this.meetings[index] = { ...this.meetings[index], ...meeting } as IMeetingDTO<TUserId>;
+  async update(id: TMeetingId, meeting: Partial<IMeetingDTO<TUserId>>): Promise<IMeetingDTO<TUserId>> {
+    const [updatedMeeting] = await db
+      .update(privateMeetingsTable)
+      .set(meeting)
+      .where(eq(privateMeetingsTable.meetingId, id))
+      .returning();
+
+    if(!updatedMeeting) throw new Error("Meeting not found");
+
+    const dto: IMeetingDTO<TUserId> = {
+      id: updatedMeeting.meetingId, 
+      title: updatedMeeting.description || "",  
+      createdBy: updatedMeeting.hostedBy,
+      createdAt: new Date(),
+      description: updatedMeeting.description || "",
+      endTime: updatedMeeting.endAt,
+      participants: {},
+      startTime: updatedMeeting.createdAt,
+      status: updatedMeeting.status
     }
-    return Promise.resolve();
+
+    return dto;
   }
 
   updateStatus(id: TMeetingId, status: meetingStatus): Promise<void> {
@@ -183,7 +188,7 @@ export class MemoryWorkspaceMeetingStore implements IMeetingStore<TMemberId> {
     try {
       const result = await db
         .update(workspaceMeetingTable)
-        .set({ status: mapMeetingStatus(status) })
+        .set({ status })
         .where(eq(workspaceMeetingTable.meetingId, id))
         .returning();
 
@@ -201,21 +206,33 @@ export class MemoryWorkspaceMeetingStore implements IMeetingStore<TMemberId> {
    * @param meeting A partial meeting object
    * @returns A promise that resolves when the update is complete
    */
-  async update(id: TMeetingId, meeting: Partial<IMeetingDTO<TMemberId>>): Promise<void> {
+  async update(id: TMeetingId, meeting: Partial<IMeetingDTO<TMemberId>>): Promise<IMeetingDTO<TMemberId>> {
     try {
       const [result] = await db
         .update(workspaceMeetingTable)
         .set({
           description: meeting.description,
           endAt: meeting.endTime,
-          status: meeting.status ? mapMeetingStatus(meeting.status) : undefined
+          status: meeting.status
         })
         .where(eq(workspaceMeetingTable.meetingId, id))
         .returning();
 
-      if (!result) throw new Error("Meeting not found");
+      if (!result) throw new Error("Meeting not found");      
 
-      return;
+      const dto: IMeetingDTO<TMemberId> = {
+        id: result.meetingId,
+        title: result.description || "", 
+        createdBy: result.hostedBy,
+        createdAt: new Date(),
+        status: result.status,
+        startTime: result.createdAt,
+        participants: {},
+        description: result.description || "",
+        endTime: result.endAt,
+      }
+
+      return dto;
     } catch (error: unknown) {
       throw new Error(`Failed to update meeting: ${(error as Error).message}`);
     }
@@ -297,6 +314,70 @@ export class MemoryWorkspaceMeetingStore implements IMeetingStore<TMemberId> {
       return await this.listMeetings({ memberId });
     } catch (error: unknown) {
       throw new Error(`Failed to list member meetings: ${(error as Error).message}`);
+    }
+  }
+
+  public async findWorkspaceMeetings(
+    workspaceId: TWorkspaceId, 
+    query: {
+      status?: TeamMeetingDTO["status"];
+      hostedBy?: TMemberId;
+      paricipantId?: TMemberId;
+    }
+  ): Promise<TeamMeetingDTO[]> {
+
+    let whereClause = [eq(workspaceMeetingTable.workspaceId, workspaceId)];
+
+    if (query.status) {
+      whereClause.push(eq(workspaceMeetingTable.status, query.status));
+    } 
+
+    if (query.hostedBy) {
+      whereClause.push(eq(workspaceMeetingTable.hostedBy, query.hostedBy));
+    }
+    
+    if (query.paricipantId) {
+      whereClause.push(eq(workspaceMeetingTable.hostedBy, query.paricipantId));
+    }
+
+    try {
+      const meetings = await db.query.workspaceMeetingTable.findMany({
+        where: and(...whereClause),
+        with: {
+          participants: true
+        }
+      })
+
+      const dtos: TeamMeetingDTO[] = []
+
+      for (const meeting of meetings) {
+        const participantsRecord: Record<string, TMemberId> = {
+          ...meeting.participants.reduce((acc, participant) => {
+            acc[participant.name] = participant.memberId;
+            return acc;
+          }, {} as Record<string, TMemberId>)
+        };
+
+        dtos.push({
+          id: meeting.meetingId,
+          title: meeting.description || "",
+          createdBy: meeting.hostedBy as unknown as TMemberId,
+          createdAt: new Date(), 
+          status: meeting.status as meetingStatus,
+          startTime: meeting.createdAt,
+          participants: {
+            ...participantsRecord
+          },
+          description: meeting.description || "",
+          endTime: meeting.endAt,
+          workspaceId: meeting.workspaceId
+        });
+      }
+
+      return dtos;
+    
+    } catch (error: unknown) {
+      throw new Error(`Failed to find workspace meetings: ${(error as Error).message}`);
     }
   }
 }

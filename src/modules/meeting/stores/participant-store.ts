@@ -5,7 +5,7 @@ import { Input } from "@collaro/utils/omit";
 import { ID } from "@/modules/utils/generate";
 import { db } from "@/db";
 import { meetingParticipantsTable } from "@/db/schema/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 const localStorage: IParticipantDTO[] = [];
 
@@ -20,7 +20,7 @@ export class ParticipantStore implements IParticipantStore {
   }
 
   member: IMember = new Member();
-  meetingStore: IMeetingStore<TMemberId> = new MemoryWorkspaceMeetingStore();
+  meetingStore: IMeetingStore<TMemberId> = MemoryWorkspaceMeetingStore.getInstance();
 
   async addParticipant(participant: Input<IParticipantDTO>): Promise<void> {
     const member: IParticipantDTO = {
@@ -81,7 +81,7 @@ export class ParticipantStore implements IParticipantStore {
    * Is the right name for this method removeParticipant or should it be removeParticipants since it removes all participants for a meeting?
    * @param meetingId 
    */
-  async removeParticipant(meetingId: TMeetingId): Promise<void> {
+  async removeParticipant(meetingId: TMeetingId, memberId: TMemberId): Promise<void> {
     try {
       const checkMeetingExists = await this.meetingStore.checkMeetingExists(meetingId);
       if (!checkMeetingExists) {
@@ -91,7 +91,12 @@ export class ParticipantStore implements IParticipantStore {
       const participants = await db
         .update(meetingParticipantsTable)
         .set({ leftAt: new Date() })
-        .where(eq(meetingParticipantsTable.meetingId, meetingId))
+        .where(
+          and(
+            eq(meetingParticipantsTable.meetingId, meetingId),
+            eq(meetingParticipantsTable.memberId, memberId),
+          )
+        )
         .returning();
 
       if (!participants) {
