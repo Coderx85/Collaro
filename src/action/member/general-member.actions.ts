@@ -8,8 +8,10 @@ import { createMemberSchema } from "@/db/schema/type";
 import { membersTable } from "@/db/schema/schema";
 import z from "zod";
 import { getWorkspaceBySlug } from "../workspace/get-workspace.actions";
-import { getWorkspaceById } from "../workspace";
+import { getWorkspaceById } from "../workspace/get-workspace.actions";
+import { sql } from "drizzle-orm";
 import { eq } from "drizzle-orm";
+import { usersTable } from "@/db/schema/schema";
 import type { Prettify, User } from "better-auth";
 type MemberResponse = APIResponse<TOrganizationMember>;
 
@@ -28,14 +30,21 @@ export const addMember = async (
       return { success: false, error: "Workspace not exsist" };
     }
 
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(sql`${usersTable.id} = ${input.userId}`)
+      .execute();
+
     const [result] = await db
       .insert(membersTable)
       .values({
-        userId: input.userId,
-        workspaceId: workspace.data.id,
+        name: user?.name || user?.email || "Unknown",
+        userId: input.userId as unknown as any,
+        workspaceId: workspace.data.id as unknown as any,
         role: input.role as TInviteMemberRole,
         createdAt: new Date(),
-      })
+      } as any)
       .returning()
       .execute();
 
@@ -46,14 +55,14 @@ export const addMember = async (
     return {
       success: true,
       data: {
-        id: result.id,
-        userId: result.userId,
-        workspaceId: result.workspaceId,
+        id: result.id as unknown as string,
+        userId: result.userId as unknown as string,
+        workspaceId: result.workspaceId as unknown as string,
         role: input.role as TInviteMemberRole,
         createdAt: result.createdAt,
       },
-    };
-      
+    } as any;
+       
   } catch (error: unknown) {
     throw new Error(`Failed to add member: ${error instanceof Error ? error.message : String(error)}`);
   }

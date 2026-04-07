@@ -47,7 +47,7 @@ export async function signUpAction({
       body: {
         name,
         email,
-        userName,
+        username: userName,
         password,
       },
       headers: await headers(),
