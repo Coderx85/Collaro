@@ -5,6 +5,7 @@ import { db } from "@/db/client";
 import { membersTable, workspacesTable } from "@/db/schema/schema";
 import { usersTable } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
+import { TUserId } from "@/types";
 
 export async function GET() {
   try {
@@ -16,7 +17,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = session.user.id as unknown as TUserId;
 
     // Fetch user data from better-auth user table
     const [userData] = await db
