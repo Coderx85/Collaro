@@ -41,7 +41,7 @@ const MemberList = ({ organisationSlug }: { organisationSlug: string }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {members?.map((member) => (
-        <Card key={member.id} className="overflow-hidden">
+        <Card key={String(member.id)} className="overflow-hidden">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -55,7 +55,7 @@ const MemberList = ({ organisationSlug }: { organisationSlug: string }) => {
                 </div>
               </div>
 
-              <DirectCallButton memberId={member.id} memberName={member.name} />
+              <DirectCallButton memberId={String(member.id)} memberName={member.name} />
             </div>
           </CardContent>
         </Card>

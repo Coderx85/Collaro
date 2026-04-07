@@ -54,7 +54,7 @@ export function NewWorkspaceForm() {
         }
 
         toast.success("Workspace created successfully", { description: "Your workspace is ready to collaborate.", });
-        router.push(`/workspace/${result.data.id}`);
+        router.push(`/workspace/${result.data.slug}`);
       } catch (error: unknown) {
         if (error instanceof Error && error.message.includes("permission")) {
           toast.error(
