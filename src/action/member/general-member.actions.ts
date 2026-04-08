@@ -19,7 +19,6 @@ type CreateMemberDTO = z.infer<typeof createMemberSchema>;
 
 type MemberListDTO = Prettify<z.infer<typeof createMemberSchema> & { user: User }>;
 
-
 export const addMember = async (
   input: { userId: string; workspaceId: string, role: Omit<TUserRole, "owner"> }
 ): Promise<APIResponse<CreateMemberDTO>> => {

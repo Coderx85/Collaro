@@ -1,25 +1,27 @@
 "use client";
-import Image from "next/image";
+
 import { authClient, useSession } from "@/lib/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useEffect, useState } from "react";
+import { TUserRole } from "@/types";
+import { getCurrentMemberRole } from "@/action/member";
 
 type org = {
   data?: any;
   error?: string;
 };
 
-const ProfileCard = () => {
+const ProfileCard = ({ slug }: { slug: string }) => {
   const { data: session } = useSession();
   const [org, setOrg] = useState<org>({});
-  const [memberRole, setMemberRole] = useState<{ role?: string }>({});
+  const [memberRole, setMemberRole] = useState<{ role: TUserRole } | undefined>(undefined);
 
   useEffect(() => {
     const fetchMember = async () => {
-      const result = await authClient.organization.getActiveMemberRole();
-      if (result.data) {
-        setMemberRole({ role: result.data.role });
-      }
+      const result = await getCurrentMemberRole(slug);
+      if (!result.success || !result.data) return;
+
+      setMemberRole({ role: result.data });
     };
     fetchMember();
   }, []);
@@ -53,7 +55,7 @@ const ProfileCard = () => {
               {session?.user?.name}
             </h1>
             <p className="italic text-white/75 text-xs xl:text-sm">
-              @{session?.user?.userName || session?.user?.name}
+              @{session?.user?.username || session?.user?.name}
             </p>
             {org?.data && (
               <p className="text-white/75 mt-2.5 text-xs xl:text-lg">

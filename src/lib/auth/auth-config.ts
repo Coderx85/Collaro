@@ -6,7 +6,6 @@ import { db } from "@/db/client";
 import { nextCookies } from "better-auth/next-js";
 import { config } from "../config";
 import { organization, username } from "better-auth/plugins";
-import { TUserId } from "@/modules/user/interface";
 
 export const auth = betterAuth({
   secret: config.betterSecret,
@@ -82,15 +81,12 @@ export const auth = betterAuth({
   ],
   user: {
     additionalFields: {
-      "id": {
+      username: {
         type: "string",
-        required: true,
+        required: false,
         unique: true,
-        transform: {
-          input: (value) => value as unknown as TUserId,
-        },
         input: true,
-      }
+      },
     },
   },
   advanced: {
