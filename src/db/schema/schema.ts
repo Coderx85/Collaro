@@ -9,11 +9,16 @@ import {
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm/sql";
 import * as t from "drizzle-orm/pg-core";
-import { TMeetingId, TParticipantId, TWorkspaceId } from "@/modules/meeting";
-import { TMemberId } from "@/modules/member";
-import { TUserId } from "@/modules/user";
+import { 
+  TUserId, 
+  TWorkspaceId, 
+  TMemberId, 
+  TMeetingId, 
+  TParticipantId, 
+  TRequestId,
+  TNotificationId
+} from "@/types";
 import { ID } from "@/modules/utils/generate";
-import { uuid } from "zod";
 
 // Define user_role enum first
 export const pgUserRole = pgEnum("user_role", ["owner", "admin", "member"]);
@@ -211,20 +216,24 @@ export const meetingParticipantsTable = pgTable(
 );
 
 // Join Requests table - tracks workspace join requests
-export const joinRequestsTable = pgTable(
+export const workspaceRequestTable = pgTable(
   "join_requests",
   {
-    id: text("id").default(sql`gen_random_uuid()::text`).primaryKey(),
+    id: text("id")
+      .default(sql`gen_random_uuid()::text`)
+      .primaryKey()
+      .$type<TRequestId>(),
+    name: text("name").notNull(),
     userId: text("user_id")
       .notNull()
       .references(() => usersTable.id, {
         onDelete: "cascade",
-      }),
+      }).$type<TUserId>(),
     workspaceId: text("workspace_id")
       .notNull()
       .references(() => workspacesTable.id, {
         onDelete: "cascade",
-      }),
+      }).$type<TWorkspaceId>(),
     status: pgJoinRequestStatus("status").default("pending").notNull(),
     requestedAt: timestamp("requested_at").notNull().defaultNow(),
     respondedAt: timestamp("responded_at"),
@@ -248,27 +257,30 @@ const notificationTypes = ["join_request", "meeting_invite", "general"] as const
 export const pgNotificationType = pgEnum("notification_type", notificationTypes);
 
 export const notificationsTable = pgTable("notifications", {
-  id: text("id").default(sql`gen_random_uuid()::text`).primaryKey(),
+  id: text("id")
+    .default(sql`gen_random_uuid()::text`)
+    .primaryKey()
+    .$type<TNotificationId>(),
   userId: text("user_id")
     .notNull()
     .references(() => usersTable.id, {
       onDelete: "cascade",
-    }),
+    }).$type<TUserId>(),
   workspaceId: text("workspace_id")
     .notNull()
     .references(() => workspacesTable.id, {
       onDelete: "cascade",
-    }),
+    }).$type<TWorkspaceId>(),
   memberId: text("member_id")
-    .notNull()
     .references(() => membersTable.id, {
       onDelete: "cascade",
-    }),
-  type: pgNotificationType("notification_type").default("general").notNull(),
+    })
+    .$type<TMemberId>(),
+  type: text("type").default("general").notNull(),
   message: text("message").notNull(),
   read: boolean("read_status").default(false).notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-  readAt: timestamp("read_at"),
+  updatedAt: timestamp("read_at"),
   }, 
   (table) => [
     t.index("notifications_user_id_idx").on(table.userId),

@@ -12,7 +12,7 @@ import {
   pgMeetingStatus,
   pgJoinRequestStatus,
   notificationsTable,
-  joinRequestsTable,
+  workspaceRequestTable,
 } from "./schema";
 
 // Drizzle-Zod schema creators
@@ -108,7 +108,7 @@ export const UpdateMeetingSchema = createUpdateSchema(workspaceMeetingTable, {
 });
 
 export const SelectJoinRequestSchema =
-  createSelectSchema(joinRequestsTable).strict();
+  createSelectSchema(workspaceRequestTable).strict();
 export type SelectJoinRequestType = z.infer<typeof SelectJoinRequestSchema>;
 
 export const SelectNotificationSchema = createSelectSchema(notificationsTable);

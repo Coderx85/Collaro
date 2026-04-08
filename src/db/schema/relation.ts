@@ -3,7 +3,7 @@ import * as schema from "./schema";
 
 export const usersRelations = relations(schema.usersTable, ({ many }) => ({
   members: many(schema.membersTable),
-  joinRequests: many(schema.joinRequestsTable),
+  joinRequests: many(schema.workspaceRequestTable),
 }));
 
 export const workspacesRelations = relations(schema.workspacesTable, ({ one, many }) => ({
@@ -13,18 +13,18 @@ export const workspacesRelations = relations(schema.workspacesTable, ({ one, man
   }),
   members: many(schema.membersTable),
   meetings: many(schema.workspaceMeetingTable),
-  joinRequests: many(schema.joinRequestsTable),
+  joinRequests: many(schema.workspaceRequestTable),
 }));
 
-export const joinRequestsRelations = relations(
-  schema.joinRequestsTable,
+export const workspaceRequestRelations = relations(
+  schema.workspaceRequestTable,
   ({ one }) => ({
     workspace: one(schema.workspacesTable, {
-      fields: [schema.joinRequestsTable.workspaceId],
+      fields: [schema.workspaceRequestTable.workspaceId],
       references: [schema.workspacesTable.id],
     }),
     user: one(schema.usersTable, {
-      fields: [schema.joinRequestsTable.userId],
+      fields: [schema.workspaceRequestTable.userId],
       references: [schema.usersTable.id],
     }),
   })
