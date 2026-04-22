@@ -4,7 +4,8 @@ import {
   type ParticipantRole,
 } from "@/action/participant.actions";
 import type { StreamVideoParticipant } from "@stream-io/video-react-sdk";
-import { TWorkspaceMember, TWorkspaceUser } from "@/types";
+import { TUserId, TWorkspaceMember, TWorkspaceUser } from "@/types";
+import { Prettify } from "better-auth";
 
 interface ParticipantRoleData {
   role: ParticipantRole;
@@ -20,6 +21,8 @@ type Data = Pick<
   isLoading: boolean;
 };
 
+type Participants = Prettify<StreamVideoParticipant & { userId: TUserId }>;
+
 /**
  * Custom hook to get participant role with hybrid approach:
  * 1. First check if role is in participant custom data (passed during join)
@@ -27,7 +30,7 @@ type Data = Pick<
  * 3. Cache the result to avoid repeated lookups
  */
 export const useParticipantRole = (
-  participant: StreamVideoParticipant,
+  participant: Participants,
   workspaceSlug: string,
 ): Data => {
   const [roleData, setRoleData] = useState<Data>({

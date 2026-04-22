@@ -8,7 +8,7 @@ export type TCreateUserInput = Input<IUserDTO> & { password: string };
 export interface IUserDTO {
   id: TUserId;
   name: string;
-  userName: string;
+  username: string;
   email: string;
   createdAt: Date;
   updatedAt: Date | null;

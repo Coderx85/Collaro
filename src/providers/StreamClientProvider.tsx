@@ -21,7 +21,7 @@ const StreamVideoProvider = ({ children }: { children: ReactNode }) => {
       apiKey: API_KEY,
       user: {
         id: session.user.id,
-        name: session.user.userName || session.user.name || session.user.id,
+        name: session.user.username || session.user.name || session.user.id,
         image: session.user.image || undefined,
       },
       tokenProvider,

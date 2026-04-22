@@ -18,7 +18,7 @@ export const useGetCallsBySlug = (slug: string) => {
         setData([]);
       }
 
-      const { data } = res as APISuccessResponse<Call[]>;
+      const { data } = res as unknown as APISuccessResponse<Call[]>;
 
       setData(data);
       setIsPending(false);
