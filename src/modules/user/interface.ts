@@ -1,18 +1,5 @@
-import { BRAND } from "@collaro/utils/brand";
 import { Prettify } from "better-auth";
-import { Input } from "../utils/omit";
-
-export type TUserId = BRAND<"UserId">;
-export type TCreateUserInput = Input<IUserDTO> & { password: string };
-
-export interface IUserDTO {
-  id: TUserId;
-  name: string;
-  userName: string;
-  email: string;
-  createdAt: Date;
-  updatedAt: Date | null;
-}
+import { IUserDTO, TCreateUserInput, TUserId } from "@/types";
 
 export interface IUser {
   user: IUserDTO;

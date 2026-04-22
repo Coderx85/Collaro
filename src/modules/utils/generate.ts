@@ -1,13 +1,13 @@
+import { TInvitationId, TJoinRequestId, TNotificationId, TRequestId } from "@/types";
 import { TMeetingId, TParticipantId, TWorkspaceId } from "@collaro/meeting";
-import { TMemberId } from "@collaro/member";
-import { TUserId } from "@collaro/user";
+import { TMemberId, TUserId } from "@/types";
 import { v7 } from "uuid";
 
 function generateId<T>(prefix: string): T {
   const createdAt = new Date().getTime();
   const str = v7({ msecs: createdAt });
 
-  const result = `${prefix || ""}${str}`.slice(0, 32);
+  const result = `${prefix}${str}`.slice(0, 32);
   return result as unknown as T;
 }
 
@@ -39,6 +39,30 @@ export class ID {
   static participantId(): TParticipantId {
     const prefix = "prt_";
     const id = generateId<TParticipantId>(prefix);
+    return id;
+  }
+
+  static joinRequestId(): TJoinRequestId {
+    const prefix = "jqr_";
+    const id = generateId<TJoinRequestId>(prefix);
+    return id;
+  }
+
+  static invitationId(): TInvitationId {
+    const prefix = "inv_";
+    const id = generateId<TInvitationId>(prefix);
+    return id;
+  }
+
+  static notificationId(): TNotificationId {
+    const prefix = "ntf_";
+    const id = generateId<TNotificationId>(prefix);
+    return id;
+  }
+
+  static requestId(): TRequestId {
+    const prefix = "req_";
+    const id = generateId<TRequestId>(prefix);
     return id;
   }
 }

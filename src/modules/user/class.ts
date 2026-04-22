@@ -1,14 +1,10 @@
 import { ID } from "@collaro/utils/generate";
-import { IUser, IUserDTO, IUserStore, TCreateUserInput, TUserId } from "./interface";
+import { IUser, IUserStore } from "./interface";
+import { IUserDTO, TUserId, TCreateUserInput } from "@/types";
 import { UserStore } from "./user-store";
 import { Prettify } from "better-auth";
 
 export class User implements IUser {
-  // private async fetchUser(id: TUserId): Promise<IUserDTO | null> {
-  //   const user = await this.store.findById(id);
-  //   return user;
-  // }
-
   user: IUserDTO = {} as IUserDTO;
   private store: IUserStore = UserStore.getInstance();
 
@@ -76,3 +72,5 @@ export class User implements IUser {
     return [this.user];
   }
 }
+
+export const userService = new User();

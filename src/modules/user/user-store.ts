@@ -1,5 +1,6 @@
 import { db } from "@/db";
-import { IUserDTO, IUserStore, TUserId } from "./interface"
+import { IUserStore } from "./interface"
+import { IUserDTO, TUserId } from "@/types";
 import { usersTable } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
 
@@ -19,7 +20,7 @@ export class UserStore implements IUserStore {
     await db.insert(usersTable).values({
       id: user.id,
       name: user.name,
-      userName: user.userName,
+      userName: user?.username,
       email: user.email,
       createdAt: user.createdAt,
     });
@@ -27,7 +28,10 @@ export class UserStore implements IUserStore {
 
   async findById(id: TUserId): Promise<IUserDTO | null> {
     try {
-      const [user] = await db.select().from(usersTable).where(eq(usersTable.id, id));
+      const user = await db
+        .query.usersTable.findFirst({
+          where: eq(usersTable.id, id),
+        })
 
       if (!user) {
         return null;
@@ -36,7 +40,7 @@ export class UserStore implements IUserStore {
       const result: IUserDTO = {
         id: user.id,
         name: user.name,
-        userName: user.userName,
+        userName: user?.username,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt || null,
         email: user.email,
@@ -52,7 +56,7 @@ export class UserStore implements IUserStore {
       .update(usersTable)
       .set({
         name: user.name,
-        userName: user.userName,
+        userName: user?.username,
         email: user.email,
         updatedAt: new Date(),
       })
