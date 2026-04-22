@@ -5,10 +5,10 @@ import {
   type CreateWorkspaceType,
 } from "@/db/schema/type";
 import { auth } from "@/lib/auth/auth-server";
-import { config } from "@/lib/config";
 import { sql } from "drizzle-orm";
 import { authSchema, schema } from ".";
-type WorkspaceUserRole = "owner" | "admin" | "member";
+import { TUserId, TWorkspaceId } from "@/types";
+import { TInviteMemberRole, workspaceMemberManager } from "@/modules/member";
 
 type SeedUser = CreateUserType;
 type SeedWorkspace = Omit<CreateWorkspaceType, "id">;
@@ -16,115 +16,127 @@ type SeedWorkspace = Omit<CreateWorkspaceType, "id">;
 type WorkspaceAssignment = {
   workspaceSlug: string;
   userName: string;
-  role: WorkspaceUserRole;
+  role: TInviteMemberRole;
 };
 
-const users: SeedUser[] = [
+const USER_PASSWORD = "Collaro@123"; 
+
+const systemUsers: SeedUser[] = [
+  // System users
   {
-    name: "Admin User",
-    userName: "admin",
-    email: "admin@example.com",
-    password: "password",
+    name: "System Owner",
+    userName: "sys_owner",
+    email: "sys_owner@example.com",
+    password: USER_PASSWORD,
   },
   {
-    name: "Member User",
-    userName: "member",
-    email: "member@example.com",
-    password: "password",
+    name: "System Admin",
+    userName: "sys_admin",
+    email: "sys_admin@example.com",
+    password: USER_PASSWORD,
   },
   {
-    name: "Guest User",
-    userName: "guest",
-    email: "guest@example.com",
-    password: "gueest-password",
-  },
-  {
-    name: "Test User",
-    userName: "testuser",
-    email: "testuser@example.com",
-    password: "test-password",
-  },
-  {
-    name: "Demo User",
-    userName: "demouser",
-    email: "demouser@example.com",
-    password: "demo-password",
-  },
-  {
-    name: "Sample User",
-    userName: "sampleuser",
-    email: "sampleuser@example.com",
-    password: "sample-password",
-  },
-  {
-    name: "Example User",
-    userName: "exampleuser",
-    email: "exampleuser@example.com",
-    password: "example-password",
-  },
-  {
-    name: "Outsider User",
-    userName: "outsider",
-    email: "outsider@example.com",
-    password: "outsider-password",
-  },
-  {
-    name: "New Avenger",
-    userName: "newavenger",
-    email: "newavenger@example.com",
-    password: "avenger-password",
-  },
-  {
-    name: "Multi Workspace User",
-    userName: "multiworkspace",
-    email: "multiworkspace@example.com",
-    password: "multi-password",
+    name: "System User",
+    userName: "sys_user",
+    email: "sys_user@example.com",
+    password: USER_PASSWORD,
   },
 ];
 
-const workspaces: SeedWorkspace[] = [
+const avengersUsers: SeedUser[] = [
+  // Avengers themed users
   {
-    name: "Avengers Workspace",
-    slug: "avengers-workspace",
-    createdBy: "admin", // This user will be the creator/owner
+    name: "Tony Stark",
+    userName: "iron_man",
+    email: "tony@avengers.com",
+    password: USER_PASSWORD,
   },
   {
-    name: "New Avenger Workspace",
-    slug: "new-avenger-workspace",
-    createdBy: "newavenger",
+    name: "Steve Rogers",
+    userName: "captain_america",
+    email: "steve@avengers.com",
+    password: USER_PASSWORD,
   },
   {
-    name: "Multi Workspace One",
-    slug: "multi-workspace-one",
-    createdBy: "multiworkspace",
+    name: "Bruce Banner",
+    userName: "hulk",
+    email: "bruce@avengers.com",
+    password: USER_PASSWORD,
   },
-  {
-    name: "Multi Workspace Two",
-    slug: "multi-workspace-two",
-    createdBy: "multiworkspace",
-  },
+  { name: "Dead Pool",
+    userName: "dead_pool",
+    email: "dead@avengers.com",
+    password: USER_PASSWORD,
+  }
 ];
 
-const workspaceAssignments: WorkspaceAssignment[] = [
-  // Creators are assigned as 'owner' role
-  { workspaceSlug: "avengers-workspace", userName: "admin", role: "owner" },
+const justiceLeagueUsers: SeedUser[] = [
+  // System users
   {
-    workspaceSlug: "new-avenger-workspace",
-    userName: "newavenger",
-    role: "owner",
+    name: "Bruce Wayne",
+    userName: "batman",
+    email: "bruce@justice.com",
+    password: USER_PASSWORD,
+  },
+  // Justice League themed users
+  {
+    name: "Clark Kent",
+    userName: "superman",
+    email: "clark@justice.com",
+    password: USER_PASSWORD,
   },
   {
-    workspaceSlug: "multi-workspace-one",
-    userName: "multiworkspace",
-    role: "owner",
+    name: "Diana Prince",
+    userName: "wonder_woman",
+    email: "diana@justice.com",
+    password: USER_PASSWORD,
+  }, 
+  {
+    name: "Death Stroke",
+    userName: "death_stroke",
+    email: "death@justice.com",
+    password: USER_PASSWORD,
+  }
+];
+
+const workspaces: (SeedWorkspace & { creatorUserName: string })[] = [
+  {
+    creatorUserName: systemUsers[0].userName,
+    name: "System Workspace",
+    slug: "system-workspace",
+    createdAt: new Date(),
+    updatedAt: null,
   },
   {
-    workspaceSlug: "multi-workspace-two",
-    userName: "multiworkspace",
-    role: "owner",
+    creatorUserName: avengersUsers[0].userName,
+    name: "Avengers",
+    slug: "avengers",
+    logo: "",
+    createdAt: new Date(),
+    updatedAt: null,
   },
+  {
+    creatorUserName: justiceLeagueUsers[0].userName,
+    name: "Justice League",
+    slug: "justice-league",
+    logo: "",
+    createdAt: new Date(),
+    updatedAt: null,
+  },
+  {
+    creatorUserName: avengersUsers[1].userName,
+    name: "Illuminati",
+    slug: "illuminati",
+    logo: "",
+    createdAt: new Date(),
+    updatedAt: null,
+
+  }
+];
+
+const workspaceMembers: WorkspaceAssignment[] = [
   // Additional members with different roles
-  { workspaceSlug: "avengers-workspace", userName: "member", role: "member" },
+  { workspaceSlug: workspaces[0].slug, userName: "member", role: "member" },
   { workspaceSlug: "avengers-workspace", userName: "testuser", role: "admin" },
   { workspaceSlug: "new-avenger-workspace", userName: "guest", role: "member" },
 ];
@@ -154,13 +166,13 @@ async function seed() {
     console.log("Database reset complete.");
 
     // Store user session tokens and IDs for later use
-    const userSessionMap = new Map<string, string>(); // userName -> sessionToken
-    const userIdMap = new Map<string, string>(); // userName -> userId
+    const userSessionMap = new Map<string, TUserId>(); // userName -> sessionToken
+    const userIdMap = new Map<string, TUserId>(); // userName -> userId
     const userEmailMap = new Map<string, string>(); // userName -> email
 
     // 2. Create Users
     console.log("Creating users...");
-    for (const seedUser of users) {
+    for (const seedUser of systemUsers.concat(avengersUsers, justiceLeagueUsers)) {
       const response = await auth.api.signUpEmail({
         body: {
           email: seedUser.email,
@@ -187,112 +199,51 @@ async function seed() {
         throw new Error(`Session token missing for ${seedUser.userName}`);
       }
 
+      const userId = safeResponse.user.id  as TUserId;
+
       userSessionMap.set(seedUser.userName, sessionToken);
-      userIdMap.set(seedUser.userName, response.user.id);
+      userIdMap.set(seedUser.userName, userId);
       userEmailMap.set(seedUser.userName, seedUser.email);
       console.log(`Created user: ${seedUser.userName}`);
     }
 
     // Store workspace IDs mapped by slug
-    const workspaceIdMap = new Map<string, string>(); // slug -> workspaceId
+    const workspaceIdMap = new Map<string, TWorkspaceId>(); // slug -> workspaceId
     const workspaceOwnerMap = new Map<string, string>(); // slug -> ownerUserName
 
     // 3. Create Workspaces
     console.log("Creating workspaces...");
     for (const workspace of workspaces) {
-      if (!workspace.createdBy) {
-        console.warn(
-          `Skipping workspace ${workspace.name}: No createdBy user specified.`,
-        );
-        continue;
-      }
+      const createdWorkspaced = await workspaceMemberManager.createWorkspace({
+        name: workspace.name,
+        slug: workspace.slug,
+        logoUrl: workspace.logo || "",
+        ownerId: userIdMap.get(workspace.creatorUserName)!,
+        description: `${workspace.name} description`,
+      })
 
-      const ownerToken = userSessionMap.get(workspace.createdBy);
-      if (!ownerToken) {
-        console.error(
-          `Cannot create workspace ${workspace.name}: Creator ${workspace.createdBy} not found.`,
-        );
-        continue;
-      }
-
-      // Create Organization explicitly specifying userId (server-side mode)
-      const creatorId = userIdMap.get(workspace.createdBy);
-
-      const newOrg = await auth.api.createOrganization({
-        body: {
-          userId: creatorId, // Specify creator explicitly
-          name: workspace.name,
-          slug: workspace.slug,
-          logo: workspace.logo || "",
-        },
-      });
-
-      if (!newOrg) {
-        throw new Error(`Failed to create workspace ${workspace.name}`);
-      }
-
-      workspaceIdMap.set(workspace.slug, newOrg.id);
-      workspaceOwnerMap.set(workspace.slug, workspace.createdBy);
-      console.log(
-        `Created workspace: ${workspace.name} by ${workspace.createdBy} `,
-      );
+      workspaceIdMap.set(workspace.slug, createdWorkspaced.id);
     }
 
-    // 4. Assign Members
-    console.log("Assigning members...");
-    for (const assignment of workspaceAssignments) {
+    // 4. Assign Members to Workspaces
+    console.log("Assigning members to workspaces...");
+    for (const assignment of workspaceMembers) {
       const workspaceId = workspaceIdMap.get(assignment.workspaceSlug);
-      const ownerUserName = workspaceOwnerMap.get(assignment.workspaceSlug);
-      const ownerToken = ownerUserName
-        ? userSessionMap.get(ownerUserName)
-        : null;
-
-      if (!workspaceId || !ownerToken) {
-        console.warn(
-          `Skipping assignment for ${assignment.userName} in ${assignment.workspaceSlug}: Workspace or Owner not found.`,
-        );
-        continue;
-      }
-
-      // Skip if the user is the creator (they are already added as owner by createOrganization)
-      if (assignment.userName === ownerUserName) {
-        // Creator is automatically assigned as 'owner' via creatorRole config
-        console.log(
-          `Skipping explicit assignment for creator/owner ${assignment.userName}`,
-        );
-        continue;
-      }
-
       const userId = userIdMap.get(assignment.userName);
-      if (!userId) {
-        console.warn(`User ID not found for ${assignment.userName}`);
-        continue;
-      }
 
-      // Add member to organization using the Owner's session
-      try {
-        const result = await auth.api.addMember({
-          headers: {
-            cookie: `better-auth.session_token=${ownerToken}`,
-            origin: config.betterAuthUrl,
-          },
-          body: {
-            organizationId: workspaceId,
-            userId: userId,
-            role: assignment.role, // Use the role from assignment
-          },
-        });
-        if (result) {
-          console.log(result);
-        }
-        console.log(
-          `Added ${assignment.userName} to ${assignment.workspaceSlug} as ${assignment.role}`,
-        );
-      } catch (error: unknown) {
-        console.error(
-          `Failed to add member ${assignment.userName} to ${assignment.workspaceSlug}:`,
-          error,
-        );
+      if (!workspaceId || !userId) {
+        console.error(`Invalid workspace slug or user name for assignment: ${assignment.workspaceSlug}, ${assignment.userName}`);
+        continue;
+      } 
+
+      const newMember = await workspaceMemberManager.joinWorkspace({
+        workspaceId,
+        userId,
+        role: assignment.role,
+      });
+
+      if (!newMember) {
+        console.error(`Failed to assign user ${assignment.userName} to workspace ${assignment.workspaceSlug}`);
       }
     }
 

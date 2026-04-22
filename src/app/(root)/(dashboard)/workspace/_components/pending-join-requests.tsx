@@ -221,7 +221,7 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
                     <TableCell className="font-medium">
                       {request.name}
                       <p className="text-xs text-muted-foreground">
-                        @{request.user.userName}
+                        @{request.user?.username}
                       </p>
                     </TableCell>
                     <TableCell>{request.user.email}</TableCell>

@@ -11,13 +11,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { SelectWorkspaceType } from "@/db/schema/type";
+import type { IWorkspaceDTO } from "@/modules/workspace";
 import { getAllWorkspaces } from "@/action";
 import { useEffect, useState } from "react";
 import { useWorkspaceStore } from "@/store/workspace";
 
 const OrgSwitcher = () => {
-  const [organizations, setOrganizations] = useState<SelectWorkspaceType[]>([]);
+  const [organizations, setOrganizations] = useState<IWorkspaceDTO[]>([]);
   const router = useRouter();
   const { data: org } = authClient.useListOrganizations();
 
@@ -30,8 +30,12 @@ const OrgSwitcher = () => {
 
   useEffect(() => {
     const fetchOrganizations = async () => {
-      const orgs = await getAllWorkspaces();
-      setOrganizations(orgs || []);
+      const response = await getAllWorkspaces();
+      if (response.success && response.data) {
+        setOrganizations(response.data);
+      } else {
+        setOrganizations([]);
+      }
 
       // Sync workspace store with Better Auth active org
       if (org?.[0]) {
@@ -51,7 +55,7 @@ const OrgSwitcher = () => {
     // Find the selected organization to update store
     const selectedOrg = organizations.find((o) => o.slug === organizationSlug);
     if (selectedOrg) {
-      setWorkspace(selectedOrg.id, selectedOrg.name, selectedOrg.slug);
+      setWorkspace(selectedOrg.id as unknown as string, selectedOrg.name, selectedOrg.slug);
     }
 
     router.push(`/workspace/${organizationSlug}/`);
@@ -68,7 +72,7 @@ const OrgSwitcher = () => {
             <SelectItem
               className="dark:text-white/75"
               value={org.slug}
-              key={org.id}
+              key={org.id as unknown as string}
               onClick={() => router.push(`/workspace${org.slug}`)}
             >
               {org.name}
