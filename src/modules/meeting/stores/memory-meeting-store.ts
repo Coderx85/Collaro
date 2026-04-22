@@ -1,7 +1,6 @@
-import { IMeetingDTO, IWorkspaceMeetingDTO, TMeetingId, TWorkspaceId, TeamMeetingDTO, meetingStatus } from "../interface";
-import { IMeetingStore, IParticipantDTO } from ".";
-import { TUserId } from "@collaro/user";
-import { TMemberId } from "@collaro/member";
+import { IMeetingDTO, TMeetingId, TWorkspaceId, TeamMeetingDTO, meetingStatus } from "../interface";
+import { IMeetingStore } from ".";
+import { TUserId , TMemberId } from "@/types";
 import { db } from "@/db";
 import { privateMeetingsTable, workspaceMeetingTable } from "@/db/schema/schema";
 import { and, eq } from "drizzle-orm";
@@ -19,6 +18,7 @@ export class MemoryMeetingStore implements IMeetingStore<TUserId> {
 
   async save(meeting: IMeetingDTO<TUserId>): Promise<void> {
     await db.insert(privateMeetingsTable).values({
+      meetingId: meeting.id,
       hostedBy: meeting.createdBy,
       description: meeting.description,
       endAt: null,

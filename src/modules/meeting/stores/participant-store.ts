@@ -1,4 +1,4 @@
-import { IMember, Member, TMemberId } from "@collaro/member";
+import { IMember, Member } from "@collaro/member";
 import { TMeetingId } from "../interface";
 import { IMeetingStore, IParticipantDTO, IParticipantStore, MemoryWorkspaceMeetingStore, TParticipantId, TParticipantStatus } from "./index";
 import { Input } from "@collaro/utils/omit";
@@ -6,6 +6,7 @@ import { ID } from "@/modules/utils/generate";
 import { db } from "@/db";
 import { meetingParticipantsTable } from "@/db/schema/schema";
 import { and, eq } from "drizzle-orm";
+import { TMemberId } from "@/types";
 
 const localStorage: IParticipantDTO[] = [];
 

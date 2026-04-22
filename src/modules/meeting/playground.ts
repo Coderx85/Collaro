@@ -15,8 +15,8 @@ async function main() {
     email: "john@example.com",
     name: "John Doe",
     password: "password123",
-    userName: "john_doe",
-  })
+    username: "john_doe",
+  });
 
   // Create a private meeting
   // const privateMeeting = new PrivateMeeting({
@@ -33,17 +33,17 @@ async function main() {
   //   endTime: null,
   // });
 
-  const workspace = new WorkspaceMemberManager()
+  const workspace = WorkspaceMemberManager.getInstance();
 
   const createdWorkspace = await workspace.createWorkspace({
     name: "Workspace 1",
     description: "This is the first workspace",
     ownerId: user_01.id,
     slug: "workspace-1",
-  })
+  });
 
-  const member = await  workspace.getMemberDetails({
-    userID: user_01.id,
+  const member = await workspace.getMemberDetails({
+    userId: user_01.id,
     workspaceId: createdWorkspace.id,
   });
 
@@ -60,12 +60,12 @@ async function main() {
     description: "This is a team meeting",
     createdBy: member.id,
     startTime: new Date(),
-    status: "Ongoing",
+    status: "active",
     endTime: null,
     participants: {
-      [member.name]: member.id
+      [member.name]: member.id,
     },
-  })
+  });
 
   console.log("Created team meeting:", meeting);
 }

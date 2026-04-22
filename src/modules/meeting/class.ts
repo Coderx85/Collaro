@@ -14,8 +14,7 @@ import {
   IParticipantDTO,
 } from "./index";
 import { ID } from "@collaro/utils/generate";
-import { TMemberId } from "@collaro/member/interface";
-import { TUserId } from "@collaro/user";
+import { TMemberId , TUserId } from "@/types";
 
 export type TMeetingInput<T> = Omit<Input<T>, "participants">
 
@@ -84,7 +83,7 @@ export class TeamMeeting extends MeetingBase<IWorkspaceMeetingDTO, Input<TeamMee
       title: input.title,
       createdBy: input.createdBy,
       workspaceId: input.workspaceId,
-      status: "Scheduled",
+      status: "active",
       createdAt: new Date(),
       description: input.description,
       startTime: input.startTime,

@@ -1,5 +1,6 @@
-import { IMember, IMemberDTO, TMemberId } from "@collaro/member";
-import { IMeetingDTO, meetingStatus, TeamMeetingDTO, TMeetingId, TWorkspaceId } from "..";
+import { IMember, IMemberDTO } from "@collaro/member";
+import { IMeetingDTO, meetingStatus, TMeetingId } from "..";
+import { TMemberId } from "@/types";
 import { Input } from "@collaro/utils/omit";
 import { BRAND } from "@/modules/utils/brand";
 
