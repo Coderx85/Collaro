@@ -1,4 +1,5 @@
-import { TCreateUserInput, User } from "@collaro/user";
+import { TCreateUserInput } from "@/types";
+import { User } from "@collaro/user";
 import { WorkspaceMemberManager } from "./index";
 import { generateUserName } from "@collaro/utils/generate";
 
@@ -30,7 +31,8 @@ const secondUserInput: TCreateUserInput = {
 
 const secondUser = await userService.createUser(secondUserInput);
 
-workspaceMemberManager.joinWorkspace(workspace.id, secondUser.id);
+workspaceMemberManager.joinWorkspace({ userId: secondUser.id, workspaceId: workspace.id, role: "admin" });
+
 console.log("Added member details:", secondUser);
 
 workspaceMemberManager.listMembers(workspace.id);

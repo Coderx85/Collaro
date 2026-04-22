@@ -3,19 +3,19 @@ import { User } from "@collaro/user";
 import { generateUserName, generateWorkspaceSlug } from "./utils/generate";
 
 const userService = new User();
-const workspaceManager = new WorkspaceMemberManager();
-const meetingManager = new WorkspaceMeetingManager();
+const workspaceManager = WorkspaceMemberManager.getInstance();
+const meetingManager = WorkspaceMeetingManager.getInstance();
 
 async function main() {
   try {
-    const user01 = userService.createUser({
+    const user01 = await userService.createUser({
       name: "Tony Stark",
       email: "tony.stark@avengers.com",
       password: "password123",
       userName: generateUserName("Tony Stark")
     });
     
-    const avengers = workspaceManager.createWorkspace({
+    const avengers = await workspaceManager.createWorkspace({
       name: "Team Avengers",
       description: "Workspace for the Avengers team",
       ownerId: user01.id,
@@ -23,7 +23,7 @@ async function main() {
     });
     
     const memberDetails = await workspaceManager.getMemberDetails({
-      userID: user01.id,
+      userId: user01.id,
       workspaceId: avengers.id
     });
     
@@ -31,13 +31,13 @@ async function main() {
       title: "Avengers Initiative Planning",
       description: "Discuss the details of the Avengers initiative Project.",
       createdBy: memberDetails!.id,
-      status: "Scheduled",
+      status: "scheduled",
       workspaceId: avengers.id,
       startTime: new Date(Date.now() + 60 * 60 * 1000), // Schedule for 1 hour later
     }, avengers.id);
     console.log("Created Meeting:", avengersMeeting);
 
-    const user02 = userService.createUser({
+    const user02 = await userService.createUser({
       name: "Steve Rogers",
       email: "steve.rogers@avengers.com",
       password: "password123",
@@ -45,10 +45,14 @@ async function main() {
     });
       
     // Steve Rogers joins the Avengers workspace
-    workspaceManager.joinWorkspace(avengers.id, user02.id);
+    await workspaceManager.joinWorkspace({
+      userId: user02.id,
+      workspaceId: avengers.id,
+      role: "member"
+    });
 
     const memberDetails02 = await workspaceManager.getMemberDetails({
-      userID: user02.id,
+      userId: user02.id,
       workspaceId: avengers.id
     });
     console.log("Member Details for Steve Rogers in Avengers workspace:", memberDetails02);

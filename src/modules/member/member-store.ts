@@ -1,8 +1,9 @@
 import { db } from "@/db";
 import { membersTable } from "@/db/schema/schema";
 import { and, eq } from "drizzle-orm";
-import { IMemberDTO, TMemberId, IMemberStore } from ".";
+import { IMemberDTO, IMemberStore } from ".";
 import { IWorkspaceDTO } from "../workspace";
+import { TMemberId } from "@/types";
 
 export class MemberStore implements IMemberStore {
   async save(member: IMemberDTO): Promise<void> {

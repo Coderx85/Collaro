@@ -1,6 +1,7 @@
 import { IWorkspaceDTO } from "@collaro/workspace";
-import { IMember, IMemberDTO, IMemberStore, TMemberId } from "./interface";
+import { IMember, IMemberDTO, IMemberStore } from "./interface";
 import { MemberStore } from "./member-store";
+import { TMemberId } from "@/types";
 
 export class Member implements IMember {
   member: IMemberDTO = {} as IMemberDTO;

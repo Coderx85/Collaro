@@ -1,5 +1,5 @@
 import { IMemberDTO } from "@collaro/member";
-import { IUserDTO } from "@collaro/user";
+import { IUserDTO } from "@/types";
 
 export interface ISorting {
   sortby<T>(array: T[], key: keyof T, order?: "asc" | "desc"): T[];

@@ -1,16 +1,16 @@
-import { IUser, IUserDTO } from "@collaro/user";
+import { IUserDTO, TMemberId } from "@/types";
 import { Input } from "@collaro/utils/omit";
-import { IWorkspaceDTO, IWorkspaceStore } from "@collaro/workspace";
-import { BRAND } from "zod";
+import { IWorkspaceDTO } from "@collaro/workspace";
 
-export type TMemberId = BRAND<"MemberId">;
+export type TMemberRole = 'owner' | 'admin' | 'member';
+export type TInviteMemberRole = Exclude<TMemberRole, 'owner'>;
 
 export interface IMemberDTO {
   id: TMemberId;
   name: string;
   userId: IUserDTO["id"];
   workspaceId: IWorkspaceDTO["id"];
-  role: 'owner' | 'admin' | 'member';
+  role: TMemberRole;
   createdAt: Date;
   updatedAt: Date | null;
 }
@@ -37,13 +37,16 @@ export interface IMemberStore {
   checkMemberExists(workspaceId: IWorkspaceDTO["id"], memberId: TMemberId): Promise<boolean>;
 }
 
-export interface IWorkspaceMemberManager {
-  memberStore: IMemberStore;
-  workspaceStore: IWorkspaceStore;
-  user: IUser;
+export type JoinWorkspaceParams = {
+  workspaceId: IWorkspaceDTO["id"];
+  userId: IUserDTO["id"];
+  role: TInviteMemberRole;
+};
 
+export interface IWorkspaceMemberManager {
   createWorkspace(workspace: Input<IWorkspaceDTO>): Promise<IWorkspaceDTO>;
-  joinWorkspace(workspaceId: IWorkspaceDTO["id"], userId: IUserDTO["id"]): Promise<void>;
+  joinWorkspace(params: JoinWorkspaceParams): Promise<IWorkspaceDTO>;
+
   listMembers(workspaceId: IWorkspaceDTO["id"]): Promise<IMemberDTO[]>;
   banMember(workspaceId: IWorkspaceDTO["id"], memberId: TMemberId): Promise<void>;
   removeMemberFromWorkspace(workspaceId: IWorkspaceDTO["id"], memberId: TMemberId): Promise<void>;

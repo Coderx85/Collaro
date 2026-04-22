@@ -1,14 +1,21 @@
 import { TWorkspaceDTO } from "@/types/workspace.types";
-import { IMeetingStore, IParticipantDTO, IParticipantStore, IWorkspaceMeetingDTO, MemoryWorkspaceMeetingStore, ParticipantStore, TeamMeetingDTO, TMeetingId } from "@collaro/meeting";
-import { IMemberDTO, IWorkspaceMemberManager, TMemberId, WorkspaceMemberManager } from "@collaro/member";
+import { IParticipantDTO, IParticipantStore, IWorkspaceMeetingDTO, MemoryWorkspaceMeetingStore, ParticipantStore, TeamMeetingDTO, TMeetingId } from "@collaro/meeting";
+import { IMemberDTO, IMemberStore, IWorkspaceMemberManager, MemberStore, WorkspaceMemberManager } from "@collaro/member";
 import { ID } from "@collaro/utils/generate";
 import { Input } from "@collaro/utils/omit";
 import { IWorkspaceDTO } from "@collaro/workspace/interface";
+import { IRequestMember, RequestMember } from "../workspace";
+import { IUser, User } from "../user";
+import { MemberSorting } from "../sorting/interface";
+import { TMemberId } from "@/types";
 
 export class WorkspaceMeetingManager {
-  manager: IWorkspaceMemberManager = WorkspaceMemberManager.getInstance();
+  private memberStore: IMemberStore = new MemberStore();
   participantStore: IParticipantStore = ParticipantStore.getInstance();
-  meetingStore = MemoryWorkspaceMeetingStore.getInstance();
+  private meetingStore = MemoryWorkspaceMeetingStore.getInstance();
+  private requestService: IRequestMember = new RequestMember();
+  private user: IUser = new User();
+  private sorting = new MemberSorting();
 
   static instance: WorkspaceMeetingManager;
   static getInstance(): WorkspaceMeetingManager {
@@ -30,7 +37,7 @@ export class WorkspaceMeetingManager {
       throw new Error(`Meeting with ID: ${meetingId} not found`);
     }
 
-    const checkExists = await this.manager.memberStore.checkMemberExists(meeting.workspaceId, memberId);
+    const checkExists = await this.memberStore.checkMemberExists(meeting.workspaceId, memberId);
     if (!checkExists) {
       throw new Error(`Member with Id ${memberId} does not exist in workspace with ID: ${meeting.workspaceId}`);
     }
@@ -39,7 +46,7 @@ export class WorkspaceMeetingManager {
   }
 
   async validateMember(memberId: TMemberId): Promise<IMemberDTO> {
-    const member = await this.manager.memberStore.findById(memberId);
+    const member = await this.memberStore.findById(memberId);
     if (!member) {
       throw new Error(`Member with ID: ${memberId} not found`);
     }
@@ -48,7 +55,7 @@ export class WorkspaceMeetingManager {
 
   async createMeeting(input: Omit<Input<TeamMeetingDTO>, "participants" | "endTime">, workspaceId: IWorkspaceDTO["id"]): Promise<TeamMeetingDTO> {
     try {
-      const checkExists = await this.manager.memberStore.checkMemberExists(workspaceId, input.createdBy);
+      const checkExists = await this.memberStore.checkMemberExists(workspaceId, input.createdBy);
       if (!checkExists) {
         throw new Error(`Member with Id ${input.createdBy} does not exist in workspace with ID: ${workspaceId}`);
       }
