@@ -8,8 +8,6 @@ import { meetingParticipantsTable } from "@/db/schema/schema";
 import { and, eq } from "drizzle-orm";
 import { TMemberId } from "@/types";
 
-const localStorage: IParticipantDTO[] = [];
-
 export class ParticipantStore implements IParticipantStore {
   private static instance: ParticipantStore;
 

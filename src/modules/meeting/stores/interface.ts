@@ -8,7 +8,10 @@ export interface IMeetingStore<T> {
   checkMeetingExists(id: TMeetingId): Promise<boolean>;
   save(meeting: IMeetingDTO<T>): Promise<void>;
   findById(id: TMeetingId): Promise<IMeetingDTO<T> | null>;
-  update(id: TMeetingId, meeting: Partial<IMeetingDTO<T>>): Promise<IMeetingDTO<T>>;
+  update(
+    id: TMeetingId,
+    meeting: Partial<IMeetingDTO<T>>,
+  ): Promise<IMeetingDTO<T>>;
   updateStatus(id: TMeetingId, status: meetingStatus): Promise<void>;
   delete(id: TMeetingId): Promise<void>;
 }

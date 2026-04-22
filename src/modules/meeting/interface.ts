@@ -15,10 +15,8 @@ export enum MeetingType {
 
 export type meetingStatus = "scheduled" | "active" | "completed" | "cancelled";
 
-export type TParicipants<T> = Record<string, T>;
-
 export interface IMeetingDTO<T> {
-  participants: TParicipants<T>;
+  participants: Record<string, string>;
   id: TMeetingId;
   title: string;
   createdBy: T;
