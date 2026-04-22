@@ -34,7 +34,11 @@ export interface IMemberStore {
   update(id: TMemberId, member: Partial<IMemberDTO>): Promise<void>;
   delete(id: TMemberId): Promise<void>;
   list(): Promise<IMemberDTO[]>;
-  checkMemberExists(workspaceId: IWorkspaceDTO["id"], memberId: TMemberId): Promise<boolean>;
+  listWorkspaceMembers(workspaceId: IWorkspaceDTO["id"]): Promise<IMemberDTO[]>;
+  checkMemberExists(
+    workspaceId: IWorkspaceDTO["id"],
+    memberId: TMemberId,
+  ): Promise<boolean>;
 }
 
 export type JoinWorkspaceParams = {

@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { IMemberDTO, IMemberStore } from ".";
 import { IWorkspaceDTO } from "../workspace";
 import { TMemberId } from "@/types";
+import tryCatch from "@/lib/try-catch-wrapper";
 
 export class MemberStore implements IMemberStore {
   async save(member: IMemberDTO): Promise<void> {
@@ -17,10 +18,7 @@ export class MemberStore implements IMemberStore {
       updatedAt: member.updatedAt,
     };
 
-    const [newMember] = await db
-      .insert(membersTable)
-      .values(dto)
-      .returning()
+    const [newMember] = await db.insert(membersTable).values(dto).returning();
 
     if (!newMember) {
       throw new Error("Failed to save member to the database.");
@@ -29,18 +27,18 @@ export class MemberStore implements IMemberStore {
     return;
   }
 
-  async findById(id: TMemberId): Promise<IMemberDTO | null> {    
+  async findById(id: TMemberId): Promise<IMemberDTO | null> {
     try {
       const [member] = await db
         .select()
         .from(membersTable)
         .where(eq(membersTable.id, id));
-  
+
       if (!member) {
         console.log(`Member with ID: ${id} not found in the database.`);
         return null;
       }
-  
+
       const memberDTO: IMemberDTO = {
         id: member.id,
         name: member.name,
@@ -52,34 +50,61 @@ export class MemberStore implements IMemberStore {
       };
 
       if (!memberDTO) {
-        throw new Error(`Failed to convert database record to IMemberDTO for member ID: ${id}.`);
+        throw new Error(
+          `Failed to convert database record to IMemberDTO for member ID: ${id}.`,
+        );
       }
 
       return memberDTO || null;
     } catch (error: unknown) {
-      console.error(`Error occurred while fetching member with ID: ${id}`, error);
+      console.error(
+        `Error occurred while fetching member with ID: ${id}`,
+        error,
+      );
       return null;
     }
   }
 
+  async listWorkspaceMembers(
+    workspaceId: IWorkspaceDTO["id"],
+  ): Promise<IMemberDTO[]> {
+    return tryCatch({
+      ctx: async () => {
+        const members = await db
+          .select()
+          .from(membersTable)
+          .where(eq(membersTable.workspaceId, workspaceId));
+
+        return members.map((member) => ({
+          id: member.id,
+          name: member.name,
+          userId: member.userId,
+          workspaceId: member.workspaceId,
+          role: member.role,
+          createdAt: member.createdAt,
+          updatedAt: member.updatedAt,
+        }));
+      },
+    });
+  }
+
   async delete(id: TMemberId): Promise<void> {
     try {
-      await db
-        .delete(membersTable)
-        .where(eq(membersTable.id, id));
+      await db.delete(membersTable).where(eq(membersTable.id, id));
     } catch (error) {
-      console.error(`Error occurred while deleting member with ID: ${id}`, error);
+      console.error(
+        `Error occurred while deleting member with ID: ${id}`,
+        error,
+      );
       throw new Error(`Failed to delete member with ID: ${id}`);
     }
   }
 
   async list(): Promise<IMemberDTO[]> {
     try {
-      const members = await db
-        .select()
-        .from(membersTable);
-          
-      return members.map(member => ({
+      const members = await db.select().from(membersTable);
+
+      return members.map((member) => ({
         id: member.id,
         name: member.name,
         userId: member.userId,
@@ -88,18 +113,19 @@ export class MemberStore implements IMemberStore {
         createdAt: member.createdAt,
         updatedAt: member.updatedAt,
       }));
-
     } catch (error: unknown) {
-      throw new Error(`Error occurred while listing members.`, { cause: error });
+      throw new Error(`Error occurred while listing members.`, {
+        cause: error,
+      });
     }
-    
   }
 
-  async update(id: TMemberId, member: Partial<IMemberDTO>): Promise<void>  {
+  async update(id: TMemberId, member: Partial<IMemberDTO>): Promise<void> {
     const memberToUpdate = await this.findById(id);
-    
-    if (!memberToUpdate) throw new Error(`Member with ID: ${id} not found. Cannot update.`);
- 
+
+    if (!memberToUpdate)
+      throw new Error(`Member with ID: ${id} not found. Cannot update.`);
+
     const updatedMember: IMemberDTO = {
       ...memberToUpdate,
       ...member,
@@ -119,30 +145,42 @@ export class MemberStore implements IMemberStore {
         .where(eq(membersTable.id, id));
 
       if (!result) {
-        throw new Error(`Failed to update member with ID: ${id} in the database.`);
+        throw new Error(
+          `Failed to update member with ID: ${id} in the database.`,
+        );
       }
-        
+
       return;
-      }
-      catch (error) {
-      console.error(`Error occurred while updating member with ID: ${id}`, error);
+    } catch (error) {
+      console.error(
+        `Error occurred while updating member with ID: ${id}`,
+        error,
+      );
       throw new Error(`Failed to update member with ID: ${id}`);
     }
-    
   }
 
-  async checkMemberExists(workspaceId: IWorkspaceDTO["id"], memberId: TMemberId): Promise<boolean> {
+  async checkMemberExists(
+    workspaceId: IWorkspaceDTO["id"],
+    memberId: TMemberId,
+  ): Promise<boolean> {
     try {
       const [member] = await db
         .select()
         .from(membersTable)
         .where(
-          and(eq(membersTable.id, memberId), eq(membersTable.workspaceId, workspaceId))
+          and(
+            eq(membersTable.id, memberId),
+            eq(membersTable.workspaceId, workspaceId),
+          ),
         );
-  
+
       return !!member;
     } catch (error: unknown) {
-      throw new Error(`Error occurred while checking if member with ID: ${memberId} exists in workspace ID: ${workspaceId}.`, { cause: error });
+      throw new Error(
+        `Error occurred while checking if member with ID: ${memberId} exists in workspace ID: ${workspaceId}.`,
+        { cause: error },
+      );
     }
   }
 }
