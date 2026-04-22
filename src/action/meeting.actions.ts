@@ -1,8 +1,7 @@
 "use server";
 import { workspaceMeetingManager, workspaceMemberManager } from "@/modules/manager";
-import { IParticipantDTO, IWorkspaceMeetingDTO, TeamMeetingDTO, TMeetingId } from "@/modules/meeting";
-import { IMemberDTO, TMemberId } from "@/modules/member";
-import { APIResponse, Call, MeetingResponse } from "@/types";
+import { IParticipantDTO, TeamMeetingDTO, TMeetingId } from "@/modules/meeting";
+import { APIResponse, MeetingResponse, TMemberId } from "@/types";
 
 export async function getCallsBySlug(slug: string): Promise<APIResponse<TeamMeetingDTO[]>> {
   try {

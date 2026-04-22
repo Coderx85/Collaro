@@ -108,7 +108,7 @@ export const auth = betterAuth({
                   id: user.id,
                   name: user.name,
                   email: user.email,
-                  userName: user.userName,
+                  userName: user?.username,
                   createdAt: user.createdAt,
                 },
               };
