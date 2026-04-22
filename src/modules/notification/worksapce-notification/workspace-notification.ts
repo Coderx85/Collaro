@@ -91,7 +91,6 @@ export class WorkspaceNotification {
         message,
         read: false,
         createdAt: new Date(),
-        updatedAt: null,
       };
   
       await this.store.create({...dto});
@@ -115,7 +114,6 @@ export class WorkspaceNotification {
         message,
         read: false,
         createdAt: new Date(),
-        updatedAt: null,
       };
   
       // Save the notification to the store

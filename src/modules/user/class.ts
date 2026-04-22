@@ -3,9 +3,16 @@ import { IUser, IUserStore } from "./interface";
 import { IUserDTO, TUserId, TCreateUserInput } from "@/types";
 import { UserStore } from "./user-store";
 import { Prettify } from "better-auth";
+import {
+  INotificationDTO,
+  INotificationStore,
+  notificationStore,
+} from "../notification";
+import tryCatch from "@/lib/try-catch-wrapper";
 
 export class User implements IUser {
   user: IUserDTO = {} as IUserDTO;
+  notificationService: INotificationStore = notificationStore;
   private store: IUserStore = UserStore.getInstance();
 
   private async findById(id: TUserId): Promise<IUserDTO | null> {
@@ -21,13 +28,13 @@ export class User implements IUser {
         createdAt: new Date(),
         updatedAt: null,
       };
-  
+
       // Save the new user to the store
       await this.store.save(newUser);
 
       // Update the user property with the newly created user
       this.user = newUser;
-      
+
       // return the newly created user
       return newUser;
     } catch (error) {
@@ -35,16 +42,19 @@ export class User implements IUser {
     }
   }
 
-  async updateUser(id: TUserId, user: Partial<IUserDTO>): Promise<IUserDTO | null> {
+  async updateUser(
+    id: TUserId,
+    user: Partial<IUserDTO>,
+  ): Promise<IUserDTO | null> {
     try {
       const existingUser = await this.findById(id);
-      
+
       if (existingUser) {
         this.store.update(id, user);
-  
-      return this.store.findById(id);
+
+        return this.store.findById(id);
       }
-  
+
       return this.user.id === id ? this.user : null;
     } catch (error) {
       throw new Error(`Error updating user: ${(error as Error).message}`);
@@ -70,6 +80,14 @@ export class User implements IUser {
   get listUsers(): IUserDTO[] {
     // Implementation to return a list of users
     return [this.user];
+  }
+
+  async listNotifications(userId: TUserId): Promise<INotificationDTO[]> {
+    return tryCatch({
+      ctx: async () => {
+        return await this.notificationService.queryNotifications({ userId });
+      },
+    });
   }
 }
 

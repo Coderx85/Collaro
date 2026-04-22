@@ -11,13 +11,12 @@ export interface INotificationDTO {
   message: string;
   read: boolean;
   createdAt: Date;
-  updatedAt: Date | null;
 }
 
-export interface INotification {
-  notification: INotificationDTO;
+export interface INotification<T extends INotificationDTO, TInput> {
+  notification: T;
 
-  createNotification(notification: INotificationDTO): Promise<INotificationDTO>;
+  createNotification(notification: TInput): Promise<INotificationDTO>;
 
   markAsRead(notificationId: TNotificationId): Promise<boolean>;
 

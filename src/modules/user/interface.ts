@@ -1,5 +1,8 @@
 import { Prettify } from "better-auth";
-import { IUserDTO, TCreateUserInput, TUserId } from "@/types";
+import { IUserDTO as dto, TCreateUserInput, TUserId } from "@/types";
+import { INotificationDTO } from "../notification";
+
+export interface IUserDTO extends dto {}
 
 export interface IUser {
   user: IUserDTO;
@@ -9,6 +12,7 @@ export interface IUser {
   getUser(id: TUserId): Promise<IUserDTO | null>;
   updateUser(id: TUserId, user: Partial<IUserDTO>): Promise<IUserDTO | null>;
   deleteUser(id: TUserId): Promise<void>;
+  listNotifications(userId: TUserId): Promise<INotificationDTO[]>;
 }
 
 export interface IUserStore {

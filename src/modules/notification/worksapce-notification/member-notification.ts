@@ -56,7 +56,6 @@ class WorkspaceMemberNotification {
       memberID: input.memberID,
       read: false,
       createdAt: new Date(),
-      updatedAt: null,
     };
 
     await this.store.create({
@@ -68,8 +67,7 @@ class WorkspaceMemberNotification {
       memberID: notification.memberID,
       read: notification.read,
       createdAt: notification.createdAt,
-      updatedAt: notification.updatedAt,
-    })
+    });
 
     return Promise.resolve(notification);
   }
