@@ -15,6 +15,13 @@
       "when": 1775497442321,
       "tag": "0001_parallel_madelyne_pryor",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776882809644,
+      "tag": "0002_clumsy_morlocks",
+      "breakpoints": true
     }
   ]
 }
