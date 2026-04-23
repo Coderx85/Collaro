@@ -1,17 +1,12 @@
-import { IUserDTO, TNotificationId } from "@/types";
-import { IMemberDTO } from "@collaro/member";
-import { IWorkspaceDTO } from "@collaro/workspace";
+import {
+  INotificationDTO as dto,
+  IUserDTO,
+  TNotificationId,
+  IWorkspaceDTO,
+  IMemberDTO,
+} from "@/types";
 
-export interface INotificationDTO {
-  id: TNotificationId;
-  userId: IUserDTO["id"];
-  workspaceId: IWorkspaceDTO["id"];
-  memberID?: IMemberDTO["id"];
-  type: string;
-  message: string;
-  read: boolean;
-  createdAt: Date;
-}
+export interface INotificationDTO extends dto {}
 
 export interface INotification<T extends INotificationDTO, TInput> {
   notification: T;
@@ -26,7 +21,7 @@ export interface INotification<T extends INotificationDTO, TInput> {
 export type GetNotificationQuery = {
   workspaceId?: IWorkspaceDTO["id"];
   userId?: IUserDTO["id"];
-  memberID?: IMemberDTO["id"]
+  memberID?: IMemberDTO["id"];
 };
 
 export interface INotificationStore {

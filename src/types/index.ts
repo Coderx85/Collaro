@@ -20,4 +20,6 @@ export * from "./user.types";
 
 export * from "./workspace.types";
 
+export * from "./member.types";
+
 export * from "./request.types";

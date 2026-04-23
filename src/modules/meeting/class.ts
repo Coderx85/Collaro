@@ -89,8 +89,8 @@ export class TeamMeeting extends MeetingBase<IWorkspaceMeetingDTO, Input<TeamMee
       startTime: input.startTime,
       endTime: null,
       participants: {
-        [String(input.createdBy)]: input.createdBy
-      }
+        [String(input.createdBy)]: input.title,
+      },
     };
 
     // console.log(`Creating meeting with ID: ${newMeeting.id} and title: ${newMeeting.title}`);
@@ -147,9 +147,9 @@ export class TeamMeeting extends MeetingBase<IWorkspaceMeetingDTO, Input<TeamMee
   async addParticipant(participant: IParticipantDTO): Promise<void> {
     await this.updateMeeting(this.meeting.id, {
       participants: {
-        [String(participant.memberId)]: participant.memberId
-      }
-    })
+        [String(participant.memberId)]: participant.name,
+      },
+    });
 
     await this.participantStore.addParticipant(participant);
   }

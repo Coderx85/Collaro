@@ -5,7 +5,7 @@ const newUser = user.createUser({
   name: "John Doe",
   email: "john.doe@example.com",
   password: "securepassword",
-  userName: "johndoe",
-})
+  username: "johndoe",
+});
 
 console.log(newUser);

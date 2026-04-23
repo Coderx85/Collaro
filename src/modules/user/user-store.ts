@@ -19,10 +19,13 @@ export class UserStore implements IUserStore {
   async save(user: IUserDTO): Promise<void> {
     await db.insert(usersTable).values({
       id: user.id,
+      userName: user.username,
       name: user.name,
-      userName: user?.username,
+      emailVerified: null,
+      password: "",
       email: user.email,
       createdAt: user.createdAt,
+      updatedAt: null,
     });
   }
 
@@ -40,11 +43,11 @@ export class UserStore implements IUserStore {
       const result: IUserDTO = {
         id: user.id,
         name: user.name,
-        userName: user?.username,
+        username: user?.userName,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt || null,
         email: user.email,
-      }
+      };
 
       return result;
     } catch (err: unknown){
@@ -69,6 +72,15 @@ export class UserStore implements IUserStore {
   }
   async list(): Promise<IUserDTO[]> {
     const users = await db.select().from(usersTable);
-    return users;
+    return {
+      ...users.map((user) => ({
+        id: user.id,
+        name: user.name,
+        username: user?.userName,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt || null,
+        email: user.email,
+      })),
+    };
   }
 }

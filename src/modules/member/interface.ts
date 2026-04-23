@@ -1,19 +1,11 @@
 import { IUserDTO, TMemberId } from "@/types";
 import { Input } from "@collaro/utils/omit";
-import { IWorkspaceDTO } from "@collaro/workspace";
+import { IMemberDTO as dto, IWorkspaceDTO } from "@/types";
 
 export type TMemberRole = 'owner' | 'admin' | 'member';
 export type TInviteMemberRole = Exclude<TMemberRole, 'owner'>;
 
-export interface IMemberDTO {
-  id: TMemberId;
-  name: string;
-  userId: IUserDTO["id"];
-  workspaceId: IWorkspaceDTO["id"];
-  role: TMemberRole;
-  createdAt: Date;
-  updatedAt: Date | null;
-}
+export interface IMemberDTO extends dto {}
 
 export interface IMember {
   member: IMemberDTO;

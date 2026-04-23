@@ -12,7 +12,7 @@ async function main() {
       name: "Tony Stark",
       email: "tony.stark@avengers.com",
       password: "password123",
-      userName: generateUserName("Tony Stark")
+      username: generateUserName("Tony Stark"),
     });
     
     const avengers = await workspaceManager.createWorkspace({
@@ -41,7 +41,7 @@ async function main() {
       name: "Steve Rogers",
       email: "steve.rogers@avengers.com",
       password: "password123",
-      userName: "steve_rogers"
+      username: "steve_rogers",
     });
       
     // Steve Rogers joins the Avengers workspace

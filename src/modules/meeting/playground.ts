@@ -63,7 +63,7 @@ async function main() {
     status: "active",
     endTime: null,
     participants: {
-      [member.name]: member.id,
+      [String(member.id)]: member.name,
     },
   });
 

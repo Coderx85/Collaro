@@ -11,7 +11,7 @@ const newUser = await userService.createUser({
   name: "Jane Doe",
   email: "jane.doe@example.com",
   password: "securepassword",
-  userName: "janedoe",
+  username: "janedoe",
 }); 
 
 // Create a new workspace
@@ -26,7 +26,7 @@ const secondUserInput: TCreateUserInput = {
   name: "Bob Smith",
   email: "bob.smith@example.com",
   password: "securepassword",
-  userName: generateUserName("Bob Smith"),
+  username: generateUserName("Bob Smith"),
 }
 
 const secondUser = await userService.createUser(secondUserInput);

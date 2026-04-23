@@ -71,9 +71,9 @@ export class WorkspaceMeetingManager {
         createdAt: new Date(),
         endTime: null,
         participants: {
-          [member.name]: input.createdBy
-        }
-      }
+          [String(member.id)]: member.name,
+        },
+      };
   
       // Save meeting to store
       await this.meetingStore.save(meeting);
@@ -100,11 +100,16 @@ export class WorkspaceMeetingManager {
   async joinMeeting(meetingId: TMeetingId, memberId: TMemberId): Promise<IParticipantDTO> {
     try {
       // Check if meeting exists
-      const checkExists = await this.checkMemberAccessToMeeting(meetingId, memberId);
-      if(!checkExists) {
-        throw new Error(`Member with Id ${memberId} does not exist in workspace with ID: ${meetingId}`);
+      const checkExists = await this.checkMemberAccessToMeeting(
+        meetingId,
+        memberId,
+      );
+      if (!checkExists) {
+        throw new Error(
+          `Member with Id ${memberId} does not exist in workspace with ID: ${meetingId}`,
+        );
       }
-  
+
       const meeting = await this.getMeeting(meetingId);
 
       const member = await this.validateMember(memberId);
@@ -118,17 +123,13 @@ export class WorkspaceMeetingManager {
         joinedAt: new Date(),
         leaveAt: null,
       });
-  
+
       // Update meeting participants
       const updatedParticipants = {
         ...meeting!.participants,
-        [member.name]: memberId
+        [String(member.id)]: member.name,
       };
-  
-      const updatedMeeting = await this.meetingStore.update(meetingId, { 
-        participants: updatedParticipants }
-      );
-      
+
       const participantDTO: IParticipantDTO = {
         id: ID.participantId(),
         role: member.role,
@@ -138,7 +139,7 @@ export class WorkspaceMeetingManager {
         memberId,
         name: member.name,
         joinedAt: new Date(),
-      }
+      };
 
       return participantDTO;
     } catch (error) {
