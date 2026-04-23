@@ -114,12 +114,15 @@ export const membersTable = pgTable(
 export const invitationTable = pgTable(
   "invitation",
   {
-    id: text("id").default(sql`gen_random_uuid()::text`).primaryKey(),
+    id: text("id")
+      .default(sql`gen_random_uuid()::text`)
+      .primaryKey(),
     workspaceId: text("workspace_id")
       .notNull()
       .references(() => workspacesTable.id, {
         onDelete: "cascade",
-      }).$type<TWorkspaceId>(),
+      })
+      .$type<TWorkspaceId>(),
     email: text("email").notNull(),
     role: pgUserRole().notNull().default("member"),
     status: text("status").default("pending").notNull(),
@@ -129,7 +132,8 @@ export const invitationTable = pgTable(
       .notNull()
       .references(() => usersTable.id, {
         onDelete: "cascade",
-      }),
+      })
+      .$type<TUserId>(),
   },
   (table) => [
     t.index("invitation_workspace_id_idx").on(table.workspaceId),

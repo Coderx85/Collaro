@@ -21,8 +21,6 @@ type Data = Pick<
   isLoading: boolean;
 };
 
-type Participants = Prettify<StreamVideoParticipant & { userId: TUserId }>;
-
 /**
  * Custom hook to get participant role with hybrid approach:
  * 1. First check if role is in participant custom data (passed during join)
@@ -30,14 +28,15 @@ type Participants = Prettify<StreamVideoParticipant & { userId: TUserId }>;
  * 3. Cache the result to avoid repeated lookups
  */
 export const useParticipantRole = (
-  participant: Participants,
+  participant: StreamVideoParticipant,
   workspaceSlug: string,
 ): Data => {
+  const userId = participant.userId as unknown as TUserId;
   const [roleData, setRoleData] = useState<Data>({
     role: "member",
     userName: participant.name || participant.userId,
     name: participant.name || participant.userId,
-    userId: participant.userId,
+    userId: userId,
     email: "",
     isLoading: true,
   });
@@ -46,10 +45,7 @@ export const useParticipantRole = (
     const fetchRole = async () => {
       // Step 1: Check if role is already in custom data (fastest)
       try {
-        const fetchRole = await getParticipantRole(
-          participant.userId,
-          workspaceSlug,
-        );
+        const fetchRole = await getParticipantRole(userId, workspaceSlug);
       } catch (error) {
         console.error("Error fetching participant role:", error);
         setRoleData({
@@ -58,7 +54,7 @@ export const useParticipantRole = (
           name: participant.name || participant.userId,
           email: "",
           isLoading: false,
-          userId: participant.userId,
+          userId: userId,
         });
       }
     };

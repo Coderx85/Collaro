@@ -18,6 +18,8 @@ import {
 } from "@tabler/icons-react";
 import { useWorkspaceStore } from "@/store/workspace";
 import { useSession } from "@/lib/auth";
+import { TUserId } from "@/types";
+import { IParticipantDTO } from "@/modules/meeting";
 
 /**
  * Custom VideoPlaceholder - shown when participant's video is off
