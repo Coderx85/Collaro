@@ -7,20 +7,23 @@ import { redirect } from "next/navigation";
 import { and, eq, desc } from "drizzle-orm";
 import type { APIResponse } from "@/types/api";
 import type { SelectNotificationType } from "@/db/schema/type";
+import { TNotificationId, TUserId, TWorkspaceId } from "@/types";
 
 /**
  * Get notifications for the current user
  */
 export async function getNotifications(
-  workspaceId?: string,
+  workspaceId?: TWorkspaceId,
   status?: "unread" | "read" | "all",
   limit: number = 20,
   offset: number = 0,
-): Promise<APIResponse<{
-  notifications: SelectNotificationType[];
-  total: number;
-  unreadCount: number;
-}>> {
+): Promise<
+  APIResponse<{
+    notifications: SelectNotificationType[];
+    total: number;
+    unreadCount: number;
+  }>
+> {
   try {
     const user = await getCurrentUser();
 
@@ -29,7 +32,8 @@ export async function getNotifications(
     }
 
     // Build where conditions
-    let whereConditions = eq(notificationsTable.userId, user.id);
+    const userId = user.id as unknown as TUserId;
+    let whereConditions = eq(notificationsTable.userId, userId);
 
     if (workspaceId) {
       whereConditions = and(
@@ -54,7 +58,7 @@ export async function getNotifications(
 
     // Get unread count
     const unreadCondition = and(
-      eq(notificationsTable.userId, user.id),
+      eq(notificationsTable.userId, userId),
       eq(notificationsTable.read, false),
       workspaceId ? eq(notificationsTable.workspaceId, workspaceId) : undefined,
     );
@@ -97,7 +101,7 @@ export async function getNotifications(
  * Mark a notification as read
  */
 export async function markNotificationAsRead(
-  notificationId: string,
+  notificationId: TNotificationId,
 ): Promise<APIResponse<SelectNotificationType>> {
   try {
     const user = await getCurrentUser();
@@ -132,7 +136,6 @@ export async function markNotificationAsRead(
       .update(notificationsTable)
       .set({
         read: true,
-        readAt: new Date(),
       })
       .where(eq(notificationsTable.id, notificationId))
       .returning();
@@ -155,7 +158,7 @@ export async function markNotificationAsRead(
  * Mark all notifications as read for a workspace
  */
 export async function markAllNotificationsAsRead(
-  workspaceId: string,
+  workspaceId: TWorkspaceId,
 ): Promise<APIResponse<{ updatedCount: number }>> {
   try {
     const user = await getCurrentUser();
@@ -169,7 +172,6 @@ export async function markAllNotificationsAsRead(
       .update(notificationsTable)
       .set({
         read: true,
-        readAt: new Date(),
       })
       .where(
         and(
@@ -200,7 +202,7 @@ export async function markAllNotificationsAsRead(
  * Archive a notification
  */
 export async function archiveNotification(
-  notificationId: string,
+  notificationId: TNotificationId,
 ): Promise<APIResponse<{ archived: boolean }>> {
   try {
     const user = await getCurrentUser();
@@ -258,7 +260,7 @@ export async function archiveNotification(
  * Get unread notification count for current user
  */
 export async function getUnreadNotificationCount(
-  workspaceId?: string,
+  workspaceId?: TWorkspaceId,
 ): Promise<APIResponse<{ count: number }>> {
   try {
     const user = await getCurrentUser();
@@ -267,8 +269,10 @@ export async function getUnreadNotificationCount(
       redirect("/sign-in");
     }
 
+    const userId = user.id as unknown as TUserId;
+
     let whereCondition = and(
-      eq(notificationsTable.userId, user.id),
+      eq(notificationsTable.userId, userId),
       eq(notificationsTable.read, false),
     );
 

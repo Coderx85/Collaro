@@ -2,15 +2,14 @@
 
 import { db, schema } from "@/db";
 import { and, eq } from "drizzle-orm";
-import type { APIResponse, PendingRequest } from "@/types";
+import type { APIResponse, TWorkspaceId } from "@/types";
 import { TWorkspaceDTO } from "@/types/workspace.types";
-import { auth } from "@/lib/auth/auth-server";
-import { headers } from "next/headers";
 
-export async function getWorkspaceBySlug(workspaceSlug: string): Promise<APIResponse<TWorkspaceDTO>> {
+export async function getWorkspaceBySlug(
+  workspaceSlug: string,
+): Promise<APIResponse<TWorkspaceDTO>> {
   try {
-    const workspace = await db
-      .query.workspacesTable
+    const workspace = await db.query.workspacesTable
       .findFirst({
         where: eq(schema.workspacesTable.slug, workspaceSlug),
       })
@@ -20,7 +19,7 @@ export async function getWorkspaceBySlug(workspaceSlug: string): Promise<APIResp
       return {
         success: false,
         error: "Workspace not found",
-      }
+      };
     }
 
     return {
@@ -30,18 +29,23 @@ export async function getWorkspaceBySlug(workspaceSlug: string): Promise<APIResp
         id: workspace.id,
         name: workspace.name,
         logo: workspace.logo || "",
-        slug: workspace.slug
-      }
-    }
+        slug: workspace.slug,
+      },
+    };
   } catch (error: unknown) {
-   throw new Error(error instanceof Error ? error.message : "Failed to get workspace by slug"); 
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Failed to get workspace by slug",
+    );
   }
-} 
+}
 
-export async function getWorkspaceById(workspaceId: string): Promise<APIResponse<TWorkspaceDTO>> {
+export async function getWorkspaceById(
+  workspaceId: TWorkspaceId,
+): Promise<APIResponse<TWorkspaceDTO>> {
   try {
-    const workspace = await db
-      .query.workspacesTable
+    const workspace = await db.query.workspacesTable
       .findFirst({
         where: eq(schema.workspacesTable.id, workspaceId),
       })
@@ -51,7 +55,7 @@ export async function getWorkspaceById(workspaceId: string): Promise<APIResponse
       return {
         success: false,
         error: "Workspace not found",
-      }
+      };
     }
 
     return {
@@ -61,10 +65,12 @@ export async function getWorkspaceById(workspaceId: string): Promise<APIResponse
         id: workspace.id,
         name: workspace.name,
         logo: workspace.logo || "",
-        slug: workspace.slug
-      }
-    }
+        slug: workspace.slug,
+      },
+    };
   } catch (error: unknown) {
-   throw new Error(error instanceof Error ? error.message : "Failed to get workspace by id"); 
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to get workspace by id",
+    );
   }
 }

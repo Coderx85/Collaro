@@ -2,14 +2,13 @@
 
 import { db } from "@/db/client";
 import { workspacesTable, membersTable, usersTable } from "@/db/schema/schema";
-import type { APIResponse, UserResponse } from "@/types";
+import type { APIResponse, TUserId, UserResponse } from "@/types";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth/auth-server";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { config } from "@/lib/config";
 import type { RegisterFormValues } from "@/types";
-import { TUserId } from "@/modules/user";
 
 // Helper to get current authenticated user
 export async function getCurrentUser() {

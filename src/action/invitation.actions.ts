@@ -14,9 +14,11 @@ import { inngest } from "@/lib/inngest";
 import type { APIResponse } from "@/types/api";
 import { getWorkspace } from "./workspace/workspace.actions";
 import { getCurrentUser } from "./user.actions";
+import { TWorkspaceId } from "@/types";
+import { ID } from "@/modules/utils/generate";
 
 interface CreateInvitationParams {
-  workspaceId: string;
+  workspaceId: TWorkspaceId;
   workspaceSlug: string;
   email: string;
   role: "admin" | "member";
@@ -48,7 +50,7 @@ export async function createInvitation({
 
     const invitation = await auth.api.createInvitation({
       body: {
-        organizationId: workspaceId,
+        organizationId: String(workspaceId),
         email,
         role,
         resend: true,
@@ -119,7 +121,7 @@ export async function createInvitation({
  * Get all pending invitations for a workspace
  */
 export async function getPendingInvitations(
-  workspaceId: string,
+  workspaceId: TWorkspaceId,
 ): Promise<APIResponse<InvitationData[]>> {
   try {
     const authUser = await getCurrentUser();
@@ -128,7 +130,7 @@ export async function getPendingInvitations(
     }
 
     // Check if user is member of this workspace
-    const userRole = await getWorkspace(workspaceId);
+    const userRole = await getWorkspace(String(workspaceId));
     if (!userRole) {
       return { success: false, error: "Not a member of this workspace" };
     }
@@ -190,12 +192,16 @@ export async function cancelInvitation(
     }
 
     // Check if user is owner of this workspace
-    const { data } = await getWorkspace(invitation.workspaceId);
+    const { data } = await getWorkspace(String(invitation.workspaceId));
     if (!data) {
       return { success: false, error: "Workspace not found" };
     }
 
-    if (data.member.role !== "owner") {
+    if (
+      !data.members?.some(
+        (m) => m.role === "owner" && m.id === String(authUser.user.id),
+      )
+    ) {
       return { success: false, error: "Only owners can cancel invitations" };
     }
 
@@ -365,7 +371,9 @@ export async function acceptInvitation(
 
     // Add user to workspace
     await db.insert(membersTable).values({
+      id: ID.memberId(),
       userId: authUser.user.id,
+      name: authUser.user.name || authUser.user.email || "Unknown",
       workspaceId: invitation.workspaceId,
       role: invitation.role as "admin" | "member",
     });

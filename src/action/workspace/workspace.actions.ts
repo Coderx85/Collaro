@@ -12,6 +12,7 @@ import { IMemberDTO, workspaceMemberManager } from "@/modules/member";
 import { IWorkspaceDTO, TWorkspaceId } from "@/modules/workspace";
 import { workspaceMeetingManager } from "@/modules/manager";
 import { TUserId, TMemberId } from "@/types";
+import { role } from "better-auth/plugins";
 
 type NewWorkspaceFormSchemaType = z.infer<typeof NewWorkspaceFormSchema>;
 
@@ -187,6 +188,7 @@ export async function getWorkspace(workspaceSlug: string) {
       members: workspaceData?.members.map((member) => ({
         id: member.id,
         name: member.name,
+        role: member.role,
       })),
     };
     

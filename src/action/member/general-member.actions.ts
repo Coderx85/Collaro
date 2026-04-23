@@ -1,8 +1,13 @@
 "use server";
 
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth/auth-server";
-import type { APIResponse, TInviteMemberRole, TOrganizationMember, TUserRole } from "@/types";
+import type {
+  APIResponse,
+  TInviteMemberRole,
+  TOrganizationMember,
+  TUserId,
+  TUserRole,
+  TWorkspaceId,
+} from "@/types";
 import { db } from "@/db";
 import { createMemberSchema } from "@/db/schema/type";
 import { membersTable } from "@/db/schema/schema";
@@ -19,9 +24,11 @@ type CreateMemberDTO = z.infer<typeof createMemberSchema>;
 
 type MemberListDTO = Prettify<z.infer<typeof createMemberSchema> & { user: User }>;
 
-export const addMember = async (
-  input: { userId: string; workspaceId: string, role: Omit<TUserRole, "owner"> }
-): Promise<APIResponse<CreateMemberDTO>> => {
+export const addMember = async (input: {
+  userId: TUserId;
+  workspaceId: TWorkspaceId;
+  role: Omit<TUserRole, "owner">;
+}): Promise<APIResponse<CreateMemberDTO>> => {
   try {
     const workspace = await getWorkspaceById(input.workspaceId);
 
@@ -61,11 +68,12 @@ export const addMember = async (
         createdAt: result.createdAt,
       },
     } as any;
-       
   } catch (error: unknown) {
-    throw new Error(`Failed to add member: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Failed to add member: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
-}
+};
 
 export const getMembersBySlug = async (slug: string, options: {
   offset?: number;
@@ -93,22 +101,23 @@ export const getMembersBySlug = async (slug: string, options: {
       .execute();
 
     const result: MemberListDTO[] = members.map((member) => ({
-      id: member.id,
-      userId: member.userId,
-      workspaceId: member.workspaceId,
+      id: String(member.id),
+      name: member.name,
+      userId: String(member.userId),
+      workspaceId: String(member.workspaceId),
       role: member.role as TUserRole,
       createdAt: member.createdAt,
       updatedAt: member.createdAt,
       user: {
-        id: member.user.id,
+        id: String(member.user.id),
         name: member.user.name,
         email: member.user.email,
-        username: member.user.email,
+        username: member.user.userName,
         createdAt: member.user.createdAt,
         updatedAt: member.user.updatedAt || member.user.createdAt,
         emailVerified: member.user.emailVerified ?? false,
         image: "",
-      }
+      },
     }));
 
     return {
