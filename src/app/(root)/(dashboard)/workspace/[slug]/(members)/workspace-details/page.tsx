@@ -40,7 +40,7 @@ export default async function OrgDetailsPage({
     throw new Error("Organization not found");
   }
 
-  const orgMember = await getMemberByIdAndSlug(slug, user.id);
+  const orgMember = await getMemberByIdAndSlug(slug, String(user.id));
 
   if (!orgMember || !orgMember.success || !orgMember?.data) {
     throw new Error("Organization member not found");

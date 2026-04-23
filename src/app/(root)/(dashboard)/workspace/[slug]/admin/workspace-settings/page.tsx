@@ -19,6 +19,7 @@ import {
 import { OrgSettingsForm } from "./_components/org-settings-form";
 import { DangerZone } from "./_components/danger-zone";
 import { PendingJoinRequests } from "../../../_components/pending-join-requests";
+import { TWorkspaceId } from "@/types";
 
 export default async function OrgSettingsPage({
   params,
@@ -43,7 +44,7 @@ export default async function OrgSettingsPage({
     redirect(`/workspace/${slug}`);
   }
 
-  const orgMember = await getMemberByIdAndSlug(slug, user.id);
+  const orgMember = await getMemberByIdAndSlug(slug, String(user.id));
 
   if (!orgMember || !orgMember.success) {
     redirect(`/workspace/${slug}`);
@@ -104,7 +105,9 @@ export default async function OrgSettingsPage({
       {(userRole === "owner" || userRole === "admin") && (
         <>
           <Separator />
-          <PendingJoinRequests workspaceId={activeOrg.id} />
+          <PendingJoinRequests
+            workspaceId={activeOrg.id as unknown as TWorkspaceId}
+          />
         </>
       )}
 

@@ -28,8 +28,6 @@ import { Clock, CheckCircle, XCircle, Loader } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { toast } from "sonner";
-import { auth } from "@/lib/auth/auth-server";
-import { headers } from "next/headers";
 import { authClient } from "@/lib/auth";
 import { workspaceMemberManager } from "@/modules/member";
 

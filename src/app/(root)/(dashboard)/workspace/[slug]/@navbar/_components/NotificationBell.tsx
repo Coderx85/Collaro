@@ -13,8 +13,8 @@ import { useRouter, useParams } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import type {
-  INotification,
   NotificationProps,
+  TUserId,
   WorkspaceNotificationProps,
 } from "@/types";
 import {
@@ -24,9 +24,10 @@ import { FaBell } from "react-icons/fa";
 import { useToast } from "@/components/ui/use-toast";
 import { getUserNotificationsAction } from "@/action/notification/general-notification.actions";
 import { toast } from "sonner";
+import { INotificationDTO } from "@/modules/notification";
 
 const NotificationBell = () => {
-  const [notifications, setNotifications] = useState<INotification[]>([]);
+  const [notifications, setNotifications] = useState<INotificationDTO[]>([]);
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
@@ -41,7 +42,9 @@ const NotificationBell = () => {
 
     try {
       setIsLoading(true);
-      const response = await getUserNotificationsAction(user.id);
+      const response = await getUserNotificationsAction(
+        user.id as unknown as TUserId,
+      );
 
       if (!response.success) {
         toast.error("Failed to fetch notifications.");
@@ -56,7 +59,7 @@ const NotificationBell = () => {
     }
   }, [user, workspaceSlug]);
 
-  const handleMarkAsRead = async (notification: INotification) => {
+  const handleMarkAsRead = async (notification: INotificationDTO) => {
     try {
       await markNotificationAsReadAction(notification.id);
     } catch (error) {
@@ -64,7 +67,7 @@ const NotificationBell = () => {
     }
   };
 
-  const handleNotificationClick = async (notification: INotification) => {
+  const handleNotificationClick = async (notification: INotificationDTO) => {
     await handleMarkAsRead(notification);
 
     // Handle navigation based on notification type
@@ -123,7 +126,7 @@ const NotificationBell = () => {
         ) : (
           <ScrollArea className="h-[300px] pr-3">
             <div className="space-y-2">
-              {notifications.map((notification: INotification) => {
+              {notifications.map((notification: INotificationDTO) => {
                 const isRead =
                   "isRead" in notification
                     ? notification.isRead
@@ -131,7 +134,7 @@ const NotificationBell = () => {
 
                 return (
                   <div
-                    key={notification.id}
+                    key={String(notification.id)}
                     className={`p-3 rounded-lg cursor-pointer transition-colors ${
                       isRead
                         ? "bg-background hover:bg-secondary/50"

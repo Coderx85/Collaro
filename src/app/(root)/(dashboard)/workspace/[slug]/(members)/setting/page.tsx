@@ -31,7 +31,7 @@ export default function SettingsPage() {
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
       name: user?.name || "",
-      username: user?.userName || "",
+      username: user?.username || "",
       bio: "",
       url: "",
     },
