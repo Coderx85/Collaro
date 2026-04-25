@@ -53,16 +53,10 @@ export function LoginForm() {
           return;
         }
 
-        toast.success("Signed in successfully");
+        toast.success(result.data.message);
         router.push("/dashboard");
       } catch (error: unknown) {
-        if (error instanceof Error && error.message.includes("permission")) {
-          toast.error(
-            "You don't have permission to sign in. Contact your admin.",
-          );
-        } else {
-          toast.error("An unexpected error occurred. Please try again.");
-        }
+        toast.error("An unexpected error occurred. Please try again.");
         console.error("Login error:", error);
       } finally {
         setIsSubmitting(false);

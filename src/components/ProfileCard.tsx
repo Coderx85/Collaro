@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useEffect, useState } from "react";
 import { TUserRole } from "@/types";
 import { getCurrentMemberRole } from "@/action/member";
+import { toast } from "sonner";
 
 type org = {
   data?: any;
@@ -19,7 +20,15 @@ const ProfileCard = ({ slug }: { slug: string }) => {
   useEffect(() => {
     const fetchMember = async () => {
       const result = await getCurrentMemberRole(slug);
-      if (!result.success || !result.data) return;
+      if (!result.success) {
+        toast.error(result.error || "Failed to fetch member role");
+        return;
+      };
+
+      if (!result.data) {
+        toast.error("Member role not found");
+        return;
+      }
 
       setMemberRole({ role: result.data });
     };
@@ -55,7 +64,7 @@ const ProfileCard = ({ slug }: { slug: string }) => {
               {session?.user?.name}
             </h1>
             <p className="italic text-white/75 text-xs xl:text-sm">
-              @{session?.user?.username || session?.user?.name}
+              @{session?.user?.userName || session?.user?.name}
             </p>
             {org?.data && (
               <p className="text-white/75 mt-2.5 text-xs xl:text-lg">
