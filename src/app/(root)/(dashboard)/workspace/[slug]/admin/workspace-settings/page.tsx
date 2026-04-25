@@ -107,6 +107,7 @@ export default async function OrgSettingsPage({
           <Separator />
           <PendingJoinRequests
             workspaceId={activeOrg.id as unknown as TWorkspaceId}
+            workspaceSlug={slug}
           />
         </>
       )}
