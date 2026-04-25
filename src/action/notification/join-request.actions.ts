@@ -1,6 +1,6 @@
 "use server";
 
-import type { APIResponse, TInviteMemberRole, TMemberId, TRequestId, TUserId, TWorkspaceId } from "@/types";
+import type { APIResponse, TInviteMemberRole, TMemberId, TRequestId, TWorkspaceId } from "@/types";
 import { workspaceMemberManager } from "@/modules/member";
 
 interface ApproveJoinRequestInput {
@@ -28,24 +28,23 @@ export async function approveJoinRequestAction({
   try {
     const requestID = requestId as unknown as TRequestId;
 
-    const member = await workspaceMemberManager.getMemberDetails({
-      userId: responderId as unknown as TUserId,
-      workspaceId: workspaceId!,
-    })
-
-    if (!member) {
-      return { success: false, error: "Member not found after approval" };
+    if (!responderId) {
+      return { success: false, error: "Approver member not found" };
     }
 
-    const result = await workspaceMemberManager.approveJoinRequest(requestID, member.id, role);
+    const result = await workspaceMemberManager.approveJoinRequest(requestID, responderId, role);
 
     const workspace = await workspaceMemberManager.findWorkspaceById(workspaceId);
+
+    if (!workspace) {
+      return { success: false, error: "Workspace not found" };
+    }
 
     return {
       success: true,
       data: {
         userName: result.name,
-        workspaceSlug: workspace!.slug,
+        workspaceSlug: workspace.slug,
       },
     };
   } catch (error: unknown) {
@@ -77,6 +76,10 @@ export async function rejectJoinRequestAction({
     // Get the join request with user details
 
     const requestID = requestId as unknown as TRequestId;
+
+    if (!responderId) {
+      return { success: false, error: "Approver member not found" };
+    }
 
     await workspaceMemberManager.rejectJoinRequest(requestID, responderId);
 

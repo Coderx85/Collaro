@@ -2,13 +2,12 @@
 import type { 
   APIResponse,
   JoinRequest,
-  TUserId,
   TWorkspaceId 
 } from "@/types";
-import { workspaceRequestTable, membersTable, workspacesTable } from "@/db/schema/schema";
-import { getCurrentAuthUser } from "./workspace.actions";
 import { workspaceMemberManager } from "@/modules/member";
 import { userService } from "@/modules/user";
+import { getCurrentUser } from "../user.actions";
+import tryCatch from "@/lib/try-catch-wrapper";
 
 
 export async function getPendingJoinRequests(
@@ -57,31 +56,33 @@ export async function sendJoinWorkspaceRequest(
   workspaceSlug: string,
   workspaceName: string,
 ): Promise<APIResponse<{ workspaceName: string }>> {
-  try {
-    const authUser = await getCurrentAuthUser();
+  return tryCatch({
+    ctx: async () => {
+      const authUser = await getCurrentUser();
+      if (!authUser) {
+        return {
+          success: false,
+          error: "User must be authenticated to send join request",
+        }
+      }
 
-    if (!authUser) {
-      return { error: "User not authenticated", success: false };
-    }
+      const workspace = await workspaceMemberManager.findWorkspaceBySlug(workspaceSlug);
+      if (!workspace) {
+        return {
+          success: false,
+          error: `Workspace with slug "${workspaceSlug}" not found`,
+        };
+      }
 
-    const workspace = await workspaceMemberManager.findWorkspaceBySlug(workspaceSlug);
+      await workspaceMemberManager.requestWorkspace(workspace.id, authUser.user.id);
 
-    const authID = authUser.id as unknown as TUserId;
-
-    await workspaceMemberManager.requestWorkspace(workspace!.id, authID);
-
-    return {
-      success: true,
-      data: {
-        workspaceName: workspace!.name,
-      },
-    };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: `Failed to send join request: ${
-        error instanceof Error ? error.message : "An unknown error occurred"
-      }`,
-    };
-  }
+      return {
+        success: true,
+        data: {
+          workspaceName: workspace.name,
+        },
+      }
+    },
+    errorMessage: `Failed to send join request for workspace with slug: ${workspaceName}`,
+  })
 }

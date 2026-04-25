@@ -37,16 +37,13 @@ export const getMemberByIdAndSlug = async (
     };
   }
 
-  const validRoles = ["owner", "admin", "member"] as const;
-  const role = validRoles.includes(member.role as any) ? (member.role as "owner" | "admin" | "member") : "member";
-
   return {
     success: true,
     data: {
       id: member.id,
       userId: member.userId,
       workspaceId: workspace.id,
-      role,
+      role: member.role,
       createdAt: new Date(member.createdAt),
       updatedAt: new Date(member.createdAt),
     },
@@ -57,14 +54,19 @@ export const getCurrentMemberRole = async (workspaceSlug: string): Promise<APIRe
   const session = await getCurrentUser();
   const authId = session?.user?.id as unknown as TUserId;
 
-  return tryCatch({
-    ctx: async () => {
-      const role = await workspaceMemberManager.getMemberRole(workspaceSlug, authId);
+  try {
+    const role = await workspaceMemberManager.getMemberRole(workspaceSlug, authId);
 
-      return {
-        success: true,
-        data: role,
-      };
-    },
-  });
+    return {
+      success: true,
+      data: role,
+    };
+
+  }
+  catch (error) {
+    return {
+      success: false,
+      error: "Failed to fetch member role",
+    };
+  }
 }
