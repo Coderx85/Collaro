@@ -59,7 +59,7 @@ export const auth = betterAuth({
               required: true,
               input: true,
             },
-          }
+          },
         },
         invitation: {
           modelName: "invitation",
@@ -70,18 +70,10 @@ export const auth = betterAuth({
         },
       },
     }),
-    username({
-      minUsernameLength: 4,
-      maxUsernameLength: 20,
-      displayUsernameValidator(displayUsername) {
-        const usernameRegex = /^[a-zA-Z0-9_]+$/;
-        return usernameRegex.test(displayUsername);
-      },
-    }),
   ],
   user: {
     additionalFields: {
-      username: {
+      userName: {
         type: "string",
         required: false,
         unique: true,
@@ -99,8 +91,8 @@ export const auth = betterAuth({
           const extendedMembers = await Promise.all(
             members.map(async (member) => {
               const user = await ctx.adapter.findUnique({
-                model: 'user',
-                where: { id: member.userId }
+                model: "user",
+                where: { id: member.userId },
               });
               return {
                 ...member,
@@ -112,7 +104,7 @@ export const auth = betterAuth({
                   createdAt: user.createdAt,
                 },
               };
-            })
+            }),
           );
           return extendedMembers;
         },

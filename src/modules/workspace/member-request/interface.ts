@@ -52,7 +52,7 @@ export interface IMemberRequestStore {
   
   save(request: IRequestMemberDTO): Promise<void>;
   findById(id: TRequestId): Promise<IRequestMemberDTO | null>;
-  update(id: TRequestId, request: Partial<IRequestMemberDTO>): Promise<void>;
+  update(id: TRequestId, request: IRequestMemberDTO): Promise<void>;
   list(): Promise<IRequestMemberDTO[]>;
   query(params: MemberRequestParams): Promise<IRequestMemberDTO[]>;
 }

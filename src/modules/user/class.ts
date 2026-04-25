@@ -49,8 +49,14 @@ export class User implements IUser {
     try {
       const existingUser = await this.findById(id);
 
+      const updatedUser = {
+        ...existingUser,
+        ...user,
+        updatedAt: new Date(),
+      } as IUserDTO;
+
       if (existingUser) {
-        this.store.update(id, user);
+        this.store.update(id, updatedUser);
 
         return this.store.findById(id);
       }

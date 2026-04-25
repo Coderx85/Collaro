@@ -18,7 +18,7 @@ export interface IUser {
 export interface IUserStore {
   save(user: IUserDTO): Promise<void>;
   findById(id: TUserId): Promise<IUserDTO | null>;
-  update(id: TUserId, user: Partial<IUserDTO>): Promise<IUserDTO | null>;
+  update(id: TUserId, user: IUserDTO): Promise<IUserDTO | null>;
   delete(id: TUserId): Promise<void>;
   list(): Promise<IUserDTO[]>;
 }

@@ -43,8 +43,15 @@ export class RequestMember implements IRequestMember {
       });
     }
 
+    const updatedRequest: IRequestMemberDTO = {
+      ...request,
+      role: "admin",
+      status: "approved",
+      updatedAt: new Date(),
+    };
+
     // update the request status to approved
-    return this.store.update(id, { role: "admin", status: "approved" }).then(() => {
+    return this.store.update(id, updatedRequest).then(() => {
       return {
         success: true,
         message: `Request with ID ${id} has been approved.`
@@ -67,7 +74,13 @@ export class RequestMember implements IRequestMember {
       };
     }
 
-    await this.store.update(id, { role: "member", status: "rejected" }).catch(error => {
+    const updatedRequest: IRequestMemberDTO = {
+      ...request,
+      status: "rejected",
+      updatedAt: new Date(),
+    };
+
+    await this.store.update(id, updatedRequest).catch(error => {
       console.error(`Error rejecting request with ID ${id}:`, error);
       return {
         success: false,

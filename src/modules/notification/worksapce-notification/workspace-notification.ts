@@ -3,6 +3,7 @@ import { INotificationDTO, INotificationStore } from "../interface";
 import { notificationStore } from "../notification-store";
 import { IWorkspaceDTO } from "@collaro/workspace";
 import { IUserDTO } from "@/types";
+import tryCatch from "@/lib/try-catch-wrapper";
 
 type TWorkspaceNotificationType = "workspace_created" | "workspace_updated" | "workspace_deleted" | "workspace_joined" | "workspace_left" | "settings_updated" | "logo_updated";
 
@@ -11,6 +12,8 @@ interface IWorkspaceNotificationDTO extends INotificationDTO {
   userName?: IUserDTO["name"];
   type: TWorkspaceNotificationType;
 }
+
+type TCreateWorkspaceNotificationInput = Omit<IWorkspaceNotificationDTO, "id" | "message" | "createdAt" | "updatedAt" | "read">;
 
 function WorkspaceNotificationMessage(type: TWorkspaceNotificationType, workspaceName: string, userName?: string): string {
   switch (type) {
@@ -40,6 +43,8 @@ interface IMemberNotificationDTO extends INotificationDTO {
   userName: IUserDTO["name"];
   workspaceName: IWorkspaceDTO["name"];
 }
+
+type TCreateMemberNotificationInput = Omit<IMemberNotificationDTO, "id" | "message" | "createdAt" | "updatedAt" | "read">;
 
 function MemberNotificationMessage(type: TMemberNotificationType, userName: string, workspaceName: string): string {
   switch (type) {
@@ -79,72 +84,97 @@ export class WorkspaceNotification {
     return WorkspaceNotification.instance;
   }
 
+  /**
+   * Creates a workspace-related notification, such as workspace creation, updates, deletions, member joins/leaves, and settings changes.
+   * @param input The input for creating a workspace notification, excluding fields that are generated automatically.
+   * @returns The created notification DTO.
+   * @throws An error if the notification creation fails.
+   */
   async createWorkspaceNotification(
-    input: Omit<IWorkspaceNotificationDTO, "id" | "message" | "createdAt" | "updatedAt" | "read">
+    input: TCreateWorkspaceNotificationInput
   ): Promise<INotificationDTO> {
-    try {
-      const message = WorkspaceNotificationMessage(input.type, input.workspaceName, input.userName) || "";
-
-      const dto: INotificationDTO = {
-        ...input,
-        id: ID.notificationId(),
-        message,
-        read: false,
-        createdAt: new Date(),
-      };
-  
-      await this.store.create({...dto});
-
-      return dto;
-    } catch (error: unknown) {
-      console.error("Error creating notification:", error);
-      throw error;
-    }
+    return tryCatch({
+      ctx: async () => {
+        const message = WorkspaceNotificationMessage(input.type, input.workspaceName, input.userName) || "";
+    
+        const dto: INotificationDTO = {
+          ...input,
+          id: ID.notificationId(),
+          message,
+          read: false,
+          createdAt: new Date(),
+        };
+    
+        await this.store.create({...dto});
+    
+        return dto;
+      }
+    })
   }
 
+  /**
+   * Creates a member-related notification, such as join requests, approvals, rejections, role changes, bans, and removals.
+   * @param input The input for creating a member notification, excluding fields that are generated automatically.
+   * @returns The created notification DTO.
+   * @throws An error if the notification creation fails.
+   */
   async createMemberNotification(
-    input: Omit<IMemberNotificationDTO, "id" | "message" | "createdAt" | "updatedAt" | "read">
+    input: TCreateMemberNotificationInput
   ): Promise<INotificationDTO> {
-    try {
-      const message = MemberNotificationMessage(input.type, input.userName, input.workspaceName) || "";
-
-      const dto: INotificationDTO = {
-        ...input,
-        id: ID.notificationId(),
-        message,
-        read: false,
-        createdAt: new Date(),
-      };
+    return tryCatch({
+      ctx: async () => {
+        // 1. Generate the notification message
+        const message = MemberNotificationMessage(input.type, input.userName, input.workspaceName) || "";
   
-      // Save the notification to the store
-      await this.store.create({
-        ...dto
-      })
-  
-      return dto;
-    } catch (error: unknown) {
-      console.error("Error creating member notification:", error);
-      throw error;
-    }
+        // 2. Create the notification DTO
+        const dto: INotificationDTO = {
+          ...input,
+          id: ID.notificationId(),
+          message,
+          read: false,
+          createdAt: new Date(),
+        };
+    
+        // 3. Save the notification to the store
+        await this.store.create(dto)
+    
+        return dto;
+      },
+    })
   }
 
+  /**
+   * Marks a notification as read by its ID.
+   * @param notificationId The ID of the notification to mark as read.
+   * @returns A boolean indicating whether the operation was successful.
+   * @throws An error if the notification is not found or if the operation fails.
+   */
   async markAsRead(notificationId: INotificationDTO["id"]): Promise<boolean> {
-    try {
-      await this.store.markAsRead(notificationId);
-      return Promise.resolve(true);
-    } catch (error: unknown) {
-      console.error("Error marking notification as read:", error);
-      throw error;
-    }
+    return tryCatch({
+      ctx: async () => {
+        const notification = await this.store.findById(notificationId);
+        if (!notification) {
+          throw new Error(`Notification with ID: ${notificationId} not found.`);
+        }
+  
+        await this.store.markAsRead(notificationId);
+        return true;
+      }
+    })
   }
 
+  /**
+   * Retrieves a list of notifications for a specific user.
+   * @param userId The ID of the user for whom to retrieve notifications.
+   * @returns An array of notification DTOs for the specified user.
+   * @throws An error if the operation fails.
+   */
   async listNotifications(userId: INotificationDTO["userId"]): Promise<INotificationDTO[]> {
-    try {
-      return await this.store.queryNotifications({ userId });
-    } catch (error: unknown) {
-      console.error("Error listing notifications:", error);
-      throw error;
-    }
+    return tryCatch({
+      ctx: async () => {
+        return await this.store.queryNotifications({ userId });
+      }
+    })
   }
 }
 

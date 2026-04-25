@@ -3,6 +3,8 @@ import { IMemberRequestStore, IRequestMemberDTO, MemberRequestParams, TRequestId
 import { db } from "@/db";
 import { workspaceRequestTable } from "@/db/schema/schema";
 import { ID } from "@/modules/utils/generate";
+import tryCatch from "@/lib/try-catch-wrapper";
+import { and, eq, SQL } from "drizzle-orm";
 
 const globalRequestMember: IRequestMemberDTO[] = [];
 
@@ -32,44 +34,127 @@ export class MemberRequestStore implements IMemberRequestStore {
       updatedAt: null,
     }
 
-    await db
-      .insert(workspaceRequestTable)
-      .values({
-        ...dto,
-      })
+    return tryCatch({
+      ctx: async () => {
+        await db
+          .insert(workspaceRequestTable)
+          .values({
+            id: dto.id,
+            name: dto.name,
+            userId: dto.userId,
+            workspaceId: dto.workspaceId,
+            requestedAt: dto.createdAt,
+            respondedAt: dto.updatedAt,
+            respondedBy: null,
+            status: "pending"
+          });
+      }
+    })
   }
 
   delete(id: TRequestId): Promise<void> {
-    globalRequestMember.splice(globalRequestMember.findIndex(request => request.id === id), 1);
-    return Promise.resolve();
+    return tryCatch({
+      ctx: async () => {
+        await db
+          .delete(workspaceRequestTable)
+          .where(eq(workspaceRequestTable.id, id));
+      }
+    });
   }
 
   async findById(id: TRequestId): Promise<IRequestMemberDTO | null> {
-    const request = globalRequestMember.find(request => request.id === id);
-    return request ?? null;
+    return tryCatch({
+      ctx: async () => {
+        const result = await db.query.workspaceRequestTable.findFirst({
+          where: eq(workspaceRequestTable.id, id)
+        })
+
+        if (!result) {
+          return null;
+        }
+
+        return {
+          id: result.id,
+          name: result.name,
+          userId: result.userId,
+          workspaceId: result.workspaceId,
+          role: "member",
+          status: result.status,
+          createdAt: result.requestedAt,
+          updatedAt: result.respondedAt
+        };
+      }
+    })
   }
 
   async list(): Promise<IRequestMemberDTO[]> {
-    return globalRequestMember;
+    return tryCatch({
+      ctx: async () => {
+        const results = await db.query.workspaceRequestTable.findMany();
+
+        return results.map(result => ({
+          id: result.id,
+          name: result.name,
+          userId: result.userId,
+          workspaceId: result.workspaceId,
+          role: "member",
+          status: result.status,
+          createdAt: result.requestedAt,
+          updatedAt: result.respondedAt
+        }));
+      }
+    })
   }
 
-  async update(id: TRequestId, request: Partial<IRequestMemberDTO>): Promise<void> {
-    const index = globalRequestMember.findIndex(req => req.id === id);
-    if (index !== -1 && globalRequestMember[index]) {
-      globalRequestMember[index] = { ...globalRequestMember[index], ...request };
-    }
+  async update(id: TRequestId, request: IRequestMemberDTO): Promise<void> {
+    return tryCatch({
+      ctx: async () => {
+        await db
+          .update(workspaceRequestTable)
+          .set({
+            name: request.name,
+            userId: request.userId,
+            workspaceId: request.workspaceId,
+            status: request.status,
+            respondedAt: new Date(),
+            respondedBy: null
+          })
+          .where(eq(workspaceRequestTable.id, id));
+      }
+    })
   }
 
   async query(params: MemberRequestParams): Promise<IRequestMemberDTO[]> {
     const { workspaceId, userId } = params.query;
 
-    const whereClause = (request: IRequestMemberDTO) => {
-      if (workspaceId && request.workspaceId !== workspaceId) return false;
-      if (userId && request.userId !== userId) return false;
-      return true;
-    };
+    const whereClause: SQL<unknown>[] = []
 
-    return globalRequestMember.filter(whereClause);
+    if (workspaceId) {
+      whereClause.push(eq(workspaceRequestTable.workspaceId, workspaceId));
+    }
+
+    if (userId) {
+      whereClause.push(eq(workspaceRequestTable.userId, userId));
+    }
+
+    return tryCatch({
+      ctx: async () => {
+        const results = await db.query.workspaceRequestTable.findMany({
+          where: and(...whereClause)
+        });
+
+        return results.map(result => ({
+          id: result.id,
+          name: result.name,
+          userId: result.userId,
+          workspaceId: result.workspaceId,
+          role: "member",
+          status: result.status,
+          createdAt: result.requestedAt,
+          updatedAt: result.respondedAt
+        }));
+      }
+    })
   }
 }
 
