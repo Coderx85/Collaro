@@ -16,6 +16,11 @@ import { role } from "better-auth/plugins";
 
 type NewWorkspaceFormSchemaType = z.infer<typeof NewWorkspaceFormSchema>;
 
+type TFullWorkspaceDetail = IWorkspaceDTO & {
+  ownerDetail: IMemberDTO,
+  members: IMemberDTO[]
+}
+
 /**
  * Create a new workspace
  * Only authenticated users can create workspaces
@@ -131,13 +136,33 @@ export async function getCurrentAuthUser() {
 }
 
 // This function is used to get the users of a workspace
-export async function getWorkspaceUsers(workspaceId: TWorkspaceId): Promise<APIResponse<{ member: IMemberDTO }[]>> {
+export async function getWorkspaceUsers(slug: IWorkspaceDTO["slug"]): Promise<APIResponse<{ member: IMemberDTO }[]>> {
   try {
-    const members = await workspaceMemberManager.listMembers(workspaceId);
+    const workspace = await workspaceMemberManager.findWorkspaceBySlug(slug);
+    if (!workspace) {
+      return {
+        error: "Workspace not found",
+        success: false,
+      };
+    }
+
+    const members = await workspaceMemberManager.listMembers(workspace.id);
+
+    const result: { member: IMemberDTO }[] = members.map((member) => ({
+      member: {
+        id: member.id,
+        name: member.name,
+        userId: member.userId,
+        workspaceId: member.workspaceId,
+        role: member.role,
+        createdAt: member.createdAt,
+        updatedAt: member.updatedAt,
+      },
+    }));
 
     return {
       success: true,
-      data: members.map((member) => ({ member })),
+      data: result,
     };
   } catch (error: unknown) {
     throw new Error(`Failed to get workspace users: ${error instanceof Error ? error.message : String(error)}`);
@@ -278,6 +303,49 @@ export async function getWorkspaceById(workspaceId: TWorkspaceId) {
   } catch (error: unknown) {
     return {
       error: `Failed to fetch workspace by id: ${error}`,
+      success: false,
+    };
+  }
+}
+
+export async function getFullWorkspaceDetail(workspaceSlug: string): Promise<APIResponse<TFullWorkspaceDetail>> {
+  try {
+    const user = await getCurrentUser();
+    if(!user) {
+      return {
+        error: "User not authenticated",
+        success: false,
+      }
+    }
+
+    const workspace = await workspaceMemberManager.findWorkspaceBySlug(workspaceSlug);
+
+    if (!workspace) {
+      return { success: false, error: "Workspace not found" };
+    }
+
+    const res = await workspaceMemberManager.listMembers(workspace.id);
+    if (!res) {
+      return { success: false, error: "Failed to fetch workspace members" };
+    }
+
+    const [owner] = res.filter((member) => member.role === "owner");
+
+    const workspaceMembers = res.filter((member) => member.role !== "owner");
+
+    const result: TFullWorkspaceDetail = {
+      ...workspace,
+      ownerDetail: owner,
+      members: workspaceMembers,
+    }
+    
+    return { 
+      success: true, 
+      data: result 
+    };
+  } catch (error: unknown) {
+    return {
+      error: `Failed to fetch full workspace details: ${error}`,
       success: false,
     };
   }

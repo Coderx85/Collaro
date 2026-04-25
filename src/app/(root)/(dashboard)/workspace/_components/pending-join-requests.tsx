@@ -18,29 +18,31 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { getPendingJoinRequests, getCurrentAuthUser } from "@/action/workspace";
+import { getPendingJoinRequests } from "@/action/workspace";
 import {
   approveJoinRequestAction,
   rejectJoinRequestAction,
 } from "@/action/notification";
-import type { JoinRequest, TInviteMemberRole, TMemberId, TUserId, TWorkspaceId } from "@/types";
+import type { JoinRequest, TInviteMemberRole, TMemberId, TWorkspaceId } from "@/types";
 import { Clock, CheckCircle, XCircle, Loader } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { toast } from "sonner";
-import { authClient } from "@/lib/auth";
-import { workspaceMemberManager } from "@/modules/member";
+import { getMemberByIdAndSlug } from "@/action/member";
+import { useSession } from "@/lib/auth";
 
 interface PendingJoinRequestsProps {
   workspaceId: TWorkspaceId;
+  workspaceSlug: string;
 }
 
-export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
+export function PendingJoinRequests({ workspaceId, workspaceSlug }: PendingJoinRequestsProps) {
   const [requests, setRequests] = useState<JoinRequest[]>([]);
   const [selectedRoles, setSelectedRoles] = useState<Record<string, "member" | "admin">>({});
   const [isLoading, setIsLoading] = useState(true);
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
   const [memberId, setMemberId] = useState<TMemberId | undefined>(undefined);
+  const { data: session, isPending: sessionLoading } = useSession();
 
   const handleRoleChange = (requestId: string, role: "member" | "admin") => {
     setSelectedRoles((prev) => ({
@@ -50,6 +52,10 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
   };
 
   useEffect(() => {
+    if (sessionLoading) {
+      return;
+    }
+
     async function fetchRequests() {
       try {
         const result = await getPendingJoinRequests(workspaceId);
@@ -67,29 +73,22 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
           initialRoles[String(req.id)] = "member";
         });
 
-        setSelectedRoles(initialRoles);   
-        
-        const { data } = await authClient.getSession()
+        setSelectedRoles(initialRoles);
 
-        if(!data || !data.user) {
-          throw new Error("Failed to get current user session");
+        if (!session?.user?.id) {
+          throw new Error("User not authenticated");
         }
 
-        const authId = data.user.id as unknown as TUserId;
-
-        const member = await workspaceMemberManager.getMemberDetails({
-          userId: authId,
-          workspaceId,
-        }).catch((error) => {
+        const member = await getMemberByIdAndSlug(workspaceSlug, String(session.user.id)).catch((error) => {
           console.error("Error fetching member details:", error);
           toast.error("Failed to fetch your member details. Please try again.");
         });
 
-        if (!member) {
+        if (!member || !member.success || !member.data) {
           throw new Error("Member details not found for current user");
         }
 
-        const memberId = member.id as unknown as TMemberId;
+        const memberId = member.data.id as unknown as TMemberId;
 
         setMemberId(memberId);
 
@@ -102,9 +101,14 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
     }
 
     fetchRequests();
-  }, [workspaceId]);
+  }, [session?.user?.id, sessionLoading, workspaceId, workspaceSlug]);
 
   async function handleApprove(requestId: string) {
+    if (!memberId) {
+      toast.error("Your workspace membership is still loading.");
+      return;
+    }
+
     setProcessingIds((prev) => new Set([...prev, requestId]));
     try {
       const result = await approveJoinRequestAction({
@@ -134,6 +138,11 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
   }
 
   async function handleReject(requestId: string) {
+    if (!memberId) {
+      toast.error("Your workspace membership is still loading.");
+      return;
+    }
+
     setProcessingIds((prev) => new Set([...prev, requestId]));
     try {
       const result = await rejectJoinRequestAction({
@@ -249,7 +258,7 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
                         variant="outline"
                         size="sm"
                         onClick={() => {handleApprove(stringId)}}
-                        disabled={processingIds.has(stringId)}
+                        disabled={processingIds.has(stringId) || !memberId}
                         className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950"
                       >
                         {processingIds.has(stringId) ? (
@@ -263,7 +272,7 @@ export function PendingJoinRequests({ workspaceId }: PendingJoinRequestsProps) {
                         variant="outline"
                         size="sm"
                         onClick={() => handleReject(stringId)}
-                        disabled={processingIds.has(stringId)}
+                        disabled={processingIds.has(stringId) || !memberId}
                         className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
                       >
                         {processingIds.has(stringId) ? (

@@ -1,37 +1,53 @@
 "use server";
 
-import { db } from "@/db/client";
-import { workspacesTable, membersTable, usersTable } from "@/db/schema/schema";
 import type { APIResponse, TUserId, UserResponse } from "@/types";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth/auth-server";
-import { eq } from "drizzle-orm";
+import { auth, Session } from "@/lib/auth/auth-server";
 import { redirect } from "next/navigation";
 import { config } from "@/lib/config";
 import type { RegisterFormValues } from "@/types";
 
+type TSession = Session["session"];
+
+interface GetCurrentUserResponse extends TSession {
+  user: {
+    id: TUserId;
+    name: string;
+    email: string;
+    userName: string;
+    emailVerified: boolean;
+    createdAt: Date;
+    updatedAt: Date | null;
+  }
+}
+
 // Helper to get current authenticated user
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<GetCurrentUserResponse> {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+
+  if (!session) {
+    throw new Error("No active session found");
+  }
 
   if (!session?.user) {
     redirect(config.SIGN_IN);
   }
 
-  const sessionId = session.user.id as unknown as TUserId;
-  const dbUser = await db.query.usersTable.findFirst({
-    where: eq(usersTable.id, sessionId),
-  });
-
-  if (!dbUser) {
-    redirect(config.SIGN_IN);
-  }
+  const userId = session.user.id as unknown as TUserId;
 
   return {
-    ...session,
-    user: dbUser,
+    ...session.session,
+    user: {
+      id: userId,
+      name: session.user.name,
+      email: session.user.email,
+      userName: session.user.userName || "",
+      emailVerified: session.user.emailVerified,
+      createdAt: new Date(session.user.createdAt),
+      updatedAt: session.user.updatedAt ? new Date(session.user.updatedAt) : null,
+    },
   };
 }
 
@@ -46,7 +62,7 @@ export async function signUpAction({
       body: {
         name,
         email,
-        username: userName,
+        userName,
         password,
       },
       headers: await headers(),
@@ -62,10 +78,8 @@ export async function signUpAction({
   }
 }
 
-export async function loginAction(email: string, password: string) {
+export async function loginAction(email: string, password: string): Promise<APIResponse<{message: string}>> {
   try {
-    // Use the server-side API for authentication
-    // Note: Do NOT hash the password - better-auth handles password hashing internally
     const result = await auth.api.signInEmail({
       body: {
         email,
@@ -78,103 +92,13 @@ export async function loginAction(email: string, password: string) {
       return { error: "Invalid email or password", success: false };
     }
 
-    // Use the session token from the login result for subsequent API calls
-    // since the cookie isn't available in the original request headers yet
-    const sessionToken = result.token;
-    const authHeaders = {
-      cookie: `better-auth.session_token=${sessionToken}`,
-      origin: config.betterAuthUrl,
-    };
-
-    // Check workspaces
-    const data = await auth.api.listOrganizations({
-      headers: authHeaders,
-    });
-
-    if (data.length < 0) {
-      return {
-        data: { user: result.user, organizationExists: false },
-        success: true,
-      };
-    }
-
     return {
-      data: {
-        user: result.user,
-        organizationExists: true,
-      },
+      data: { message: "Login successful" },
       success: true,
     };
   } catch (error: unknown) {
-    let message = "An unknown error occurred";
-
-    if (error && typeof error === "object") {
-      const errObj = error as Record<string, unknown>;
-      if (errObj.status === "UNAUTHORIZED") {
-        message = "Invalid email or password";
-      } else if (
-        typeof errObj.message === "string" &&
-        errObj.message.length > 0
-      ) {
-        message = errObj.message;
-      } else if (typeof errObj.status === "string") {
-        message = `Authentication failed: ${errObj.status}`;
-      }
-    } else if (error instanceof Error && error.message) {
-      message = error.message;
-    }
-
-    return { error: message, success: false };
-  }
-}
-
-export async function getUserWorkspaceId() {
-  const authUser = await getCurrentUser();
-
-  // Get user's first workspace membership
-  const [membership] = await db
-    .select()
-    .from(membersTable)
-    .where(eq(membersTable.userId, authUser.user.id))
-    .limit(1)
-    .execute();
-
-  if (!membership?.workspaceId) {
-    return { error: "Workspace ID is null", success: false };
-  }
-
-  return {
-    data: {
-      workspaceId: membership.workspaceId,
-    },
-    success: true,
-  };
-}
-
-export async function getUser(): Promise<APIResponse<UserResponse>> {
-  try {
-    const authUser = await getCurrentUser();
-
-    // Get user from the better-auth user table
-    const [user] = await db
-      .select()
-      .from(usersTable)
-      .where(eq(usersTable.id, authUser.user.id))
-      .execute();
-
-    if (!user) return { error: "User does not exist", success: false };
-
-    return { data: user as UserResponse, success: true };
-  } catch (error: unknown) {
-    return { error: `Failed to get user:: \n ${error}`, success: false };
-  }
-}
-
-export async function getAllUsers(): Promise<APIResponse<UserResponse[]>> {
-  try {
-    const data = await db.select().from(usersTable).execute();
-    return { data: data as UserResponse[], success: true };
-  } catch (error: unknown) {
-    return { error: `Failed to get all users:: \n ${error}`, success: false };
+    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+    
+    return { error: errorMessage, success: false };
   }
 }
