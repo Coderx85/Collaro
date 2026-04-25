@@ -1,6 +1,6 @@
-import { IMeetingDTO, TMeetingId, TWorkspaceId, TeamMeetingDTO, meetingStatus } from "../interface";
+import { IMeetingDTO, TMeetingId, TeamMeetingDTO, meetingStatus } from "../interface";
 import { IMeetingStore } from ".";
-import { TUserId , TMemberId } from "@/types";
+import { TUserId , TMemberId, TWorkspaceId } from "@/types";
 import { db } from "@/db";
 import { privateMeetingsTable, workspaceMeetingTable } from "@/db/schema/schema";
 import { and, eq } from "drizzle-orm";

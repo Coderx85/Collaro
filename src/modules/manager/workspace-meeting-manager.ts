@@ -8,14 +8,13 @@ import { IRequestMember, RequestMember } from "../workspace";
 import { IUser, User } from "../user";
 import { MemberSorting } from "../sorting/interface";
 import { TMemberId } from "@/types";
+import { MeetingNotification } from "../notification/meeting-notification";
 
 export class WorkspaceMeetingManager {
   private memberStore: IMemberStore = new MemberStore();
   participantStore: IParticipantStore = ParticipantStore.getInstance();
   private meetingStore = MemoryWorkspaceMeetingStore.getInstance();
-  private requestService: IRequestMember = new RequestMember();
-  private user: IUser = new User();
-  private sorting = new MemberSorting();
+  private notificationService: MeetingNotification = MeetingNotification.getInstance();
 
   static instance: WorkspaceMeetingManager;
   static getInstance(): WorkspaceMeetingManager {
@@ -45,6 +44,30 @@ export class WorkspaceMeetingManager {
     return true;
   }
 
+  private async listMembers(workspaceId: IWorkspaceDTO["id"], sorting?: MemberSorting): Promise<IMemberDTO[]> {
+    const members = await this.memberStore.listWorkspaceMembers(workspaceId);
+    if (sorting) {
+      return sorting.sortByName(members);
+    }
+    return members;
+  }
+
+  private async informMembers(workspaceId: IWorkspaceDTO["id"], exceptMemberId: TMemberId, input: Parameters<MeetingNotification["createNotification"]>[0]) {
+    // 1. Get the members of the workspace.
+    const members = await this.listMembers(workspaceId);
+
+    // 2. Send notification to workspace members about the new meeting.
+    for (const member of members) {
+      if (member.id !== exceptMemberId) {
+        await this.notificationService.createNotification({
+          ...input,
+          userId: member.userId,
+          memberID: member.id,
+        });
+      }
+    }
+  }
+
   async validateMember(memberId: TMemberId): Promise<IMemberDTO> {
     const member = await this.memberStore.findById(memberId);
     if (!member) {
@@ -55,15 +78,16 @@ export class WorkspaceMeetingManager {
 
   async createMeeting(input: Omit<Input<TeamMeetingDTO>, "participants" | "endTime">, workspaceId: IWorkspaceDTO["id"]): Promise<TeamMeetingDTO> {
     try {
+      // 1. Check the access.
       const checkExists = await this.memberStore.checkMemberExists(workspaceId, input.createdBy);
       if (!checkExists) {
         throw new Error(`Member with Id ${input.createdBy} does not exist in workspace with ID: ${workspaceId}`);
       }
 
-      // Validation
+      // 2. Get the member details.
       const member = await this.validateMember(input.createdBy);
   
-      // Create meeting DTO
+      // 3. Create the meeting DTO.
       const meeting: IWorkspaceMeetingDTO = {
         ...input,
         workspaceId: workspaceId,
@@ -75,10 +99,10 @@ export class WorkspaceMeetingManager {
         },
       };
   
-      // Save meeting to store
+      // 4. Save the meeting to the store.
       await this.meetingStore.save(meeting);
   
-      // Add creator as participant to that meeting
+      // 5. Add the creator of the meeting.
       await this.participantStore.addParticipant({
         status: "joined",
         meetingId: meeting.id,
@@ -88,8 +112,16 @@ export class WorkspaceMeetingManager {
         joinedAt: new Date(),
         leaveAt: null,
       });
-  
-      // Return the created meeting
+
+      // 6. Send notification to workspace members about the new meeting.
+      await this.informMembers(workspaceId, input.createdBy, {
+        type: "meeting_created",
+        userId: member.userId,
+        workspaceId: workspaceId,
+        meetingLink: `/meetings/${meeting.id}`,
+        memberID: member.id,
+      });
+
       return meeting;
     } catch (error) {
       console.error("Error creating meeting:", error);
@@ -104,6 +136,7 @@ export class WorkspaceMeetingManager {
         meetingId,
         memberId,
       );
+
       if (!checkExists) {
         throw new Error(
           `Member with Id ${memberId} does not exist in workspace with ID: ${meetingId}`,
@@ -141,6 +174,13 @@ export class WorkspaceMeetingManager {
         joinedAt: new Date(),
       };
 
+      const updatedMeeting: TeamMeetingDTO = {
+        ...meeting!,
+        participants: updatedParticipants,
+      };
+
+      await this.meetingStore.update(meetingId, updatedMeeting);
+
       return participantDTO;
     } catch (error) {
       console.error("Error joining meeting:", error);
@@ -153,13 +193,32 @@ export class WorkspaceMeetingManager {
     return meeting as unknown as TeamMeetingDTO | null;
   }
 
-  async updateMeeting(meetingId: TMeetingId, status: TeamMeetingDTO["status"]): Promise<void> {
+  async updateMeeting(meetingId: TMeetingId, status: TeamMeetingDTO["status"], ): Promise<void> {
+    // 1. Check if meeting exists
     const meeting = await this.getMeeting(meetingId);
     if (!meeting) {
       throw new Error(`Meeting with ID: ${meetingId} not found`);
     }
 
+    // 2. Validate the member trying to update the meeting.
+    const member = await this.validateMember(meeting.createdBy);
+
+    // 3. Check if the status transition is valid
+    if (meeting.status === "completed" || meeting.status === "active") {
+      throw new Error(`Cannot update the ${meeting.status} meeting.`);
+    }
+
+    // 4. Update the meeting status
     await this.meetingStore.update(meetingId, { status });
+
+    // 5. Inform members about the meeting update
+    await this.informMembers(meeting.workspaceId, meeting.createdBy, {
+      type: "meeting_updated",
+      userId: member.userId,
+      workspaceId: member.workspaceId,
+      meetingLink: `/meetings/${meeting.id}`,
+      memberID: meeting.createdBy,
+    });
   }
 
   async endMeeting(meetingId: TMeetingId): Promise<void> {
@@ -167,11 +226,14 @@ export class WorkspaceMeetingManager {
     if (!meeting) {
       throw new Error(`Meeting with ID: ${meetingId} not found`);
     }
-    
-    await this.meetingStore.update(meetingId, { 
+
+    const updatedMeeting: TeamMeetingDTO = {
+      ...meeting,
       status: "completed",
       endTime: new Date(),
-     });
+    }
+    
+    await this.meetingStore.update(meetingId, updatedMeeting);
 
     await this.participantStore.endMeetingForParticipants(meetingId);
   }

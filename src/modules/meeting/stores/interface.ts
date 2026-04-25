@@ -1,6 +1,6 @@
 import { IMember, IMemberDTO } from "@collaro/member";
 import { IMeetingDTO, meetingStatus, TMeetingId } from "..";
-import { TMemberId } from "@/types";
+import { TMemberId, TParticipantId } from "@/types";
 import { Input } from "@collaro/utils/omit";
 import { BRAND } from "@/modules/utils/brand";
 
@@ -15,8 +15,6 @@ export interface IMeetingStore<T> {
   updateStatus(id: TMeetingId, status: meetingStatus): Promise<void>;
   delete(id: TMeetingId): Promise<void>;
 }
-
-export type TParticipantId = BRAND<"ParticipantId">;
 
 export type TParticipantStatus = "joined" | "left" | "invited" | "declined";
 

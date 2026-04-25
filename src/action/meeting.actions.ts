@@ -103,8 +103,8 @@ export async function endMeetingForAll(
     // End call for all participants
     await workspaceMeetingManager.participantStore.endMeetingForParticipants(meetingId);
 
-    // Update meeting status to "completed"
-    await workspaceMeetingManager.updateMeeting(meetingId, "completed");
+    // End the meeting
+    await workspaceMeetingManager.endMeeting(meetingId);
     
     const dto: MeetingResponse = {
       endAt: new Date(),

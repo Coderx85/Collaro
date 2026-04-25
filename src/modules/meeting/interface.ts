@@ -6,8 +6,6 @@ import { TMemberId } from "@/types";
 
 export type TMeetingId = BRAND<"MeetingId">;
 
-export type { TWorkspaceId };
-
 export enum MeetingType {
   team = "Team Meeting",
   private = "Private Meeting",
@@ -41,6 +39,15 @@ export interface IMeeting<T> {
   deleteMeeting(id: TMeetingId): void;
 }
 
+/**
+ * @field workspaceId: The ID of the workspace to which the meeting belongs.
+ * @field participants: A record of participant IDs and their corresponding names.
+ * @field createdBy: The ID of the member who created the meeting.
+ * @field status: The current status of the meeting (scheduled, active, completed, cancelled).
+ * @field description: A brief description of the meeting.
+ * @field startTime: The scheduled start time of the meeting.
+ * @field endTime: The scheduled end time of the meeting (can be null if not set). 
+ */
 export type TeamMeetingDTO = IMeetingDTO<TMemberId> & { workspaceId: TWorkspaceId };
 
 export interface IWorkspaceMeeting {

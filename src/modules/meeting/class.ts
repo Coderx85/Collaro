@@ -5,7 +5,6 @@ import {
   TMeetingId, 
   IMeetingStore,
   MemoryMeetingStore,
-  TWorkspaceId,
   IWorkspaceMeeting,
   IParticipantStore,
   ParticipantStore,
@@ -14,7 +13,7 @@ import {
   IParticipantDTO,
 } from "./index";
 import { ID } from "@collaro/utils/generate";
-import { TMemberId , TUserId } from "@/types";
+import { TMemberId , TUserId, TWorkspaceId } from "@/types";
 
 export type TMeetingInput<T> = Omit<Input<T>, "participants">
 

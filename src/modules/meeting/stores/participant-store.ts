@@ -1,12 +1,13 @@
 import { IMember, Member } from "@collaro/member";
 import { TMeetingId } from "../interface";
-import { IMeetingStore, IParticipantDTO, IParticipantStore, MemoryWorkspaceMeetingStore, TParticipantId, TParticipantStatus } from "./index";
+import { IMeetingStore, IParticipantDTO, IParticipantStore, MemoryWorkspaceMeetingStore, TParticipantStatus } from "./index";
 import { Input } from "@collaro/utils/omit";
 import { ID } from "@/modules/utils/generate";
 import { db } from "@/db";
-import { meetingParticipantsTable } from "@/db/schema/schema";
+import { meetingParticipantsTable, membersTable } from "@/db/schema/schema";
 import { and, eq } from "drizzle-orm";
 import { TMemberId } from "@/types";
+import tryCatch from "@/lib/try-catch-wrapper";
 
 export class ParticipantStore implements IParticipantStore {
   private static instance: ParticipantStore;
@@ -29,21 +30,13 @@ export class ParticipantStore implements IParticipantStore {
       leaveAt: null,
     }
 
-    const result = await db
-      .insert(meetingParticipantsTable)
-      .values({
-        id: member.id,
-        meetingId: member.meetingId,
-        name: member.name,
-        memberId: member.memberId,
-        joinedAt: member.joinedAt,
-        leftAt: member.leaveAt,
-        status: member.status,
-      })
-
-    if(!result) throw new Error("Failed to add participant to the database");
-
-    return;
+    return tryCatch({
+      ctx: async () => {
+        await db
+          .insert(meetingParticipantsTable)
+          .values(member);
+      }
+    })
   }
 
   async listParticipants(meetingId: TMeetingId): Promise<IParticipantDTO[]> {
@@ -55,7 +48,10 @@ export class ParticipantStore implements IParticipantStore {
       }
 
       const participants = await db.query.meetingParticipantsTable.findMany({
-        where: eq(meetingParticipantsTable.meetingId, meetingId)
+        where: eq(meetingParticipantsTable.meetingId, meetingId),
+        with: {
+          member: true,
+        }
       });
 
       const result: IParticipantDTO[] = participants.map((p) => ({
@@ -63,7 +59,7 @@ export class ParticipantStore implements IParticipantStore {
         meetingId: p.meetingId,
         memberId: p.memberId,
         name: p.name,
-        role: "member",
+        role: p.member.role,
         joinedAt: p.joinedAt,
         leaveAt: p.leftAt,
         status: p.status 
@@ -81,48 +77,32 @@ export class ParticipantStore implements IParticipantStore {
    * @param meetingId 
    */
   async removeParticipant(meetingId: TMeetingId, memberId: TMemberId): Promise<void> {
-    try {
-      const checkMeetingExists = await this.meetingStore.checkMeetingExists(meetingId);
-      if (!checkMeetingExists) {
-        throw new Error(`Meeting with ID: ${meetingId} does not exist`);
-      }
-
-      const participants = await db
-        .update(meetingParticipantsTable)
-        .set({ leftAt: new Date() })
-        .where(
-          and(
+    await tryCatch({
+      ctx: async () => {
+        await db
+          .delete(meetingParticipantsTable)
+          .where(and(
             eq(meetingParticipantsTable.meetingId, meetingId),
-            eq(meetingParticipantsTable.memberId, memberId),
-          )
-        )
-        .returning();
-
-      if (!participants) {
-        throw new Error(`Failed to remove participant from meeting with ID: ${meetingId}`);
+            eq(meetingParticipantsTable.memberId, memberId)
+          ))
+          .returning();
       }
-
-      return;
-    } catch (error: unknown) {
-      throw new Error(`Failed to remove participant: ${(error as Error).message}`);
-    }
+    })
   }
 
+  /**
+   * The endMeetingForParticipants method updates the status of all participants.
+   * @param meetingId The ID of the meeting for which to end the meeting for all participants.
+   * @returns A promise that resolves when the operation is complete.
+   */
   async endMeetingForParticipants(meetingId: TMeetingId): Promise<void> {
-    try {
-      const participants = await db
-        .update(meetingParticipantsTable)
-        .set({ status: "left", leftAt: new Date() })
-        .where(eq(meetingParticipantsTable.meetingId, meetingId))
-        .returning();
-  
-      if (!participants) {
-        throw new Error(`Failed to end meeting for participants with ID: ${meetingId}`);
-      }
-  
-      return;
-    } catch (error: unknown) {
-      throw new Error(`Failed to end meeting for participants: ${(error as Error).message}`);
-    }
+    return tryCatch({
+      ctx: async () => {
+        await db
+            .update(meetingParticipantsTable)
+            .set({ status: "left", leftAt: new Date() })
+            .where(eq(meetingParticipantsTable.meetingId, meetingId))
+      }}
+    )
   }
 }
