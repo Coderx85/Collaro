@@ -21,7 +21,7 @@ export interface IWorkspace {
 export interface IWorkspaceStore {
   save(workspace: IWorkspaceDTO): Promise<void>;
   findById(id: TWorkspaceId): Promise<IWorkspaceDTO | null>;
-  update(id: TWorkspaceId, workspace: Partial<IWorkspaceDTO>): Promise<void>;
+  update(id: TWorkspaceId, workspace: IWorkspaceDTO): Promise<void>;
   delete(id: TWorkspaceId): Promise<void>;
   list(): Promise<IWorkspaceDTO[]>;
 }

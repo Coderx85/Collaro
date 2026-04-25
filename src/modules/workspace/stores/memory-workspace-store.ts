@@ -2,35 +2,41 @@ import { db } from "@/db";
 import { IWorkspaceDTO, IWorkspaceStore, TWorkspaceId } from "./../interface";
 import { workspacesTable } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
+import tryCatch from "@/lib/try-catch-wrapper";
 
 export class MemoryWorkspaceStore implements IWorkspaceStore {
-  private workspaces: IWorkspaceDTO[] = [];
-
   async save(workspace: IWorkspaceDTO): Promise<void> {
-    try {
-      const w: IWorkspaceDTO = {
-        id: workspace.id,
-        name: workspace.name,
-        slug: workspace.slug,
-        logoUrl: workspace.logoUrl,
-        ownerId: workspace.ownerId,
-        description: workspace.description,
-        createdAt: workspace.createdAt,
-        updatedAt: workspace.updatedAt,
-      };
-      
-      await db
-        .insert(workspacesTable)
-        .values(w)
-        .execute();
-    } catch (error: unknown) {
-      throw new Error(`Failed to save workspace: ${error instanceof Error ? error.message : String(error)}`);
-    }
+    return await tryCatch({
+      ctx: async () => {
+        await db
+          .insert(workspacesTable)
+          .values({
+            id: workspace.id,
+            name: workspace.name,
+            slug: workspace.slug,
+            logo: workspace.logoUrl,
+            createdBy: workspace.ownerId,
+            createdAt: workspace.createdAt,
+            updatedAt: workspace.updatedAt,
+          })
+          .execute();
+      }, 
+      errorMessage: `Failed to save workspace with id ${workspace.id}`
+    })
   }
 
   async findById(id: TWorkspaceId): Promise<IWorkspaceDTO | null> {
-    const workspaces = await db.query.workspacesTable.findFirst({
-      where: eq(workspacesTable.id, id),
+    const workspaces = await tryCatch({
+      ctx: async () => {
+        const result = await db
+          .select()
+          .from(workspacesTable)
+          .where(eq(workspacesTable.id, id))
+          .execute();
+
+        return result[0] || null;
+      }, 
+      errorMessage: `Failed to find workspace with id ${id}`
     })
 
     if (!workspaces) {
@@ -49,18 +55,58 @@ export class MemoryWorkspaceStore implements IWorkspaceStore {
     };
   }
 
-  async update(id: TWorkspaceId, workspace: Partial<IWorkspaceDTO>): Promise<void> {
-    const index = this.workspaces.findIndex((w) => w.id === id);
-    if (index !== -1) {
-      this.workspaces[index] = { ...this.workspaces[index], ...workspace } as IWorkspaceDTO;
-    }
+  async update(id: TWorkspaceId, workspace: IWorkspaceDTO): Promise<void> {
+    return await tryCatch({
+      ctx: async () => {
+        await db
+          .update(workspacesTable)
+          .set({
+            name: workspace.name,
+            slug: workspace.slug,
+            logo: workspace.logoUrl,
+            updatedAt: new Date(),
+          })
+          .where(eq(workspacesTable.id, id))
+          .execute();
+      }, 
+      errorMessage: `Failed to update workspace with id ${id}`
+    })
   }
 
   async delete(id: TWorkspaceId): Promise<void> {
-    this.workspaces = this.workspaces.filter((workspace) => workspace.id !== id);
+    return await tryCatch({
+      ctx: async () => {
+        await db
+          .delete(workspacesTable)
+          .where(eq(workspacesTable.id, id))
+          .execute();
+      }, 
+      errorMessage: `Failed to delete workspace with id ${id}`
+    })
   }
 
   async list(): Promise<IWorkspaceDTO[]> {
-    return [...this.workspaces];
+    const workspaces = await tryCatch({
+      ctx: async () => {
+        const result = await db
+          .select()
+          .from(workspacesTable)
+          .execute();
+
+        return result;
+      }, 
+      errorMessage: `Failed to list workspaces`
+    })
+
+    return workspaces.map((workspace) => ({
+      id: workspace.id,
+      name: workspace.name,
+      slug: workspace.slug,
+      logoUrl: workspace.logo ?? "",
+      ownerId: workspace.createdBy!,
+      description: "",
+      createdAt: workspace.createdAt,
+      updatedAt: workspace.updatedAt,
+    }));
   }
 }

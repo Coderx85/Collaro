@@ -35,8 +35,18 @@ export class Workspace implements IWorkspace {
 
   async updateWorkspace(id: TWorkspaceId, workspace: Partial<IWorkspaceDTO>): Promise<void> {
     try {
-      console.log(`Updating workspace with ID: ${id} with data: ${JSON.stringify(workspace)}`);
-      await this.store.update(id, workspace);
+      const existingWorkspace = await this.store.findById(id);
+      if (!existingWorkspace) {
+        throw new Error(`Workspace with ID: ${id} not found for update.`);
+      }
+      
+      const updatedWorkspace: IWorkspaceDTO = {
+        ...existingWorkspace,
+        ...workspace,
+        updatedAt: new Date(),
+      };
+
+      await this.store.update(id, updatedWorkspace);
     } catch (error: unknown) {
       throw new Error(`Failed to update workspace: ${error instanceof Error ? error.message : String(error)}`);
     }

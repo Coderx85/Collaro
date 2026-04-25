@@ -30,14 +30,21 @@ class NotificationStore implements INotificationStore {
     return tryCatch({ctx: async () => {
       await db
         .insert(notificationsTable)
-        .values(dto)
+        .values({
+          message: dto.message,
+          read: dto.read,
+          type: dto.type,
+          userId: dto.userId,
+          workspaceId: dto.workspaceId,
+          memberId: dto.memberID,
+          createdAt: dto.createdAt,
+          updatedAt: dto.createdAt,
+        })
     }})
   }
 
   async markAsRead(notificationId: TNotificationId): Promise<void> {
-    return tryCatch({ctx: async() => {
-      await this.findById(notificationId);
-        
+    return tryCatch({ctx: async() => {        
       await db
         .update(notificationsTable)
         .set({ read: true })
@@ -48,18 +55,19 @@ class NotificationStore implements INotificationStore {
   }
 
   async findById(notificationId: TNotificationId): Promise<INotificationDTO | null> {
-    return tryCatch({ctx: async() => {
-      const [notification] = await db
-        .select()
-        .from(notificationsTable)
-        .where(eq(notificationsTable.id, notificationId))
-        .execute()
+    return tryCatch({
+      ctx: async() => {
+        const [notification] = await db
+          .select()
+          .from(notificationsTable)
+          .where(eq(notificationsTable.id, notificationId))
+          .execute()
 
-      if (!notification) { 
-        return null;
-      }
+        if (!notification) { 
+          return null;
+        }
 
-      return notification || null;
+        return notification || null;
       }
     })
   }
