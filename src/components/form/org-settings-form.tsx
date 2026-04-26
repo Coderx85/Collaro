@@ -16,9 +16,10 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { toast } from "sonner";
 import { UpdateWorkspaceSchema } from "@/db/schema/type";
 import { updateWorkspace } from "@/action/workspace/workspace.actions";
+import { TWorkspaceId } from "@/types";
 
 interface OrgSettingsFormProps {
-  workspaceId: string;
+  workspaceId: TWorkspaceId;
   initialName: string;
   initialSlug: string;
   initialLogo?: string;
