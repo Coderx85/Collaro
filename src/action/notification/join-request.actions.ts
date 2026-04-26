@@ -1,13 +1,13 @@
 "use server";
 
-import type { APIResponse, TInviteMemberRole, TMemberId, TRequestId, TWorkspaceId } from "@/types";
+import type { APIResponse, TMemberInviteRole, TMemberId, TRequestId, TWorkspaceId } from "@/types";
 import { workspaceMemberManager } from "@/modules/member";
 
 interface ApproveJoinRequestInput {
   requestId: string;
   responderId: TMemberId;
   workspaceId: TWorkspaceId;
-  role: TInviteMemberRole;
+  role: TMemberInviteRole;
 }
 
 interface ApproveJoinRequestResult {

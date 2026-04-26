@@ -1,45 +1,28 @@
 "use server";
 import type { 
   APIResponse,
-  JoinRequest,
+  TJoinRequest,
   TWorkspaceId 
 } from "@/types";
 import { workspaceMemberManager } from "@/modules/member";
-import { userService } from "@/modules/user";
 import { getCurrentUser } from "../user.actions";
 import tryCatch from "@/lib/try-catch-wrapper";
 
 
 export async function getPendingJoinRequests(
   orgId: TWorkspaceId,
-): Promise<APIResponse<{ requests: JoinRequest[] }>> {
+): Promise<APIResponse<{ requests: TJoinRequest[] }>> {
+  const joinRequests = await workspaceMemberManager.listJoinRequests(orgId);
   try {
-    const dto: JoinRequest[] = [];
-
-    const joinRequests = await workspaceMemberManager.listJoinRequests(orgId);
-
-    if (!joinRequests) {
+    const res = await workspaceMemberManager.listJoinRequests(orgId);
+    if (!res) {
       return {
         success: false,
         error: `Failed to fetch join requests for workspace with ID: ${orgId}`, 
       };
     }
 
-    for (const req of joinRequests) {
-      const user = await userService.getUser(req.userId);
-      
-      if (!user) {
-        throw new Error(`User not found for join request with ID: ${req.id}`);
-      }
-      
-      // Combine request data with user data into a single DTO
-      dto.push({
-        ...req,
-        user,
-      });
-    }
-
-    return { success: true, data: { requests: dto } };
+    return { success: true, data: { requests: res } };
   } catch (error: unknown) {
     console.error("[getPendingJoinRequests] error:", error);
     return {

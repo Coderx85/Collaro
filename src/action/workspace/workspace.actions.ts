@@ -12,7 +12,6 @@ import { IMemberDTO, workspaceMemberManager } from "@/modules/member";
 import { IWorkspaceDTO, TWorkspaceId } from "@/modules/workspace";
 import { workspaceMeetingManager } from "@/modules/manager";
 import { TUserId, TMemberId } from "@/types";
-import { role } from "better-auth/plugins";
 
 type NewWorkspaceFormSchemaType = z.infer<typeof NewWorkspaceFormSchema>;
 
@@ -86,7 +85,7 @@ export async function createWorkspace(
  * @permission Only workspace owners and admins can update workspace details
  */
 export async function updateWorkspace(
-  workspaceId: string,
+  workspaceId: TWorkspaceId,
   data: { name?: string; slug?: string; logo?: string },
 ): Promise<APIResponse<{ name: string; slug: string; logo: string }>> {
   try {
@@ -94,7 +93,7 @@ export async function updateWorkspace(
     const result = await auth.api.updateOrganization({
       headers: await headers(),
       body: {
-        organizationId: workspaceId,
+        organizationId: String(workspaceId),
         data: {
           name: data.name,
           slug: data.slug,
@@ -136,7 +135,7 @@ export async function getCurrentAuthUser() {
 }
 
 // This function is used to get the users of a workspace
-export async function getWorkspaceUsers(slug: IWorkspaceDTO["slug"]): Promise<APIResponse<{ member: IMemberDTO }[]>> {
+export async function getWorkspaceUsers(slug: IWorkspaceDTO["slug"]): Promise<APIResponse<{ members: IMemberDTO[] }>> {
   try {
     const workspace = await workspaceMemberManager.findWorkspaceBySlug(slug);
     if (!workspace) {
@@ -148,8 +147,8 @@ export async function getWorkspaceUsers(slug: IWorkspaceDTO["slug"]): Promise<AP
 
     const members = await workspaceMemberManager.listMembers(workspace.id);
 
-    const result: { member: IMemberDTO }[] = members.map((member) => ({
-      member: {
+    const result: { members: IMemberDTO[] } = {
+      members: members.map((member) => ({
         id: member.id,
         name: member.name,
         userId: member.userId,
@@ -157,8 +156,8 @@ export async function getWorkspaceUsers(slug: IWorkspaceDTO["slug"]): Promise<AP
         role: member.role,
         createdAt: member.createdAt,
         updatedAt: member.updatedAt,
-      },
-    }));
+      })),
+    };
 
     return {
       success: true,
@@ -224,7 +223,7 @@ export async function getWorkspace(workspaceSlug: string) {
 }
 
 // This function is used to get all workspaces
-export async function getAllWorkspaces(): Promise<APIResponse<IWorkspaceDTO[] | null>> {
+export async function getAllWorkspaces(): Promise<APIResponse<IWorkspaceDTO[]>> {
   const user = await getCurrentUser();
 
   if(!user) {
@@ -234,7 +233,7 @@ export async function getAllWorkspaces(): Promise<APIResponse<IWorkspaceDTO[] | 
     }
   }
 
-  const workspaces = await workspaceMemberManager.listUserWorkspaces(user?.id as unknown as TUserId);
+  const workspaces = await workspaceMemberManager.listUserWorkspaces(user.id);
 
   if (!workspaces) {
     return {
@@ -388,36 +387,25 @@ export async function getWorkspaceTUserRole(workspaceSlug: string) {
  * Delete a workspace
  * Only owners can delete workspaces
  */
-export async function deleteWorkspace(
-  workspaceId: string,
+export async function deleteWorkspaceAction(
+  workspaceId: TWorkspaceId,
 ): Promise<APIResponse<{ deleted: boolean }>> {
   try {
-    // Check if user has permission to delete
-    const permission = await canDeleteWorkspace();
-
-    if (!permission.allowed) {
+    const res = await workspaceMemberManager.deleteWorkspace(workspaceId);
+    if (!res || !res.success) {
       return {
-        error:
-          "You don't have permission to delete this workspace. Only owners can delete workspaces.",
         success: false,
+        error: "Failed to delete workspace"
       };
     }
 
-    // Use better-auth's API to delete the organization
-    await auth.api.deleteOrganization({
-      headers: await headers(),
-      body: {
-        organizationId: workspaceId,
-      },
-    });
-
     return { data: { deleted: true }, success: true };
   } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : "An unknown error occurred";
     return {
-      error: `Failed to delete workspace: ${message}`,
       success: false,
+      error: `Failed to delete workspace: ${
+        error instanceof Error ? error.cause : "An unknown error occurred"
+      }`,
     };
   }
 }
