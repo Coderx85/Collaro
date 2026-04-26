@@ -11,6 +11,7 @@ import {
   IconSparkles,
   IconUsers,
 } from "@tabler/icons-react";
+import { getAllWorkspaces } from "@/action";
 
 const displayFont = Space_Grotesk({
   subsets: ["latin"],
@@ -20,13 +21,16 @@ const displayFont = Space_Grotesk({
 const WorkspacePage = async () => {
   let workspaceLoadError = false;
 
-  const workspaces = await auth.api.listOrganizations({
-    headers: await headers(),
-  }).catch((error) => {
-    console.error("Error fetching workspaces:", error);
+  const res = await getAllWorkspaces();
+  if (!res.success) {
     workspaceLoadError = true;
-    return [];
-  });
+    return {
+      success: false,
+      error: "Failed to load workspaces",
+    }
+  }
+
+  const workspaces = res.data;
 
   console.log("Fetched workspaces:", workspaces);
 
@@ -107,7 +111,7 @@ const WorkspacePage = async () => {
           {workspaceCount > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {workspaces.map((workspace) => (
-                <Link href={`/workspace/${workspace.slug}`} key={workspace.id}>
+                <Link href={`/workspace/${workspace.slug}`} key={String(workspace.id)}>
                   <Card className="group relative h-full overflow-hidden rounded-2xl border border-border/50 bg-card/60 backdrop-blur-sm transition-[transform,border-color,box-shadow] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.98]">
                     <div className="relative flex h-full flex-col justify-between gap-5 p-5">
                       {/* Workspace Info */}

@@ -7,8 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { auth } from "@/lib/auth/auth-server";
-import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/dal";
 import { getMemberByIdAndSlug } from "@/action/member";
 import { redirect } from "next/navigation";
@@ -16,10 +14,11 @@ import {
   canRoleDeleteOrganization,
   canRoleUpdateOrganization,
 } from "@/lib/auth/auth-server";
-import { OrgSettingsForm } from "./_components/org-settings-form";
+import { OrgSettingsForm } from "@/components/form/org-settings-form";
 import { DangerZone } from "./_components/danger-zone";
 import { PendingJoinRequests } from "../../../_components/pending-join-requests";
 import { TWorkspaceId } from "@/types";
+import { getWorkspaceBySlug } from "@/action/workspace/get-workspace.actions";
 
 export default async function OrgSettingsPage({
   params,
@@ -33,16 +32,13 @@ export default async function OrgSettingsPage({
     redirect("/sign-in");
   }
 
-  const activeOrg = await auth.api.getFullOrganization({
-    query: {
-      organizationSlug: slug,
-    },
-    headers: await headers(),
-  });
+  const res = await getWorkspaceBySlug(slug);
 
-  if (!activeOrg) {
-    redirect(`/workspace/${slug}`);
+  if (!res || !res.success) {
+    redirect("/dashboard");
   }
+
+  const activeOrg = res.data;
 
   const orgMember = await getMemberByIdAndSlug(slug, String(user.id));
 

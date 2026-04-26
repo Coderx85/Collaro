@@ -17,11 +17,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { deleteWorkspace } from "@/action/workspace/workspace.actions";
+import { deleteWorkspaceAction } from "@/action/workspace/workspace.actions";
 import { useRouter } from "next/navigation";
+import { TWorkspaceId } from "@/types";
 
 interface DangerZoneProps {
-  workspaceId: string;
+  workspaceId: TWorkspaceId;
   workspaceName: string;
 }
 
@@ -42,7 +43,7 @@ export function DangerZone({ workspaceId, workspaceName }: DangerZoneProps) {
     setIsDeleting(true);
 
     try {
-      const result = await deleteWorkspace(workspaceId);
+      const result = await deleteWorkspaceAction(workspaceId);
 
       if (result.success) {
         toast.success("Workspace Deleted")
