@@ -4,7 +4,7 @@ import {
   type ParticipantRole,
 } from "@/action/participant.actions";
 import type { StreamVideoParticipant } from "@stream-io/video-react-sdk";
-import { TUserId, TWorkspaceMember, TWorkspaceUser } from "@/types";
+import { IMemberDTO, TUserId, TWorkspaceUser } from "@/types";
 import { Prettify } from "better-auth";
 
 interface ParticipantRoleData {
@@ -15,8 +15,8 @@ interface ParticipantRoleData {
   isLoading: boolean;
 }
 type Data = Pick<
-  TWorkspaceMember,
-  "role" | "userName" | "name" | "email" | "userId"
+  IMemberDTO,
+  "role" | "name" | "userId"
 > & {
   isLoading: boolean;
 };
@@ -34,10 +34,8 @@ export const useParticipantRole = (
   const userId = participant.userId as unknown as TUserId;
   const [roleData, setRoleData] = useState<Data>({
     role: "member",
-    userName: participant.name || participant.userId,
     name: participant.name || participant.userId,
     userId: userId,
-    email: "",
     isLoading: true,
   });
 
@@ -50,9 +48,7 @@ export const useParticipantRole = (
         console.error("Error fetching participant role:", error);
         setRoleData({
           role: "member",
-          userName: participant.name || participant.userId,
           name: participant.name || participant.userId,
-          email: "",
           isLoading: false,
           userId: userId,
         });

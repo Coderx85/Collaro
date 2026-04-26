@@ -20,50 +20,34 @@ export class User implements IUser {
     return user;
   }
 
-  async createUser(input: Prettify<TCreateUserInput>): Promise<IUserDTO> {
-    try {
-      const newUser: IUserDTO = {
-        ...input,
-        id: ID.userId(),
-        createdAt: new Date(),
-        updatedAt: null,
-      };
-
-      // Save the new user to the store
-      await this.store.save(newUser);
-
-      // Update the user property with the newly created user
-      this.user = newUser;
-
-      // return the newly created user
-      return newUser;
-    } catch (error) {
-      throw new Error(`Error creating user: ${(error as Error).message}`);
-    }
-  }
-
   async updateUser(
     id: TUserId,
     user: Partial<IUserDTO>,
   ): Promise<IUserDTO | null> {
     try {
+      // First, find the existing user by ID
       const existingUser = await this.findById(id);
+      if (!existingUser) {
+        throw new Error("USER NOT FOUND", {
+          cause: "No user found with the provided ID",
+        });
+      }
 
-      const updatedUser = {
+      // Merge the existing user data with the new data
+      const updatedUser: IUserDTO = {
         ...existingUser,
         ...user,
         updatedAt: new Date(),
-      } as IUserDTO;
+      };
 
-      if (existingUser) {
-        this.store.update(id, updatedUser);
+      // Update the user in the store
+      await this.store.update(id, updatedUser);
 
-        return this.store.findById(id);
-      }
-
-      return this.user.id === id ? this.user : null;
+      return updatedUser;
     } catch (error) {
-      throw new Error(`Error updating user: ${(error as Error).message}`);
+      throw new Error("Error updating user: ", {
+        cause: error,
+      })
     }
   }
 

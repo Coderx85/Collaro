@@ -4,34 +4,19 @@ import { IUserDTO, TUserId } from "@/types";
 import { usersTable } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
 import tryCatch from "@/lib/try-catch-wrapper";
+import { INotificationDTO, INotificationStore, notificationStore } from "../notification";
 
 const dummyStore: IUserDTO[] = [];
 
 export class UserStore implements IUserStore {
   private static instance: UserStore;
+  private readonly notificationStore: INotificationStore = notificationStore;
 
   public static getInstance(): UserStore {
     if (!UserStore.instance) {
       UserStore.instance = new UserStore();
     }
     return UserStore.instance;
-  }
-
-  async save(user: IUserDTO): Promise<void> {
-    tryCatch({
-      ctx: async () => {
-        await db.insert(usersTable).values({
-          id: user.id,
-          userName: user.username,
-          name: user.name,
-          emailVerified: null,
-          password: "",
-          email: user.email,
-          createdAt: user.createdAt,
-          updatedAt: null,
-        });
-      }
-    })
   }
 
   async findById(id: TUserId): Promise<IUserDTO | null> {
@@ -46,12 +31,7 @@ export class UserStore implements IUserStore {
         }
 
         return {
-          id: user.id,
-          name: user.name,
-          username: user.userName,
-          email: user.email,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt || null,
+          ...user,
         };
       }
     })
@@ -62,12 +42,7 @@ export class UserStore implements IUserStore {
       ctx: async () => {
         const [result] = await db
         .update(usersTable)
-        .set({
-          name: user.name,
-          userName: user.username,
-          email: user.email,
-          updatedAt: user.updatedAt,
-          })
+        .set({ ...user })
         .where(eq(usersTable.id, id))
         .returning();
 
@@ -76,16 +51,12 @@ export class UserStore implements IUserStore {
         }
 
         return {
-          id: result.id,
-          name: result.name,
-          username: result.userName,
-          email: result.email,
-          createdAt: result.createdAt,
-          updatedAt: result.updatedAt,
+          ...result,
         };
       }
     })
   }
+
   async delete(id: TUserId): Promise<void> {
     await db.delete(usersTable).where(eq(usersTable.id, id));
   }
@@ -97,14 +68,19 @@ export class UserStore implements IUserStore {
         
         return {
           ...users.map((user) => ({
-            id: user.id,
-            name: user.name,
-            username: user?.userName,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt || null,
-            email: user.email,
+            ...user,
           })),
         };
+      }
+    })
+  }
+
+  async listNotifications(userId: TUserId): Promise<readonly INotificationDTO[]> {
+    return tryCatch({
+      ctx: async() => {
+        return await this.notificationStore.queryNotifications({
+          userId,
+        })
       }
     })
   }

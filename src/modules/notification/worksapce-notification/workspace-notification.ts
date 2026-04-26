@@ -90,13 +90,13 @@ export class WorkspaceNotification {
    * @returns The created notification DTO.
    * @throws An error if the notification creation fails.
    */
-  async createWorkspaceNotification(
+async createWorkspaceNotification(
     input: TCreateWorkspaceNotificationInput
   ): Promise<INotificationDTO> {
     return tryCatch({
       ctx: async () => {
         const message = WorkspaceNotificationMessage(input.type, input.workspaceName, input.userName) || "";
-    
+      
         const dto: INotificationDTO = {
           ...input,
           id: ID.notificationId(),
@@ -104,9 +104,9 @@ export class WorkspaceNotification {
           read: false,
           createdAt: new Date(),
         };
-    
+      
         await this.store.create({...dto});
-    
+      
         return dto;
       }
     })
@@ -123,10 +123,8 @@ export class WorkspaceNotification {
   ): Promise<INotificationDTO> {
     return tryCatch({
       ctx: async () => {
-        // 1. Generate the notification message
         const message = MemberNotificationMessage(input.type, input.userName, input.workspaceName) || "";
   
-        // 2. Create the notification DTO
         const dto: INotificationDTO = {
           ...input,
           id: ID.notificationId(),
@@ -134,10 +132,9 @@ export class WorkspaceNotification {
           read: false,
           createdAt: new Date(),
         };
-    
-        // 3. Save the notification to the store
+     
         await this.store.create(dto)
-    
+     
         return dto;
       },
     })

@@ -2,7 +2,7 @@
 
 import nodemailer, { type SendMailOptions } from "nodemailer";
 import { config } from "./config";
-import { TInviteMemberRole } from "@/types";
+import { TMemberInviteRole } from "@/types";
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -19,7 +19,7 @@ interface SendInviteEmailParams {
   workspaceName: string;
   inviterName: string;
   inviteUrl: string;
-  role: TInviteMemberRole;
+  role: TMemberInviteRole;
 }
 
 export async function sendInviteEmail({

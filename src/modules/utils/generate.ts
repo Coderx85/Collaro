@@ -1,6 +1,14 @@
-import { TInvitationId, TJoinRequestId, TNotificationId, TRequestId } from "@/types";
-import { TMeetingId, TParticipantId, TWorkspaceId } from "@collaro/meeting";
-import { TMemberId, TUserId } from "@/types";
+import type { 
+  TInvitationId, 
+  TJoinRequestId, 
+  TNotificationId,
+  TMeetingId, 
+  TParticipantId, 
+  TWorkspaceId,
+  TRequestId,
+  TMemberId, 
+  TUserId
+} from "@/types";
 import { v7 } from "uuid";
 
 function generateId<T>(prefix: string): T {

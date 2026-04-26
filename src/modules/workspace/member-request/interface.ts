@@ -1,26 +1,11 @@
-import { IUserDTO } from "@/types";
+import { IMemberDTO, IRequestMemberDTO, IUserDTO, TMemberInviteRole, TRequestStatus } from "@/types";
 import { BRAND } from "@collaro/utils/brand";
 import { IWorkspaceDTO } from "..";
 import { INotificationStore } from "@collaro/notification";
 
 export type TRequestId = BRAND<"RequestId">;
 
-export type TRequestStatus = "pending" | "approved" | "rejected";
-
-export type TMemberInviteRole = "admin" | "member";
-
-export interface IRequestMemberDTO {
-  id: TRequestId;
-  name: string;
-  userId: IUserDTO["id"];
-  workspaceId: IWorkspaceDTO["id"];
-  role: TMemberInviteRole;
-  status: TRequestStatus;
-  createdAt: Date;
-  updatedAt: Date | null;
-}
-
-export type Input<T> = Omit<T, "id" | "createdAt" | "updatedAt" | "status">;
+export type TRequestInput<T> = Omit<T, "id" | "createdAt" | "updatedAt" | "status" | "role" | "respondedBy"> ;
 
 export type returnDTO = {
   success: boolean;
@@ -32,17 +17,18 @@ export interface IRequestMember {
   store: IMemberRequestStore; 
 
   // methods
-  createRequest(request: Input<IRequestMemberDTO>): Promise<IRequestMemberDTO>;
-  getRequest(id: TRequestId ): Promise<IRequestMemberDTO | null>;
-  approveRequest(id: TRequestId ): Promise<returnDTO>;
-  rejectRequest(id: TRequestId ): Promise<returnDTO>;
-  listRequests(workspaceId: IWorkspaceDTO["id"]): Promise<IRequestMemberDTO[]>;
+  create(request: TRequestInput<IRequestMemberDTO>): Promise<IRequestMemberDTO>;
+  getById(id: TRequestId): Promise<IRequestMemberDTO | null>;
+  approve(id: TRequestId, role: TMemberInviteRole, responder: IMemberDTO): Promise<returnDTO>;
+  reject(id: TRequestId, responder: IMemberDTO): Promise<returnDTO>;
+  list(workspaceId: IWorkspaceDTO["id"], query: TRequestStatus): Promise<IRequestMemberDTO[]>;
 }
 
 export type MemberRequestParams = {
   query: {
     workspaceId?: IWorkspaceDTO["id"];
     userId?: IUserDTO["id"];
+    status?: TRequestStatus;
   }
 }
 

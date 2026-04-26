@@ -1,10 +1,10 @@
 import { ID } from "@collaro/utils/generate";
-import { IMemberDTO, IMemberStore, IWorkspaceMemberManager, JoinWorkspaceParams, MemberStore } from "../member/index";
-import { IRequestMember, IRequestMemberDTO, IWorkspaceDTO, IWorkspaceStore, MemoryWorkspaceStore, RequestMember } from "@collaro/workspace";
+import { IMemberDTO, IMemberStore, IWorkspaceMemberManager, JoinWorkspaceParams, MemberStore } from "../member";
+import { IRequestMember, IWorkspaceDTO, IWorkspaceStore, MemoryWorkspaceStore, RequestMember } from "@collaro/workspace";
 import { IUser, User } from "@collaro/user";
 import { MemberSorting } from "@collaro/sorting/interface";
 import { Input } from "@collaro/utils/omit";
-import { IUserDTO, TInviteMemberRole, TMemberId, TRequestId } from "@/types";
+import { IUserDTO, TMemberInviteRole, TMemberId, TRequestId, IRequestMemberDTO, TJoinRequest, TWorkspaceWithMembers } from "@/types";
 import tryCatch from "@/lib/try-catch-wrapper";
 import { WorkspaceNotification, workspaceNotification } from "../notification";
 
@@ -230,7 +230,7 @@ export class WorkspaceMemberManager implements IWorkspaceMemberManager {
     })
   }
 
-  async getMemberDetails(
+  async getMemberDetail(
     query: {
       userId: IUserDTO["id"], 
       workspaceId: IWorkspaceDTO["id"]
@@ -265,7 +265,7 @@ export class WorkspaceMemberManager implements IWorkspaceMemberManager {
           });
         }
 
-        const memberDetails = await this.getMemberDetails({ userId, workspaceId: workspace.id });
+        const memberDetails = await this.getMemberDetail({ userId, workspaceId: workspace.id });
         if (!memberDetails) {
           throw new Error("MEMBER_NOT_FOUND", {
             cause: `Member details for user ID: ${userId} in workspace slug: ${workspaceSlug} not found. Cannot fetch member role.`
@@ -275,6 +275,30 @@ export class WorkspaceMemberManager implements IWorkspaceMemberManager {
         return memberDetails.role;
       },
     });
+  }
+
+  async getFullWorkspaceDetail(id: IWorkspaceDTO["id"]): Promise<TWorkspaceWithMembers | null> {
+    try {
+      // 1. Validate if the workspace exists.
+      const workspace = await this.findWorkspaceById(id);
+      if (!workspace) {
+        console.log(`Workspace with ID: ${id} not found. Cannot fetch workspace details.`);
+        return null;
+      }
+  
+      // 2. Fetch members of the workspace.
+      const members = await this.memberStore.listWorkspaceMembers(id);
+  
+      // 3. Combine workspace details with member details and return.
+      const workspaceWithMembers: TWorkspaceWithMembers = {
+        ...workspace,      
+        members,
+      };
+  
+      return workspaceWithMembers;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async updateMemberRole(workspaceId: IWorkspaceDTO["id"], memberId: TMemberId, newRole: IMemberDTO["role"]): Promise<void> {
@@ -344,62 +368,77 @@ export class WorkspaceMemberManager implements IWorkspaceMemberManager {
   async requestWorkspace(workspaceId: IWorkspaceDTO["id"], userId: IUserDTO["id"]): Promise<void> {
     // 1. Validate if the workspace exists.
     const workspace = await this.findWorkspaceById(workspaceId);
-    if (!workspace) {
+    if (!workspace || workspace.ownerId) {
       console.log(`Workspace with ID: ${workspaceId} not found. Cannot request to join.`);
-      throw new Error(`Workspace with ID: ${workspaceId} not found.`);
+      throw new Error("WORKSPACE_NOT_FOUND", {
+        cause: `Workspace with ID: ${workspaceId} not found.`
+      });
+    }
+    
+    const owner = await this.user.getUser(workspace.ownerId);
+    if (!owner) {
+      throw new Error("WORKSPACE_OWNER_NOT_FOUND", {
+        cause: `Owner with ID: ${workspace.ownerId} not found for workspace ID: ${workspaceId}. Cannot request to join workspace.`
+      });
     }
 
     // 2. Validate if the user exists.
     const user = await this.user.getUser(userId);
     if (!user) {
       console.log(`User with ID: ${userId} not found. Cannot request to join workspace.`);
-      throw new Error(`User with ID: ${userId} not found.`);
+      throw new Error("USER_NOT_FOUND", {
+        cause: `User with ID: ${userId} not found.`
+      });
     }
 
-    const owner = await this.getMemberDetails({ workspaceId, userId: workspace.ownerId });
-
     // 3. Create a join request for the user to join the workspace.
-    await this.requestService.createRequest({
+    await this.requestService.create({
       userId,
       workspaceId,
       name: user.name,
-      role: "member",
     });
 
-    // 4. Create a notification for the workspace admins about the new join request.
     await this.notificationService.createMemberNotification({
       type: "join_request",
       userName: user.name,
       workspaceName: workspace.name,
-      userId: workspace.ownerId,
+      userId,
       workspaceId,
     })
   }
   
-  async approveJoinRequest(requestId: TRequestId, approvedBy: TMemberId, role: TInviteMemberRole): Promise<IMemberDTO> {
+  async approveJoinRequest(requestId: TRequestId, approvedBy: TMemberId, role: TMemberInviteRole): Promise<IMemberDTO> {
     try {
       // 1. Fetch the join request details.
-      const request = await this.requestService.getRequest(requestId);
+      const request = await this.requestService.getById(requestId);
       if (!request) {
-        throw new Error(`Join request with ID: ${requestId} not found.`);
+        throw new Error("JOIN_REQUEST_NOT_FOUND", {
+          cause: `Join request with ID: ${requestId} not found.`
+        });
       }
       
       // 2. Validate if the approver is a member of the workspace 
       const approver = await this.memberStore.checkMemberExists(request.workspaceId, approvedBy);
       if (!approver) {
-        throw new Error("Approver is not a member of the workspace. Cannot approve join request.");
+        throw new Error("APPROVER_NOT_MEMBER", {
+          cause: `Approver with ID: ${approvedBy} is not a member of the workspace with ID: ${request.workspaceId}.`
+        });
       }
 
       // 3. Validate if the approver has sufficient permissions to approve the join request (e.g., admin or owner).
       const approverDetails = await this.memberStore.findById(approvedBy);
       if (!approverDetails || approverDetails.role === "member") {
-        throw new Error("Approver does not have sufficient permissions to approve join requests.");
+        throw new Error("APPROVER_INSUFFICIENT_PERMISSIONS", {
+          cause: `Approver with ID: ${approvedBy} does not have sufficient permissions to approve join requests.`
+        });
       }
   
       // 4. Approve the join request and update the request status in the store.
-      const result = await this.requestService.approveRequest(requestId);  
+      const result = await this.requestService.approve(requestId, role, approverDetails);  
       if (!result || !result.success) {
-        throw new Error(`Failed to approve join request with ID: ${requestId}.`);
+        throw new Error("FAILED_TO_APPROVE_JOIN_REQUEST", {
+          cause: `Failed to approve join request with ID: ${requestId}.`
+        });
       }
   
       // 5. Add the user as a member of the workspace.
@@ -409,12 +448,16 @@ export class WorkspaceMemberManager implements IWorkspaceMemberManager {
         role: role 
       });
       if (!newMember) {
-        throw new Error(`Failed to add user with ID: ${request.userId} to workspace with ID: ${request.workspaceId} after approving join request.`);
+        throw new Error("FAILED_TO_ADD_MEMBER", {
+          cause: `Failed to add user with ID: ${request.userId} to workspace with ID: ${request.workspaceId} after approving join request.`
+        });
       }
 
-      const memberDetails = await this.getMemberDetails({ userId: request.userId, workspaceId: request.workspaceId });
+      const memberDetails = await this.getMemberDetail({ userId: request.userId, workspaceId: request.workspaceId });
       if (!memberDetails) {
-        throw new Error(`Failed to retrieve member details for user ID: ${request.userId} in workspace ID: ${request.workspaceId} after approving join request.`);
+        throw new Error("FAILED_TO_RETRIEVE_MEMBER_DETAILS", {
+          cause: `Failed to retrieve member details for user ID: ${request.userId} in workspace ID: ${request.workspaceId} after approving join request.`
+        });
       }
 
       // 6. Create a notification for the user whose join request was approved.
@@ -437,27 +480,33 @@ export class WorkspaceMemberManager implements IWorkspaceMemberManager {
   async rejectJoinRequest(requestId: TRequestId, rejectedBy: TMemberId): Promise<void> {
     try {
       // 1. Fetch the join request details.
-      const request = await this.requestService.getRequest(requestId);
+      const request = await this.requestService.getById(requestId);
       if (!request) {
-        throw new Error(`Join request with ID: ${requestId} not found.`);
+        throw new Error("JOIN_REQUEST_NOT_FOUND", {
+          cause: `Join request with ID: ${requestId} not found.`
+        });
       }
 
       // 2. Validate if the rejector is a member of the workspace and validate the workspace exists.
       const workspace = await this.findWorkspaceById(request.workspaceId);
       const rejector = await this.memberStore.checkMemberExists(request.workspaceId, rejectedBy);
       if (!rejector) {
-        throw new Error("Rejector is not a member of the workspace. Cannot reject join request.");
+        throw new Error("REJECTOR_NOT_MEMBER", {
+          cause: `Rejector with ID: ${rejectedBy} is not a member of the workspace with ID: ${request.workspaceId}.`
+        });
       }
       
       // 3. Validate if the rejector has sufficient permissions to reject the join request (e.g., admin or owner). 
       const rejectorDetails = await this.memberStore.findById(rejectedBy);
       if (!rejectorDetails || rejectorDetails.role === "member") {
         
-        throw new Error("Rejector does not have sufficient permissions to reject join requests.");
+        throw new Error("REJECTOR_INSUFFICIENT_PERMISSIONS", {
+          cause: `Rejector with ID: ${rejectedBy} does not have sufficient permissions to reject join requests.`
+        });
       }
 
       // 4. Reject the join request and update the request status in the store.
-      await this.requestService.rejectRequest(requestId);
+      await this.requestService.reject(requestId, rejectorDetails);
 
       // 5. Create a notification for the user whose join request was rejected.
       await this.notificationService.createMemberNotification({
@@ -469,21 +518,78 @@ export class WorkspaceMemberManager implements IWorkspaceMemberManager {
       });
 
     } catch (error: unknown) {
-      throw new Error(`Error rejecting join request: ${(error as Error).message}`, {
-        cause: error,
+      throw new Error("FAILED_TO_REJECT_JOIN_REQUEST", {
+        cause: `Error rejecting join request: ${(error as Error).message}`,
       });
     }
   }
 
-  async listJoinRequests(workspaceId: IWorkspaceDTO["id"]): Promise<IRequestMemberDTO[]> {
+  async listJoinRequests(workspaceId: IWorkspaceDTO["id"]): Promise<TJoinRequest[]> {
     try {
-      const requests = await this.requestService.listRequests(workspaceId);
-      return requests;
+      const requests = await this.requestService.list(workspaceId, "pending");
+
+      const result: TJoinRequest[] = [];
+
+      for (const request of requests) {
+        const user = await this.user.getUser(request.userId);
+        if (!user) {
+          throw new Error("USER_NOT_FOUND", {
+            cause: `User with ID: ${request.userId} not found for join request ID: ${request.id}.`
+          });
+        }
+        result.push({
+          ...request,
+          userDetail: user,
+        });
+      }
+
+      return result;
     } catch (error: unknown) {
-      throw new Error(`Error listing join requests for workspace ID: ${workspaceId}. ${(error as Error).message}`, {
-        cause: error,
+      throw new Error("FAILED_TO_LIST_JOIN_REQUESTS", {
+        cause: `Error listing join requests for workspace ID: ${workspaceId}. ${(error as Error).message}`,
       });
     }
+  }
+
+  async deleteWorkspace(workspaceId: IWorkspaceDTO["id"]): Promise<{ success: boolean }> {
+    return tryCatch({
+      ctx: async () => {
+        // 1. Validate if the workspace exists.
+        const workspace = await this.getFullWorkspaceDetail(workspaceId);
+        if (!workspace) {
+          throw new Error("WORKSPACE_NOT_FOUND", {
+            cause: `Workspace with ID: ${workspaceId} not found. Cannot delete workspace.`
+          });
+        }
+
+        // 2. Delete the workspace from the store.
+        await this.workspaceStore.delete(workspaceId);
+        
+        // 3. Create a notification for the workspace deletion.
+        await this.notificationService.createWorkspaceNotification({
+          type: "workspace_deleted",
+          userName: "A workspace owner or admin",
+          workspaceName: workspace.name,
+          userId: workspace.ownerId,
+          workspaceId: workspace.id,
+        });
+
+        // 4. Delete all members associated with the workspace
+        for (const member of workspace.members) {
+          await this.memberStore.delete(member.id);
+
+          await this.notificationService.createMemberNotification({
+            type: "member_removed",
+            userName: member.name,
+            workspaceId: workspaceId,
+            userId: member.userId,
+            workspaceName: workspace.name,
+          })
+        }
+        
+        return { success: true };
+      }
+    })
   }
 }
 

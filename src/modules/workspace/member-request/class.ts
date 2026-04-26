@@ -1,7 +1,10 @@
 import { ID } from "@collaro/utils/generate";
-import { IMemberRequestStore, Input, IRequestMember, IRequestMemberDTO, returnDTO, TRequestId,  } from "./interface";
+import { IMemberRequestStore, TRequestInput, IRequestMember, returnDTO, TRequestId,  } from "./interface";
 import { memberRequestStore } from "./store";
 import { IWorkspaceDTO } from "../interface";
+import { DEFAULT_MEMBER_INVITE_ROLE, IMemberDTO, IRequestMemberDTO, TMemberInviteRole, TRequestStatus } from "@/types";
+
+export const DEFAULT_MEMBER_STATUS: TRequestStatus = "pending";
 
 /**
  * The RequestMember class is responsible for handling member join requests for a workspace. 
@@ -12,27 +15,29 @@ export class RequestMember implements IRequestMember {
   store: IMemberRequestStore = memberRequestStore;
   request: IRequestMemberDTO = {} as IRequestMemberDTO;
 
-  async createRequest(request: Input<IRequestMemberDTO>): Promise<IRequestMemberDTO> {
+  async create(request: TRequestInput<IRequestMemberDTO>): Promise<IRequestMemberDTO> {
     const dto: IRequestMemberDTO = {
       ...request,
-      status: "pending",
+      role: DEFAULT_MEMBER_INVITE_ROLE,
+      status: DEFAULT_MEMBER_STATUS,
       id: ID.requestId(),
       createdAt: new Date(),
       updatedAt: null,
+      respondedBy: null,
     }
 
     await this.store.save(dto);
     return dto;
   }
 
-  async getRequest(id: TRequestId): Promise<IRequestMemberDTO | null> {
+  async getById(id: TRequestId): Promise<IRequestMemberDTO | null> {
     return await this.store.findById(id).catch(error => {
       console.error(`Error fetching request with ID ${id}:`, error);
       return null;
     });
   }
 
-  async approveRequest(id: TRequestId): Promise<returnDTO> {
+  async approve(id: TRequestId, role: TMemberInviteRole, responder: IMemberDTO): Promise<returnDTO> {
     // find the request by ID
     const request = await this.store.findById(id);
 
@@ -43,10 +48,18 @@ export class RequestMember implements IRequestMember {
       });
     }
 
+    if (request.status !== "pending" ) {
+      return {
+        success: false,
+        message: `Request with ID ${id} cannot be approved because it is already ${request.status}.`
+      }
+    }
+
     const updatedRequest: IRequestMemberDTO = {
       ...request,
-      role: "admin",
+      role: role, // set the role based on the input parameter
       status: "approved",
+      respondedBy: responder.id,
       updatedAt: new Date(),
     };
 
@@ -65,7 +78,7 @@ export class RequestMember implements IRequestMember {
     });
   }
   
-  async rejectRequest(id: TRequestId): Promise<returnDTO> {
+  async reject(id: TRequestId, responder: IMemberDTO): Promise<returnDTO> {
     const request = await this.store.findById(id);
     if (!request) {
       return {
@@ -94,10 +107,10 @@ export class RequestMember implements IRequestMember {
     };
   }
   
-  async listRequests(workspaceId: IWorkspaceDTO["id"]): Promise<IRequestMemberDTO[]> {
+  async list(workspaceId: IWorkspaceDTO["id"], query: TRequestStatus): Promise<IRequestMemberDTO[]> {
     try {
       const requests = await this.store.query({
-        query: { workspaceId }
+        query: { workspaceId, status: query }
       });
       
       return requests;

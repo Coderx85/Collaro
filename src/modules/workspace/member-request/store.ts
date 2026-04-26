@@ -1,12 +1,11 @@
 import { INotificationStore } from "@collaro/notification";
-import { IMemberRequestStore, IRequestMemberDTO, MemberRequestParams, TRequestId } from "./interface";
+import { IMemberRequestStore, MemberRequestParams, TRequestId } from "./interface";
 import { db } from "@/db";
 import { workspaceRequestTable } from "@/db/schema/schema";
 import { ID } from "@/modules/utils/generate";
 import tryCatch from "@/lib/try-catch-wrapper";
 import { and, eq, SQL } from "drizzle-orm";
-
-const globalRequestMember: IRequestMemberDTO[] = [];
+import { IRequestMemberDTO } from "@/types";
 
 export class MemberRequestStore implements IMemberRequestStore {
   notification: INotificationStore = {} as INotificationStore;
@@ -32,6 +31,7 @@ export class MemberRequestStore implements IMemberRequestStore {
       id: ID.requestId(),
       createdAt: new Date(),
       updatedAt: null,
+      respondedBy: null,
     }
 
     return tryCatch({
@@ -39,14 +39,7 @@ export class MemberRequestStore implements IMemberRequestStore {
         await db
           .insert(workspaceRequestTable)
           .values({
-            id: dto.id,
-            name: dto.name,
-            userId: dto.userId,
-            workspaceId: dto.workspaceId,
-            requestedAt: dto.createdAt,
-            respondedAt: dto.updatedAt,
-            respondedBy: null,
-            status: "pending"
+            ...dto,
           });
       }
     })
@@ -74,14 +67,10 @@ export class MemberRequestStore implements IMemberRequestStore {
         }
 
         return {
-          id: result.id,
-          name: result.name,
-          userId: result.userId,
-          workspaceId: result.workspaceId,
+          ...result,
           role: "member",
-          status: result.status,
           createdAt: result.requestedAt,
-          updatedAt: result.respondedAt
+          updatedAt: result.respondedAt,
         };
       }
     })
@@ -93,31 +82,27 @@ export class MemberRequestStore implements IMemberRequestStore {
         const results = await db.query.workspaceRequestTable.findMany();
 
         return results.map(result => ({
-          id: result.id,
-          name: result.name,
-          userId: result.userId,
-          workspaceId: result.workspaceId,
+          ...result,
           role: "member",
-          status: result.status,
           createdAt: result.requestedAt,
-          updatedAt: result.respondedAt
+          updatedAt: result.respondedAt,
         }));
       }
     })
   }
 
   async update(id: TRequestId, request: IRequestMemberDTO): Promise<void> {
+    const updatedRequest: IRequestMemberDTO = {
+      ...request,
+      updatedAt: new Date(),
+    }
+
     return tryCatch({
       ctx: async () => {
         await db
           .update(workspaceRequestTable)
           .set({
-            name: request.name,
-            userId: request.userId,
-            workspaceId: request.workspaceId,
-            status: request.status,
-            respondedAt: new Date(),
-            respondedBy: null
+            ...updatedRequest,
           })
           .where(eq(workspaceRequestTable.id, id));
       }
@@ -150,6 +135,7 @@ export class MemberRequestStore implements IMemberRequestStore {
           workspaceId: result.workspaceId,
           role: "member",
           status: result.status,
+          respondedBy: result.respondedBy,
           createdAt: result.requestedAt,
           updatedAt: result.respondedAt
         }));
