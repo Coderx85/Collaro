@@ -1,7 +1,6 @@
-import { TMemberRole, TUserRole } from "./action";
-import { TMemberId } from "./id.types";
-import { IUserDTO } from "./user.types";
-import { IWorkspaceDTO } from "./workspace.types";
+import { type TMemberId } from "./id.types";
+import { type IUserDTO } from "./user.types";
+import { type IWorkspaceDTO } from "./workspace.types";
 
 export interface IMemberDTO {
   id: TMemberId;
@@ -12,3 +11,11 @@ export interface IMemberDTO {
   createdAt: Date;
   updatedAt: Date | null;
 }
+
+export type TUserRole = TAdminRole | TMemberRole | TMemberInviteRole;
+
+export type TAdminRole = "owner" | "admin";
+
+export type TMemberRole = "member";
+
+export type TMemberInviteRole = "admin" | "member";

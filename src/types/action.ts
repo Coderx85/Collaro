@@ -1,5 +1,6 @@
 import { SelectCallSchema } from "@/db/schema/type";
 import z from "zod";
+import { TUserRole } from "./member.types";
 
 export type clientCall = {
   id: string;
@@ -19,14 +20,6 @@ export interface Response<T> {
   success: boolean;
   status: number;
 }
-
-export type TUserRole = TAdminRole | TMemberRole | TInviteMemberRole;
-
-export type TAdminRole = "owner" | "admin";
-
-export type TMemberRole = "member";
-
-export type TInviteMemberRole = "admin" | "member";
 
 export interface TOrganizationMember {
   id: string;

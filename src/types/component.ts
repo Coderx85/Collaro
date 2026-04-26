@@ -1,5 +1,5 @@
 import type { IconType } from "react-icons/lib";
-import type { TUserRole } from "./action";
+import type { TUserRole } from "@/types";
 import { ComponentType } from "react";
 
 export interface CalendarExportProps {

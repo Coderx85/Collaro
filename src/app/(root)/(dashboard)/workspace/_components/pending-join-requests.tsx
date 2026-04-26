@@ -23,13 +23,25 @@ import {
   approveJoinRequestAction,
   rejectJoinRequestAction,
 } from "@/action/notification";
-import type { JoinRequest, TInviteMemberRole, TMemberId, TWorkspaceId } from "@/types";
+import type { TJoinRequest, TMemberId, TMemberInviteRole, TWorkspaceId } from "@/types";
 import { Clock, CheckCircle, XCircle, Loader } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { getMemberByIdAndSlug } from "@/action/member";
 import { useSession } from "@/lib/auth";
+
+const ROLE_OPTIONS = ["member", "admin"] as const;
+
+function normalizeInviteRole(value: string): TMemberInviteRole {
+  return value === "admin" ? "admin" : "member";
+}
 
 interface PendingJoinRequestsProps {
   workspaceId: TWorkspaceId;
@@ -37,17 +49,17 @@ interface PendingJoinRequestsProps {
 }
 
 export function PendingJoinRequests({ workspaceId, workspaceSlug }: PendingJoinRequestsProps) {
-  const [requests, setRequests] = useState<JoinRequest[]>([]);
-  const [selectedRoles, setSelectedRoles] = useState<Record<string, "member" | "admin">>({});
+  const [requests, setRequests] = useState<TJoinRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedRoles, setSelectedRoles] = useState<Record<string, TMemberInviteRole>>({});
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
   const [memberId, setMemberId] = useState<TMemberId | undefined>(undefined);
   const { data: session, isPending: sessionLoading } = useSession();
 
-  const handleRoleChange = (requestId: string, role: "member" | "admin") => {
+  const handleRoleChange = (requestId: string, role: string) => {
     setSelectedRoles((prev) => ({
       ...prev,
-      [requestId]: role,
+      [requestId]: normalizeInviteRole(role),
     }));
   };
 
@@ -67,8 +79,8 @@ export function PendingJoinRequests({ workspaceId, workspaceSlug }: PendingJoinR
         } 
         
         setRequests(result.data.requests);
-        // Initialize selected roles with default "member" value
-        const initialRoles: Record<string, "member" | "admin"> = {};
+        
+        const initialRoles: Record<string, TMemberInviteRole> = {};
         result.data.requests.forEach((req) => {
           initialRoles[String(req.id)] = "member";
         });
@@ -115,7 +127,7 @@ export function PendingJoinRequests({ workspaceId, workspaceSlug }: PendingJoinR
         requestId,
         responderId: memberId!,
         workspaceId,
-        role: selectedRoles[requestId],
+        role: selectedRoles[requestId] ?? "member",
       });
       
       if (result.success) {
@@ -223,15 +235,16 @@ export function PendingJoinRequests({ workspaceId, workspaceSlug }: PendingJoinR
               <TableBody>
                 {requests.map((request) => {
                   const stringId = String(request.id);
+                  const { userDetail: user } = request;
                   return (
                   <TableRow key={stringId} className="hover:bg-muted/50">
                     <TableCell className="font-medium">
-                      {request.name}
+                      {user.name}
                       <p className="text-xs text-muted-foreground">
-                        @{request.user?.username}
+                        @{user.userName}
                       </p>
                     </TableCell>
-                    <TableCell>{request.user.email}</TableCell>
+                    <TableCell>{user.email}</TableCell>
                     <TableCell>
                       <span className="text-sm text-muted-foreground">
                         {formatDistanceToNow(new Date(request.createdAt), {
@@ -241,11 +254,11 @@ export function PendingJoinRequests({ workspaceId, workspaceSlug }: PendingJoinR
                     </TableCell>
                     <TableCell>
                       <Select
-                        value={selectedRoles[stringId] || ""}
-                        onValueChange={(value) => handleRoleChange(stringId, value as TInviteMemberRole)}
+                        value={selectedRoles[stringId] ?? "member"}
+                        onValueChange={(value) => handleRoleChange(stringId, value)}
                       >
                         <SelectTrigger className="w-full">
-                          {selectedRoles[stringId] || "Select Role"}
+                          <SelectValue placeholder="Member" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="member">Member</SelectItem>
