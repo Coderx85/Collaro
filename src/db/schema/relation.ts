@@ -65,10 +65,14 @@ export const workspaceMeetingRelations = relations(
 );
 
 export const participantsRelations = relations(
-  schema.meetingParticipantsTable, ({ one, many }) => ({
+  schema.meetingParticipantsTable, ({ one }) => ({
     meeting: one(schema.workspaceMeetingTable, {
       fields: [schema.meetingParticipantsTable.meetingId],
       references: [schema.workspaceMeetingTable.meetingId],
+    }),
+    member: one(schema.membersTable, {
+      fields: [schema.meetingParticipantsTable.memberId],
+      references: [schema.membersTable.id],
     }),
   })
 );

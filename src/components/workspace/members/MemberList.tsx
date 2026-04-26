@@ -4,33 +4,26 @@ import { useState, useEffect } from "react";
 import DirectCallButton from "@/components/workspace/calls/DirectCallButton";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  APISuccessResponse,
-  TWorkspaceMembersTableRow as TWorkspaceUser,
-} from "@/types";
+import type { IMemberDTO } from "@/types";
 import Loader from "@/components/Loader";
+import { getWorkspaceUsers } from "@/action";
 
 const MemberList = ({ organisationSlug }: { organisationSlug: string }) => {
-  const [members, setMembers] = useState<TWorkspaceUser>([]);
+  const [members, setMembers] = useState<IMemberDTO[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   useEffect(() => {
     const fetchMembers = async () => {
-      try {
-        setIsLoading(true);
-        const orgMember = await fetch(
-          `/api/workspace/${organisationSlug}/members`
-        );
-        const res = await orgMember.json();
+      setIsLoading(true);
+      const res = await getWorkspaceUsers(organisationSlug);
 
-        if (res.success) {
-          const data = res as APISuccessResponse<TWorkspaceUser>;
-          setMembers(data.data);
-        }
-      } catch (error) {
-        console.error("Error fetching members:", error);
-      } finally {
+      if (!res.success) {
+        console.error("Failed to fetch members:", res.error);
         setIsLoading(false);
+        return;
       }
+
+      setMembers(res.data.members);
+      setIsLoading(false);
     };
 
     fetchMembers();

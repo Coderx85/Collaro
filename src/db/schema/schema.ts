@@ -241,9 +241,9 @@ export const workspaceRequestTable = pgTable(
     status: pgJoinRequestStatus("status").default("pending").notNull(),
     requestedAt: timestamp("requested_at").notNull().defaultNow(),
     respondedAt: timestamp("responded_at"),
-    respondedBy: text("responded_by").references(() => usersTable.id, {
+    respondedBy: text("responded_by").references(() => membersTable.id, {
       onDelete: "set null",
-    }),
+    }).$type<TMemberId>(),
   },
   (table) => [
     t

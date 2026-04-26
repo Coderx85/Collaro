@@ -69,6 +69,18 @@ export const CreateUserSchema = createInsertSchema(usersTable, {
     path: ["confirmPassword"],
   });
 
+export const UpdateUserSchema = createUpdateSchema(usersTable, {
+  userName: z.string().min(6, "User Name must be at least 6 characters").optional(),
+  name: z.string().min(6, "Name must be at least 6 characters").optional(),
+  email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email must be valid").optional(),
+}).omit({
+  password: true,
+  createdAt: true,
+  updatedAt: true,
+  emailVerified: true,
+  id: true,
+});
+
 export const CreateWorkspaceSchema = createInsertSchema(workspacesTable);
 
 export const UpdateWorkspaceSchema = createUpdateSchema(workspacesTable, {
