@@ -22,6 +22,20 @@
       "when": 1776882809644,
       "tag": "0002_clumsy_morlocks",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1777622404831,
+      "tag": "0003_bitter_norrin_radd",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1777628201664,
+      "tag": "0004_add_title_to_workspace_meetings",
+      "breakpoints": true
     }
   ]
 }

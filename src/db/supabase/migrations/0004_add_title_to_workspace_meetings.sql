@@ -1,0 +1,1 @@
+ALTER TABLE "workspace_meetings" ADD COLUMN "title" text NOT NULL DEFAULT 'Untitled Meeting';
