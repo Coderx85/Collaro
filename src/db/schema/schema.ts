@@ -203,6 +203,7 @@ export const meetingParticipantsTable = pgTable(
       .references(() => workspaceMeetingTable.meetingId, {
         onDelete: "cascade",
       }),
+    role: text("role").notNull().default("member"),
     memberId: text("member_id")
       .$type<TMemberId>()
       .notNull()
@@ -210,7 +211,7 @@ export const meetingParticipantsTable = pgTable(
         onDelete: "cascade",
       }),
     joinedAt: timestamp("joined_at").notNull().defaultNow(),
-    leftAt: timestamp("left_at"),
+    leaveAt: timestamp("left_at"),
     status: pgParticipantStatus().notNull().default("invited"),
   },
   (table) => [

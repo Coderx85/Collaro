@@ -1,4 +1,5 @@
 // Import meeting status enum
+import { TMeetingId } from "@/types";
 import { session, account, verification } from "./auth-schema";
 // Import table schemas
 import {
@@ -141,3 +142,5 @@ export const createMemberSchema = createInsertSchema(membersTable, {
 }).omit({
   updatedAt: true,
 });
+
+export const createParticipantSchema = createInsertSchema(meetingParticipantsTable);

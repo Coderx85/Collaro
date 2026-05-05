@@ -7,6 +7,8 @@ import { membersTable, usersTable } from "@/db/schema/schema";
 import { eq, and } from "drizzle-orm";
 import type { APIResponse, TUserId, TUserRole, TWorkspaceId } from "@/types";
 import { IWorkspaceDTO } from "@/modules/workspace";
+import { tryCatchAction } from "@/lib/try-catch-wrapper";
+import { IParticipantDTO, participantStore } from "@/modules/meeting";
 
 export type ParticipantRole = TUserRole;
 

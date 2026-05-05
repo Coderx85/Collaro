@@ -4,16 +4,8 @@ import {
   type ParticipantRole,
 } from "@/action/participant.actions";
 import type { StreamVideoParticipant } from "@stream-io/video-react-sdk";
-import { IMemberDTO, TUserId, TWorkspaceUser } from "@/types";
-import { Prettify } from "better-auth";
+import { IMemberDTO, TUserId } from "@/types";
 
-interface ParticipantRoleData {
-  role: ParticipantRole;
-  userName: string;
-  name: string;
-  email: string;
-  isLoading: boolean;
-}
 type Data = Pick<
   IMemberDTO,
   "role" | "name" | "userId"
@@ -41,9 +33,17 @@ export const useParticipantRole = (
 
   useEffect(() => {
     const fetchRole = async () => {
-      // Step 1: Check if role is already in custom data (fastest)
       try {
-        const fetchRole = await getParticipantRole(userId, workspaceSlug);
+        const res = await getParticipantRole(userId, workspaceSlug);
+        if (!res.success || !res.data) {
+          throw new Error("Role not found");
+        }
+        setRoleData({
+          role: res.data.role as ParticipantRole,
+          name: participant.name || participant.userId,
+          userId: userId,
+          isLoading: false,
+        });
       } catch (error) {
         console.error("Error fetching participant role:", error);
         setRoleData({

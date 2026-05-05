@@ -21,7 +21,8 @@
     "with-dev-env": "dotenv -e .env.development -- ",
     "with-prod-env": "dotenv -e .env.production -- ",
     "db:seed": "bunx tsx src/db/seed.ts",
-    "db": "drizzle-kit "
+    "db": "drizzle-kit",
+    "stream-setup": "tsx src/modules/stream/script.ts"
   },
   "lint-staged": {
     "**/*.{js,ts,tsx}": [
@@ -128,6 +129,7 @@
     "inngest-cli": "^1.15.3",
     "postgres": "^3.4.9",
     "tailwindcss": "^4.1.18",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   },
   "trustedDependencies": [
