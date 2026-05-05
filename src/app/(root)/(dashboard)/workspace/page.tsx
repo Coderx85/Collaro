@@ -98,7 +98,7 @@ const WorkspacePage = async () => {
           )}
 
           {workspaceCount > 0 && (
-            <div py-4 className="flex items-center justify-end">
+            <div className="flex items-center justify-end py-4">
               <Button asChild className="group rounded-full px-5 transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97]">
                 <Link href="/workspace/new">
                   New workspace

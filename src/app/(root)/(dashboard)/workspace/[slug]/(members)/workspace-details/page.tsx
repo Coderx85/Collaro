@@ -15,17 +15,19 @@ import MembersTable from "@/components/workspace/meeting/charts/members-table";
 import { getFullWorkspaceDetail } from "@/action";
 import { checkWorkspaceAccess } from "@/lib/workspace-auth";
 import { redirect } from "next/navigation";
+import { TWorkspaceSlug } from "@/types";
 
 export default async function OrgDetailsPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: TWorkspaceSlug }>;
 }) {
   const { slug } = await params;
-  await checkWorkspaceAccess(slug);
+  const stringSlug = String(slug);
+  await checkWorkspaceAccess(stringSlug);
 
   const role = await getCurrentMemberRole(slug);
-  const res = await getFullWorkspaceDetail(slug);
+  const res = await getFullWorkspaceDetail(stringSlug);
 
   if (!role.success) {
     redirect(`/workspace/${slug}`);
@@ -83,7 +85,7 @@ export default async function OrgDetailsPage({
               {currentRole === "owner" && (
                 <InviteMemberDialog
                   workspaceId={String(activeOrg.id)}
-                  workspaceSlug={slug}
+                  workspaceSlug={stringSlug}
                 />
               )}
               <Badge className="text-sm">
