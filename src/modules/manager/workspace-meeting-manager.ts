@@ -9,6 +9,8 @@ import { IUser, User } from "../user";
 import { MemberSorting } from "../sorting/interface";
 import { TMemberId } from "@/types";
 import { MeetingNotification } from "../notification/meeting-notification";
+import { auth } from "@/lib/auth/auth-server";
+import { headers } from "next/headers";
 
 export class WorkspaceMeetingManager {
   private memberStore: IMemberStore = new MemberStore();
@@ -76,50 +78,31 @@ export class WorkspaceMeetingManager {
     return member;
   }
 
-  async createMeeting(input: Omit<Input<TeamMeetingDTO>, "participants" | "endTime">, workspaceId: IWorkspaceDTO["id"]): Promise<TeamMeetingDTO> {
+  async createMeeting(input: Omit<Input<TeamMeetingDTO>, "participants" | "endTime">, workspaceId: IWorkspaceDTO["id"], workspaceSlug: string): Promise<TeamMeetingDTO> {
     try {
-      // 1. Check the access.
-      const checkExists = await this.memberStore.checkMemberExists(workspaceId, input.createdBy);
-      if (!checkExists) {
-        throw new Error(`Member with Id ${input.createdBy} does not exist in workspace with ID: ${workspaceId}`);
-      }
-
-      // 2. Get the member details.
-      const member = await this.validateMember(input.createdBy);
-  
-      // 3. Create the meeting DTO.
-      const meeting: IWorkspaceMeetingDTO = {
-        ...input,
-        workspaceId: workspaceId,
-        id: ID.meetingId(),
-        createdAt: new Date(),
-        endTime: null,
-        participants: {
-          [String(member.id)]: member.name,
+      const res = await auth.api.createMeeting({
+        method: "POST",
+        body: {
+          startTime: input.startTime,
+          title: input.title,
+          description: input.description,
+          workspaceSlug: workspaceSlug,
         },
-      };
-  
-      // 4. Save the meeting to the store.
-      await this.meetingStore.save(meeting);
-  
-      // 5. Add the creator of the meeting.
-      await this.participantStore.addParticipant({
-        status: "joined",
-        meetingId: meeting.id,
-        memberId: input.createdBy,
-        name: member.name,
-        role: member.role,
-        joinedAt: new Date(),
-        leaveAt: null,
+        headers: await headers(),
       });
+      if(!res || !res.success) {
+        throw new Error("Failed to create meeting");
+      }
+ 
+      const meeting = await res.data
 
       // 6. Send notification to workspace members about the new meeting.
       await this.informMembers(workspaceId, input.createdBy, {
         type: "meeting_created",
-        userId: member.userId,
+        userId: meeting.hostData.userId,
         workspaceId: workspaceId,
         meetingLink: `/meetings/${meeting.id}`,
-        memberID: member.id,
+        memberID: meeting.hostData.id,
       });
 
       return meeting;
@@ -129,50 +112,19 @@ export class WorkspaceMeetingManager {
     }
   }
 
-  async joinMeeting(meetingId: TMeetingId, memberId: TMemberId): Promise<IParticipantDTO> {
+  async joinMeeting(meetingId: TMeetingId, memberId: TMemberId): Promise<{ success: boolean; }> {
     try {
-      // Check if meeting exists
-      const checkExists = await this.checkMemberAccessToMeeting(
-        meetingId,
-        memberId,
-      );
-
-      if (!checkExists) {
-        throw new Error(
-          `Member with Id ${memberId} does not exist in workspace with ID: ${meetingId}`,
-        );
+      const meeting = await this.getMeeting(meetingId); 
+      if(!meeting) {
+        return {
+          success: false,
+        }
       }
 
-      const meeting = await this.getMeeting(meetingId);
-
-      const member = await this.validateMember(memberId);
-
-      await this.participantStore.addParticipant({
-        status: "joined",
-        meetingId,
-        memberId,
-        name: member.name,
-        role: member.role,
-        joinedAt: new Date(),
-        leaveAt: null,
-      });
-
-      // Update meeting participants
       const updatedParticipants = {
-        ...meeting!.participants,
-        [String(member.id)]: member.name,
-      };
-
-      const participantDTO: IParticipantDTO = {
-        id: ID.participantId(),
-        role: member.role,
-        status: "joined",
-        leaveAt: null,
-        meetingId,
-        memberId,
-        name: member.name,
-        joinedAt: new Date(),
-      };
+        ...meeting.participants,
+        [String(memberId)]: meeting.participants[String(memberId)] || `Member ${memberId}`,
+      }
 
       const updatedMeeting: TeamMeetingDTO = {
         ...meeting!,
@@ -181,7 +133,9 @@ export class WorkspaceMeetingManager {
 
       await this.meetingStore.update(meetingId, updatedMeeting);
 
-      return participantDTO;
+      return {
+        success: true,
+      };
     } catch (error) {
       console.error("Error joining meeting:", error);
       throw error;

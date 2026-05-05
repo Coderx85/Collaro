@@ -4,9 +4,10 @@ import { IRequestMember, IWorkspaceDTO, IWorkspaceStore, MemoryWorkspaceStore, R
 import { IUser, User } from "@collaro/user";
 import { MemberSorting } from "@collaro/sorting/interface";
 import { Input } from "@collaro/utils/omit";
-import { IUserDTO, TMemberInviteRole, TMemberId, TRequestId, IRequestMemberDTO, TJoinRequest, TWorkspaceWithMembers } from "@/types";
+import { IUserDTO, TMemberInviteRole, TMemberId, TRequestId, IRequestMemberDTO, TJoinRequest, TWorkspaceWithMembers, TWorkspaceSlug } from "@/types";
 import tryCatch from "@/lib/try-catch-wrapper";
 import { WorkspaceNotification, workspaceNotification } from "../notification";
+import { auth } from "@/lib/auth/auth-server";
 
 export class WorkspaceMemberManager implements IWorkspaceMemberManager {
   private memberStore: IMemberStore = new MemberStore();
@@ -30,11 +31,10 @@ export class WorkspaceMemberManager implements IWorkspaceMemberManager {
   }
 
   private sorting = new MemberSorting();
-
-  async findWorkspaceBySlug(slug: IWorkspaceDTO["slug"]): Promise<IWorkspaceDTO | null> {
+  async findWorkspaceBySlug(slug: TWorkspaceSlug): Promise<IWorkspaceDTO | null> {
     try {
       const workspaces = await this.workspaceStore.list();
-      const workspace = workspaces.find(ws => ws.slug === slug);
+      const workspace = workspaces.find(ws => ws.slug === String(slug));
       
       if (!workspace) {
         console.log(`Workspace with slug: ${slug} not found.`);
@@ -64,13 +64,13 @@ export class WorkspaceMemberManager implements IWorkspaceMemberManager {
   async createWorkspace(workspace: Input<IWorkspaceDTO>): Promise<IWorkspaceDTO> {
     return tryCatch({
       ctx: async () => {
-        // 1. Validate if the owner of the workspace exists.
+        // 1. Validate if the owner exists.
         const user = await this.user.getUser(workspace.ownerId);
         if (!user) {
-          console.log(`Owner with ID: ${workspace.ownerId} not found. Cannot create workspace.`);
-          throw new Error(`Owner with ID: ${workspace.ownerId} not found.`);
+          console.log(`User with ID: ${workspace.ownerId} not found. Cannot create workspace.`);
+          throw new Error(`User with ID: ${workspace.ownerId} not found.`);
         }
-        
+
         // 2. Implementation to create a new workspace.
         const newWorkspace: IWorkspaceDTO = {
           ...workspace,
@@ -254,21 +254,21 @@ export class WorkspaceMemberManager implements IWorkspaceMemberManager {
     return memberDetails;
   }
 
-  async getMemberRole(workspaceSlug: IWorkspaceDTO["slug"], userId: IUserDTO["id"]): Promise<IMemberDTO["role"] | null> {
+  async getMemberRole(slug: TWorkspaceSlug, userId: IUserDTO["id"]): Promise<IMemberDTO["role"] | null> {
     return await tryCatch({
       ctx: async () => {
-        const workspace = await this.findWorkspaceBySlug(workspaceSlug);
+        const workspace = await this.findWorkspaceBySlug(slug);
         if (!workspace) {
-          console.log(`Workspace with slug: ${workspaceSlug} not found. Cannot fetch member role.`);
+          console.log(`Workspace with slug: ${slug} not found. Cannot fetch member role.`);
           throw new Error("WORKSPACE_NOT_FOUND",{
-              cause: `Workspace with slug: ${workspaceSlug} not found.`
+              cause: `Workspace with slug: ${slug} not found.`
           });
         }
 
         const memberDetails = await this.getMemberDetail({ userId, workspaceId: workspace.id });
         if (!memberDetails) {
           throw new Error("MEMBER_NOT_FOUND", {
-            cause: `Member details for user ID: ${userId} in workspace slug: ${workspaceSlug} not found. Cannot fetch member role.`
+            cause: `Member details for user ID: ${userId} in workspace slug: ${slug} not found. Cannot fetch member role.`
           });
         }
 

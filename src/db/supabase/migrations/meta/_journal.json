@@ -36,6 +36,13 @@
       "when": 1777628201664,
       "tag": "0004_add_title_to_workspace_meetings",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1777998617682,
+      "tag": "0005_chilly_the_captain",
+      "breakpoints": true
     }
   ]
 }

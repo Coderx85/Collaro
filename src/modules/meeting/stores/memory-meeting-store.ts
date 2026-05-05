@@ -74,8 +74,6 @@ export class MemoryMeetingStore implements IMeetingStore<TUserId> {
   }
 }
 
-const localWorkspaceMeetingStore: IMeetingDTO<TMemberId>[] = [];
-
 export type TMeetingQuery = {
   workspaceId?: TWorkspaceId;
   memberId?: TMemberId;
@@ -98,44 +96,59 @@ export class MemoryWorkspaceMeetingStore implements IMeetingStore<TMemberId> {
    * @returns A promise resolving to true if the meeting exists, false otherwise
    */
   async checkMeetingExists(id: TMeetingId): Promise<boolean> {
-    const meeting = await db.query.workspaceMeetingTable.findMany({
-      where: eq(workspaceMeetingTable.meetingId, id),
-    });
-
-    return !!meeting.length;
+    return tryCatch({
+      ctx: async () => {
+        const meeting = await db.query.workspaceMeetingTable.findMany({
+          where: eq(workspaceMeetingTable.meetingId, id),
+        });
+    
+        return !!meeting.length;
+      }
+    })
   }
 
+  /**
+   * Saves a new meeting to the database
+   * @param meeting The meeting DTO to save
+   * @returns A promise that resolves when the meeting is saved
+   */
   async save(meeting: TeamMeetingDTO): Promise<void> {
-    try {
-      const [newMeeting] = await db
-        .insert(workspaceMeetingTable)
-        .values({
-          meetingId: meeting.id,
+    return tryCatch({
+      ctx: async () => {
+        const result: TeamMeetingDTO = {
+          id: meeting.id,
+          title: meeting.description || "",
+          createdBy: meeting.createdBy,
+          createdAt: new Date(),
+          status: meeting.status as meetingStatus,
+          startTime: meeting.startTime,
+          participants: {},
+          description: meeting.description || "",
+          endTime: meeting.endTime || null,
           workspaceId: meeting.workspaceId,
-          hostedBy: meeting.createdBy as any,
-          description: meeting.description,
-          endAt: meeting.endTime,
-          status: "active",
-        })
-        .returning();
-
-      const result: TeamMeetingDTO = {
-        id: newMeeting.meetingId,
-        title: newMeeting.description || "",
-        createdBy: newMeeting.hostedBy as unknown as TMemberId,
-        createdAt: new Date(),
-        status: newMeeting.status as meetingStatus,
-        startTime: newMeeting.createdAt,
-        participants: {},
-        description: newMeeting.description || "",
-        endTime: newMeeting.endAt,
-        workspaceId: newMeeting.workspaceId,
-      };
-
-      return;
-    } catch (error: unknown) {
-      throw new Error(`Failed to save meeting: ${(error as Error).message}`);
-    }
+        };
+    
+        const [newMeeting] = await db
+          .insert(workspaceMeetingTable)
+          .values({
+            meetingId: result.id,
+            workspaceId: result.workspaceId,
+            description: result.description,
+            status: result.status,
+            startTime: result.startTime,
+            endAt: result.endTime,
+            hostedBy: result.createdBy,
+            createdAt: new Date(),
+          })
+          .returning();
+        
+        if(!newMeeting) {
+          throw new Error("Failed to create meeting");
+        }
+    
+        return;
+      }
+    })
   }
 
   /**
@@ -318,10 +331,18 @@ export class MemoryWorkspaceMeetingStore implements IMeetingStore<TMemberId> {
    * @throws Error if there is an issue deleting the meeting from the database.
    */
   async delete(id: TMeetingId): Promise<void> {
-    const index = localWorkspaceMeetingStore.findIndex((m) => m.id === id);
-    if (index !== -1) {
-      localWorkspaceMeetingStore.splice(index, 1);
-    }
+    return tryCatch({
+      ctx: async () => {
+        const result = await db
+          .delete(workspaceMeetingTable)
+          .where(eq(workspaceMeetingTable.meetingId, id))
+          .returning();
+
+        if (!result) throw new Error("Meeting not found");
+
+        return;
+      }
+    })
   }
 
   /**

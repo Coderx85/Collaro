@@ -17,3 +17,5 @@ export type TInvitationId = BRAND<"InvitationId">;
 export type TNotificationId = BRAND<"NotificationId">;
 
 export type TRequestId = BRAND<"RequestId">;
+
+export type TWorkspaceSlug = BRAND<"WorkspaceSlug">;

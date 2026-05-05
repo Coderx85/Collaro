@@ -22,4 +22,6 @@ export * from "./workspace.types";
 
 export * from "./member.types";
 
+export * from "./meeting.types";
+
 export * from "./request.types";

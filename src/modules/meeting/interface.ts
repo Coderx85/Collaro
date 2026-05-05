@@ -2,7 +2,8 @@ import { TWorkspaceId } from "../workspace";
 import { BRAND } from "@collaro/utils/brand";
 import { Input } from "@collaro/utils/omit";
 import { IParticipantStore } from "./stores";
-import { TMemberId } from "@/types";
+import { TMemberId, TUserId } from "@/types";
+import { z } from "zod";
 
 export type TMeetingId = BRAND<"MeetingId">;
 
@@ -25,9 +26,20 @@ export interface IMeetingDTO<T> {
   createdAt: Date;
 }
 
+export interface IPersonalMeetingDTO extends IMeetingDTO<TUserId> {};
+
 export interface IWorkspaceMeetingDTO extends IMeetingDTO<TMemberId> {
   workspaceId: TWorkspaceId;
 }
+
+export const TeamMeetingSchema =  z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string()
+    .max(500, "Description must be less than 500 characters"),
+  createdBy: z.string().min(1, "CreatedBy is required").transform(
+    (value) => value as unknown as TMemberId
+  ),
+}).strict();
 
 export interface IMeeting<T> {
   meeting: IMeetingDTO<T>;
@@ -49,6 +61,13 @@ export interface IMeeting<T> {
  * @field endTime: The scheduled end time of the meeting (can be null if not set). 
  */
 export type TeamMeetingDTO = IMeetingDTO<TMemberId> & { workspaceId: TWorkspaceId };
+
+const createMeetingSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional(),
+  startTime: z.date(),
+  endTime: z.date().optional(),
+})
 
 export interface IWorkspaceMeeting {
   meeting: IWorkspaceMeetingDTO;
