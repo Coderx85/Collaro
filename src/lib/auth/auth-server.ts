@@ -6,6 +6,8 @@ import { db } from "@/db/client";
 import { nextCookies } from "better-auth/next-js";
 import { config } from "../config";
 import { organization, username } from "better-auth/plugins";
+import { TUserId } from "@/types";
+import { meetingPlugin } from "./meeting-plugin";
 // import { ac, roles } from "./permission";
 
 export const auth = betterAuth({
@@ -21,6 +23,7 @@ export const auth = betterAuth({
       workspace: schema.workspacesTable,
       member: schema.membersTable,
       invitation: schema.invitationTable,
+      meeting: schema.workspaceMeetingTable,
     },
   }),
   emailAndPassword: {
@@ -36,7 +39,9 @@ export const auth = betterAuth({
     },
   },
   plugins: [
+    // workspacePlugin(),
     nextCookies(),
+    meetingPlugin(),
     organization({
       // ac,
       // roles,
@@ -46,6 +51,16 @@ export const auth = betterAuth({
         organization: {
           modelName: "workspace",
           schema: schema.workspacesTable,
+          additionalFields: {
+            createdBy: {
+              type: "string",
+              required: true,
+              input: true,
+              transform: {
+                output: (value) => value as unknown as TUserId,
+              }
+            },
+          }
         },
         member: {
           modelName: "member",

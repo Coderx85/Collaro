@@ -49,7 +49,7 @@ export async function sendJoinWorkspaceRequest(
         }
       }
 
-      const workspace = await workspaceMemberManager.findWorkspaceBySlug(workspaceSlug);
+      const workspace = await workspaceMemberManager.findWorkspaceBySlug(workspaceSlug as any);
       if (!workspace) {
         return {
           success: false,

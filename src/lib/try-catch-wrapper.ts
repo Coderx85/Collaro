@@ -11,6 +11,7 @@ export default async function tryCatch<T>(
   try {
     return await ctx();
   } catch (error: unknown) {
+    console.error("Error in tryCatch:", error);
     throw new Error(errorMessage || "An error occurred", {
       cause: error,
     });

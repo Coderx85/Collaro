@@ -137,7 +137,7 @@ export async function getCurrentAuthUser() {
 // This function is used to get the users of a workspace
 export async function getWorkspaceUsers(slug: IWorkspaceDTO["slug"]): Promise<APIResponse<{ members: IMemberDTO[] }>> {
   try {
-    const workspace = await workspaceMemberManager.findWorkspaceBySlug(slug);
+    const workspace = await workspaceMemberManager.findWorkspaceBySlug(slug as any);
     if (!workspace) {
       return {
         error: "Workspace not found",
@@ -317,7 +317,7 @@ export async function getFullWorkspaceDetail(workspaceSlug: string): Promise<API
       }
     }
 
-    const workspace = await workspaceMemberManager.findWorkspaceBySlug(workspaceSlug);
+    const workspace = await workspaceMemberManager.findWorkspaceBySlug(workspaceSlug as any);
 
     if (!workspace) {
       return { success: false, error: "Workspace not found" };
@@ -418,7 +418,7 @@ export async function deleteWorkspaceAction(
  */
 export async function getActiveMeetingForWorkspace(workspaceSlug: string) {
   try {
-    const workspace = await workspaceMemberManager.findWorkspaceBySlug(workspaceSlug);
+    const workspace = await workspaceMemberManager.findWorkspaceBySlug(workspaceSlug as any);
 
     if (!workspace) {
       return { message: "Workspace not found", success: false };

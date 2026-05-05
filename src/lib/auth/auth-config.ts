@@ -6,6 +6,7 @@ import { db } from "@/db/client";
 import { nextCookies } from "better-auth/next-js";
 import { config } from "../config";
 import { organization, username } from "better-auth/plugins";
+import { meetingPlugin } from "./meeting-plugin";
 
 export const auth = betterAuth({
   secret: config.betterSecret,
@@ -70,6 +71,7 @@ export const auth = betterAuth({
         },
       },
     }),
+    meetingPlugin()
   ],
   user: {
     additionalFields: {
