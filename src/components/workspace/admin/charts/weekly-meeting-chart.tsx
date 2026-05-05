@@ -26,12 +26,8 @@ const COLORS = [
 const WeeklyMeetingsChart = ({ slug }: { slug: string }) => {
   const { data, isPending } = useGetCallsBySlug(slug);
 
-  // Process data to show meetings by day of week
-  const chartData = useMemo(() => {
-    if (!data || data.length === 0) {
-      return [];
-    }
-
+  // Process data to show meetings by day of week (current week only)
+  const { chartData, totalMeetings } = useMemo(() => {
     const meetingsByDay: Record<string, number> = {
       Sunday: 0,
       Monday: 0,
@@ -42,20 +38,41 @@ const WeeklyMeetingsChart = ({ slug }: { slug: string }) => {
       Saturday: 0,
     };
 
-    // Count meetings by day of week
-    data.forEach((meeting: any) => {
-      const date = new Date(meeting.createdAt || meeting.startTime);
-      const dayName = dayNames[date.getDay()];
-      meetingsByDay[dayName]++;
-    });
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setHours(0, 0, 0, 0);
+    startOfWeek.setDate(now.getDate() - now.getDay());
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 7);
+
+    if (data && data.length > 0) {
+      // Count meetings by day of week for the current week
+      data.forEach((meeting: any) => {
+        const dateValue = meeting.startTime ?? meeting.createdAt;
+        if (!dateValue) return;
+
+        const date = new Date(dateValue);
+        if (Number.isNaN(date.getTime())) return;
+
+        if (date >= startOfWeek && date < endOfWeek) {
+          const dayName = dayNames[date.getDay()];
+          meetingsByDay[dayName]++;
+        }
+      });
+    }
 
     // Convert to chart format and filter out empty days
-    return Object.entries(meetingsByDay)
+    const chartData = Object.entries(meetingsByDay)
       .filter(([_, count]) => count > 0)
       .map(([day, count]) => ({
         name: day,
         value: count,
       }));
+
+    const totalMeetings = chartData.reduce((sum, item) => sum + item.value, 0);
+
+    return { chartData, totalMeetings };
   }, [data]);
 
   if (isPending) {
@@ -69,13 +86,11 @@ const WeeklyMeetingsChart = ({ slug }: { slug: string }) => {
   if (!chartData || chartData.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-96 text-muted-foreground">
-        <p className="text-lg font-medium">No meetings yet</p>
-        <p className="text-sm">Meetings will appear here once created</p>
+        <p className="text-lg font-medium">No meetings this week</p>
+        <p className="text-sm">Meetings in the current week will appear here</p>
       </div>
     );
   }
-
-  const totalMeetings = chartData.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <div className="space-y-4">

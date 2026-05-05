@@ -21,6 +21,7 @@ import Link from "next/link";
 import { routeConfig } from "@/lib/routeConfig";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { toast } from "sonner";
+import { TWorkspaceSlug } from "@/types";
 
 const joinWorkspaceSchema = z.object({
   workspaceName: z
@@ -31,10 +32,9 @@ const joinWorkspaceSchema = z.object({
     .string()
     .min(1, "Workspace slug is required")
     .min(3, "Workspace slug must be at least 3 characters")
-    .regex(
-      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "Workspace slug can only contain lowercase letters, numbers, and hyphens",
-    ),
+    .transform(
+      (v) => v as unknown as TWorkspaceSlug
+    )
 });
 
 export function JoinWorkspaceForm() {

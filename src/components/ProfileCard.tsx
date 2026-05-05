@@ -3,7 +3,7 @@
 import { authClient, useSession } from "@/lib/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useEffect, useState } from "react";
-import { TUserRole } from "@/types";
+import { TUserRole, TWorkspaceSlug } from "@/types";
 import { getCurrentMemberRole } from "@/action/member";
 import { toast } from "sonner";
 
@@ -12,7 +12,11 @@ type org = {
   error?: string;
 };
 
-const ProfileCard = ({ slug }: { slug: string }) => {
+type ProfileCardProps = {
+  slug: TWorkspaceSlug;
+}
+
+const ProfileCard = ({ slug }: ProfileCardProps) => {
   const { data: session } = useSession();
   const [org, setOrg] = useState<org>({});
   const [memberRole, setMemberRole] = useState<{ role: TUserRole } | undefined>(undefined);

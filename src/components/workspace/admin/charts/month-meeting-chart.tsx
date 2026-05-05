@@ -31,9 +31,17 @@ const MonthlyMeetingChart = (props: Props) => {
 
     if (data && data.length > 0) {
       data.forEach((meeting: any) => {
-        const date = new Date(meeting.createdAt || meeting.startTime);
+        const dateValue = meeting.startTime ?? meeting.createdAt;
+        if (!dateValue) return;
+
+        const date = new Date(dateValue);
+        if (Number.isNaN(date.getTime())) return;
+
         if (date.getFullYear() === year && date.getMonth() === month) {
-          const weekIndex = Math.floor((date.getDate() - 1) / 7); // 0..4
+          const weekIndex = Math.min(
+            Math.floor((date.getDate() - 1) / 7),
+            buckets.length - 1,
+          );
           buckets[weekIndex] = (buckets[weekIndex] || 0) + 1;
         }
       });

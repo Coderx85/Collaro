@@ -1,3 +1,5 @@
+"use client";
+
 import { UpdateUserSchema } from "@/db/schema/type";
 import { IUserDTO } from "@/types";
 import { useForm } from "@tanstack/react-form";
