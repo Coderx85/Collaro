@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth/auth-server";
-import type { APIResponse, TOrganizationMember, TUserId } from "@/types";
+import type { APIResponse, TOrganizationMember, TUserId, TWorkspaceSlug } from "@/types";
 import { IMemberDTO, workspaceMemberManager } from "@/modules/member";
 import tryCatch from "@/lib/try-catch-wrapper";
 import { getCurrentUser } from "../user.actions";
@@ -50,12 +50,12 @@ export const getMemberByIdAndSlug = async (
   };
 };
 
-export const getCurrentMemberRole = async (workspaceSlug: string): Promise<APIResponse<IMemberDTO["role"] | null>> => {
+export const getCurrentMemberRole = async (slug: TWorkspaceSlug): Promise<APIResponse<IMemberDTO["role"] | null>> => {
   const session = await getCurrentUser();
   const authId = session?.user?.id as unknown as TUserId;
 
   try {
-    const role = await workspaceMemberManager.getMemberRole(workspaceSlug, authId);
+    const role = await workspaceMemberManager.getMemberRole(slug, authId);
 
     return {
       success: true,
