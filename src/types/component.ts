@@ -34,6 +34,8 @@ export interface MeetingCardProps {
   endTime?: Date;
   description?: string;
   location?: string;
+  // For previous meetings - link to detail page
+  viewDetailsLink?: string;
 }
 
 export interface MeetingDetailsProps {

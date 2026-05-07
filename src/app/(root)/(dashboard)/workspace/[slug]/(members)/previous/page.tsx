@@ -9,10 +9,16 @@ export const metadata: Metadata = {
   },
 };
 
-const PreviousPage = () => {
+const PreviousPage = async ({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) => {
+  const { slug } = await params;
+  
   return (
     <>
-      <CallList type="ended" />
+      <CallList type="ended" workspaceSlug={slug} />
     </>
   );
 };
