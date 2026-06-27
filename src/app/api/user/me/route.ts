@@ -73,7 +73,6 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       data: {
-        clerkId: userId, // Legacy field name, now stores better-auth user id
         userId: userData.id,
         name: userData.name,
         userName: userData.userName,
