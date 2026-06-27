@@ -75,10 +75,7 @@ export function NewWorkspaceForm() {
   return (
     <Form {...form}>
       <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          form.handleSubmit(onSubmit)(e);
-        }}
+        onSubmit={form.handleSubmit(onSubmit)}
         className="w-full max-w-md relative z-10"
       >
       <Card className="relative backdrop-blur-xl bg-card/80 shadow-lg overflow-hidden">

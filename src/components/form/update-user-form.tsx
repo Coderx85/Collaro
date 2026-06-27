@@ -84,10 +84,7 @@ export function UpdateUserForm({user}: {user: IUserDTO}) {
         <CardContent className="grid gap-4 md:grid-cols-2">
           <Form {...form}>
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              form.handleSubmit(onSubmit)(e);
-            }}
+            onSubmit={form.handleSubmit(onSubmit)}
             className="md:col-span-2 space-y-6"
           >
             <FormField

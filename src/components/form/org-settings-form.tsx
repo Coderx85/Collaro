@@ -125,10 +125,7 @@ export function OrgSettingsForm({
   return (
     <Form {...orgForm}>
       <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          orgForm.handleSubmit(onSubmit)(e);
-        }}
+        onSubmit={orgForm.handleSubmit(onSubmit)}
       >
       <div className="flex flex-1 gap-6 py-3">
         <FormField
