@@ -6,6 +6,8 @@ metadata:
 data:
   NODE_ENV: "production"
   NEXT_PUBLIC_APP_URL: "https://collaro.app"
+  NEXT_PUBLIC_AUTH_URL: "https://collaro-backend.vercel.app"
+  NEXT_PUBLIC_BASE_URL: "https://collaro.app"
   NEXT_TELEMETRY_DISABLED: "1"
   HOSTNAME: "0.0.0.0"
   PORT: "3000"
