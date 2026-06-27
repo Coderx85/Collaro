@@ -18,4 +18,5 @@ coverage
 dist
 build
 .turbo
+k8s
 

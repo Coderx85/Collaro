@@ -16,16 +16,6 @@ services:
       timeout: 5s
       retries: 5
 
-  neon-proxy:
-    image: ghcr.io/timowilhelm/local-neon-http-proxy:main
-    environment:
-      - PG_CONNECTION_STRING=postgres://postgres:postgres@postgres:5432/postgres
-    ports:
-      - "4444:4444"
-    depends_on:
-      postgres:
-        condition: service_healthy
-
   # ============================================
   # Observability Stack (Loki + Grafana + Vector)
   # ============================================
@@ -34,7 +24,7 @@ services:
     image: grafana/loki:2.9.0
     container_name: loki
     profiles: ["obs"]
-    user: "0" # Run as root to avoid permission issues in dev
+    user: "0"
     ports:
       - "3100:3100"
     volumes:

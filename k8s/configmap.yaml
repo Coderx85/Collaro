@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: collaro-config
+  namespace: collaro
+data:
+  NODE_ENV: "production"
+  NEXT_PUBLIC_APP_URL: "https://collaro.app"
+  NEXT_TELEMETRY_DISABLED: "1"
+  HOSTNAME: "0.0.0.0"
+  PORT: "3000"

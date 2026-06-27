@@ -8,7 +8,7 @@ address = "0.0.0.0:8686"
 # Source: Docker container logs
 [sources.docker_logs]
 type = "docker_logs"
-include_containers = ["postgres", "neon-proxy", "loki", "grafana"]
+include_containers = ["postgres", "loki", "grafana"]
 
 # Transform: Parse and enrich logs
 [transforms.parse_logs]
