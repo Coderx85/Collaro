@@ -8,11 +8,18 @@ import {
   IconUserPentagon,
 } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
-import { useForm } from "@tanstack/react-form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { toast } from "sonner";
 import { UpdateWorkspaceSchema } from "@/db/schema/type";
 import { updateWorkspace } from "@/action/workspace/workspace.actions";
@@ -25,18 +32,6 @@ interface OrgSettingsFormProps {
   initialLogo?: string;
 }
 
-interface FormFieldProps {
-  icon: React.ReactNode;
-  label: string;
-  placeholder: string;
-  value: string;
-  onChange: (value: string) => void;
-  error: boolean;
-  errors?: any[];
-  inputClassName?: string;
-  type?: React.HTMLInputTypeAttribute;
-}
-
 function FormFieldWithIcon({
   icon,
   label,
@@ -44,28 +39,38 @@ function FormFieldWithIcon({
   value,
   onChange,
   error,
-  errors,
   inputClassName = "pl-10",
   type = "text",
-}: FormFieldProps) {
+}: {
+  icon: React.ReactNode;
+  label: string;
+  placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
+  error: boolean;
+  inputClassName?: string;
+  type?: React.HTMLInputTypeAttribute;
+}) {
   return (
-    <Field data-invalid={error}>
-      <FieldLabel>{label}</FieldLabel>
-      <div className="relative">
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground">
-          {icon}
+    <FormItem>
+      <FormLabel>{label}</FormLabel>
+      <FormControl>
+        <div className="relative">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground">
+            {icon}
+          </div>
+          <Input
+            placeholder={placeholder}
+            value={value || ""}
+            type={type}
+            onChange={(e) => onChange(e.target.value)}
+            aria-invalid={error}
+            className={inputClassName}
+          />
         </div>
-        <Input
-          placeholder={placeholder}
-          value={value || ""}
-          type={type}
-          onChange={(e) => onChange(e.target.value)}
-          aria-invalid={error}
-          className={inputClassName}
-        />
-      </div>
-      {error && <FieldError errors={errors} />}
-    </Field>
+      </FormControl>
+      {error && <FormMessage />}
+    </FormItem>
   );
 }
 
@@ -84,109 +89,105 @@ export function OrgSettingsForm({
       slug: initialSlug,
       logo: initialLogo || "",
     },
-    validators: {
-      onSubmit: UpdateWorkspaceSchema.pick({
-        name: true,
-        slug: true,
-        logo: true,
-      }).required({ logo: true }),
-    },
-    onSubmit: async ({ value }) => {
-      setIsSaving(true);
-      try {
-        const result = await updateWorkspace(workspaceId, {
-          name: value.name,
-          slug: value.slug,
-          logo: value.logo,
-        });
-
-        if (result.success) {
-          toast.success("Workspace settings updated successfully");
-
-          if (value.slug !== initialSlug) {
-            router.push(`/workspace/${value.slug}/workspace-settings`);
-          } else {
-            router.refresh();
-          }
-        } else {
-          toast.error(result.error || "Failed to update workspace settings");
-        }
-      } finally {
-        setIsSaving(false);
-      }
-    },
+    resolver: zodResolver(UpdateWorkspaceSchema.pick({
+      name: true,
+      slug: true,
+      logo: true,
+    }).required({ logo: true })),
   });
+
+  const onSubmit = async (data: { name: string; slug: string; logo: string }) => {
+    setIsSaving(true);
+    try {
+      const result = await updateWorkspace(workspaceId, {
+        name: data.name,
+        slug: data.slug,
+        logo: data.logo,
+      });
+
+      if (result.success) {
+        toast.success("Workspace settings updated successfully");
+
+        if (data.slug !== initialSlug) {
+          router.push(`/workspace/${data.slug}/workspace-settings`);
+        } else {
+          router.refresh();
+        }
+      } else {
+        toast.error(result.error || "Failed to update workspace settings");
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        orgForm.handleSubmit(e);
+        orgForm.handleSubmit(onSubmit)(e);
       }}
     >
-      {/* Basic Information */}
       <div className="flex flex-1 gap-6 py-3">
-        <orgForm.Field name="name">
-          {(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
+        <FormField
+          control={orgForm.control}
+          name="name"
+          render={({ field }) => {
+            const isInvalid = orgForm.formState.errors.name !== undefined;
             return (
               <FormFieldWithIcon
                 icon={<IconUserPentagon className="w-full h-full" />}
                 label="Workspace Name"
                 placeholder="My Workspace"
-                value={field.state.value}
-                onChange={(value) => field.handleChange(value)}
+                value={field.value}
+                onChange={(value) => field.onChange(value)}
                 error={isInvalid}
-                errors={field.state.meta.errors}
                 inputClassName="pl-10"
               />
             );
           }}
-        </orgForm.Field>
+        />
 
-        <orgForm.Field name="slug">
-          {(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
+        <FormField
+          control={orgForm.control}
+          name="slug"
+          render={({ field }) => {
+            const isInvalid = orgForm.formState.errors.slug !== undefined;
             return (
               <FormFieldWithIcon
                 icon={<IconAt className="w-full h-full" />}
                 label="Workspace Slug"
                 placeholder="my-workspace"
-                value={field.state.value}
-                onChange={(value) => field.handleChange(value)}
+                value={field.value}
+                onChange={(value) => field.onChange(value)}
                 error={isInvalid}
-                errors={field.state.meta.errors}
                 inputClassName="lowercase pl-9"
               />
             );
           }}
-        </orgForm.Field>
+        />
       </div>
 
-      {/* Logo */}
-      <orgForm.Field name="logo">
-        {(field) => {
-          const isInvalid =
-            field.state.meta.isTouched && !field.state.meta.isValid;
+      <FormField
+        control={orgForm.control}
+        name="logo"
+        render={({ field }) => {
+          const isInvalid = orgForm.formState.errors.logo !== undefined;
           return (
             <FormFieldWithIcon
               icon={<IconImageInPicture className="w-full h-full" />}
               label="Workspace Logo URL"
               placeholder="https://example.com/logo.png"
-              value={field.state.value}
-              onChange={(value) => field.handleChange(value)}
+              value={field.value}
+              onChange={(value) => field.onChange(value)}
               error={isInvalid}
-              errors={field.state.meta.errors}
               inputClassName="pl-10"
               type="file"
             />
           );
         }}
-      </orgForm.Field>
+      />
 
-      {/* Submit Button */}
       <div className="flex justify-end">
         <Button type="submit" disabled={isSaving} className="mt-5">
           {isSaving ? (

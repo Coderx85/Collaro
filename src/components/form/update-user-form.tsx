@@ -2,23 +2,25 @@
 
 import { UpdateUserSchema } from "@/db/schema/type";
 import { IUserDTO } from "@/types";
-import { useForm } from "@tanstack/react-form";
-import { Button } from "../ui/button";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/card";
+} from "@/components/ui/card";
 import {
-  Field,
-  FieldContent,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "../ui/field";
-import { Input } from "../ui/input";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { IconAt, IconChecks, IconLoader2, IconMail, IconSettings2, IconUser } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -35,41 +37,37 @@ const userUpdateSchema = UpdateUserSchema.pick({
   email: true,
 })
 
-type UserFormParams = {
-  user: IUserDTO
-}
-
-export function UpdateUserForm({user}: UserFormParams) {
+export function UpdateUserForm({user}: {user: IUserDTO}) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
-  const userForm = useForm({
+  const form = useForm({
     defaultValues: {
       name: user.name,
       userName: user.userName,
       email: user.email,
     },
-    validators: {
-      onSubmit: userUpdateSchema,
-    },
-    onSubmit: async ({ value }) => {
-      setIsSaving(true);
-      
-      const result = await updateUserAction({
-        name: value.name,
-        userName: value.userName,
-        email: value.email,
-      });
+    resolver: zodResolver(userUpdateSchema),
+  });
 
-      if (!result.success) {
-        toast.error(result.error || "Failed to update profile.");
-        setIsSaving(false);
-        return;
-      }
+  const onSubmit = async (data: { name: string; userName: string; email: string; }) => {
+    setIsSaving(true);
+    
+    const result = await updateUserAction({
+      name: data.name,
+      userName: data.userName,
+      email: data.email,
+    });
 
-      toast.success("Profile updated successfully.");
-      router.refresh();
+    if (!result.success) {
+      toast.error(result.error || "Failed to update profile.");
+      setIsSaving(false);
+      return;
     }
-  })
+
+    toast.success("Profile updated successfully.");
+    router.refresh();
+    setIsSaving(false);
+  }
 
   return (
     <div className="space-y-8">
@@ -87,135 +85,126 @@ export function UpdateUserForm({user}: UserFormParams) {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              userForm.handleSubmit();
+              form.handleSubmit(onSubmit)(e);
             }}
             className="md:col-span-2 space-y-6"
           >
-            <FieldGroup>
-              <userForm.Field name="name">
-                {(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel
-                        htmlFor={field.name}
-                        className="text-sm font-medium"
-                      >
-                        Full name
-                      </FieldLabel>
-                      <FieldContent>
-                        <IconUser className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground dark:text-foreground" />
-                        <Input
-                          id={field.name}
-                          name={field.name}
-                          value={field.state.value}
-                          onChange={(event) => field.setValue(event.target.value)}
-                          placeholder="Your name"
-                          onBlur={field.handleBlur}
-                          autoComplete={"name"}
-                          className="pl-10"
-                        />
-                      </FieldContent>
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  );
-                }}
-              </userForm.Field>
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel
+                    htmlFor={field.name}
+                    className="text-sm font-medium"
+                  >
+                    Full name
+                  </FormLabel>
+                  <FormControl>
+                    <div>
+                      <IconUser className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground dark:text-foreground" />
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.value}
+                        onChange={(event) => field.onChange(event.target.value)}
+                        placeholder="Your name"
+                        onBlur={field.onBlur}
+                        autoComplete="name"
+                        className="pl-10"
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <userForm.Field name="userName">
-                {(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel
-                        htmlFor={field.name}
-                        className="text-sm font-medium"
-                      >
-                        Username
-                      </FieldLabel>
-                      <FieldContent>
-                        <IconAt className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground dark:text-foreground" />
-                        <Input
-                          id={field.name}
-                          name={field.name}
-                          value={field.state.value}
-                          onChange={(event) => field.setValue(event.target.value)}
-                          placeholder="Your username"
-                          onBlur={field.handleBlur}
-                          autoComplete={"username"}
-                          className="pl-10"
-                        />
-                      </FieldContent>
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  );
-                }}
-              </userForm.Field>
+            <FormField
+              control={form.control}
+              name="userName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel
+                    htmlFor={field.name}
+                    className="text-sm font-medium"
+                  >
+                    Username
+                  </FormLabel>
+                  <FormControl>
+                    <div>
+                      <IconAt className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground dark:text-foreground" />
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.value}
+                        onChange={(event) => field.onChange(event.target.value)}
+                        placeholder="Your username"
+                        onBlur={field.onBlur}
+                        autoComplete="username"
+                        className="pl-10"
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <userForm.Field name="email">
-                {(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel
-                        htmlFor={field.name}
-                        className="text-sm font-medium"
-                      >
-                        Email address
-                      </FieldLabel>
-                      <FieldContent>
-                        <IconMail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground dark:text-foreground" />
-                        <Input
-                          id={field.name}
-                          name={field.name}
-                          type="email"
-                          value={field.state.value}
-                          onChange={(event) => field.setValue(event.target.value)}
-                          placeholder="your@email.com"
-                          onBlur={field.handleBlur}
-                          autoComplete={"email"}
-                          className="pl-10"
-                        />
-                      </FieldContent>
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  );
-                }}
-              </userForm.Field>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel
+                    htmlFor={field.name}
+                    className="text-sm font-medium"
+                  >
+                    Email address
+                  </FormLabel>
+                  <FormControl>
+                    <div>
+                      <IconMail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground dark:text-foreground" />
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        type="email"
+                        value={field.value}
+                        onChange={(event) => field.onChange(event.target.value)}
+                        placeholder="your@email.com"
+                        onBlur={field.onBlur}
+                        autoComplete="email"
+                        className="pl-10"
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <div className="flex justify-end">
-                <Button
-                  type="submit"
-                  disabled={isSaving}
-                  className="rounded-full px-8"
-                >
-                  {isSaving ? (
-                    <>
-                      <IconLoader2 className="size-4 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <IconChecks className="size-4" />
-                      Save Changes
-                    </>
-                  )}
-                </Button>
-              </div>
-
-              </FieldGroup> 
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                disabled={isSaving}
+                className="rounded-full px-8"
+              >
+                {isSaving ? (
+                  <>
+                    <IconLoader2 className="size-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <IconChecks className="size-4" />
+                    Save Changes
+                  </>
+                )}
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

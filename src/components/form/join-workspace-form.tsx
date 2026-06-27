@@ -1,27 +1,33 @@
 "use client";
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useForm } from "@tanstack/react-form";
 import * as z from "zod";
 import { sendJoinWorkspaceRequest } from "@/action/workspace";
 import { LogIn, Loader } from "lucide-react";
 import { convertToSlug } from "@/lib/text-formatter";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+
 import Link from "next/link";
 import { routeConfig } from "@/lib/routeConfig";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { toast } from "sonner";
-import { TWorkspaceSlug } from "@/types";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 const joinWorkspaceSchema = z.object({
   workspaceName: z
@@ -31,10 +37,7 @@ const joinWorkspaceSchema = z.object({
   workspaceSlug: z
     .string()
     .min(1, "Workspace slug is required")
-    .min(3, "Workspace slug must be at least 3 characters")
-    .transform(
-      (v) => v as unknown as TWorkspaceSlug
-    )
+    .min(3, "Workspace slug must be at least 3 characters"),
 });
 
 export function JoinWorkspaceForm() {
@@ -45,34 +48,33 @@ export function JoinWorkspaceForm() {
       workspaceName: "",
       workspaceSlug: "",
     },
-    validators: {
-      onSubmit: joinWorkspaceSchema
-    },
-    onSubmit: async ({ value }) => {
-      setIsLoading(true);
-      try {
-        const result = await sendJoinWorkspaceRequest(value.workspaceSlug, value.workspaceName);
-
-        if (!result.success) {
-          toast.error(result.error || "Failed to send join request");
-          return;
-        } 
-        
-        toast.success(`Your request to join "${result.data?.workspaceName}" has been sent to the workspace owner.`);
-        
-      } catch (error) {
-        toast.error("An unexpected error occurred");
-      } finally {
-        setIsLoading(false);
-      }
-    }
+    resolver: zodResolver(joinWorkspaceSchema),
   });
+
+  const onSubmit = async (data: { workspaceName: string; workspaceSlug: string }) => {
+    setIsLoading(true);
+    try {
+      const result = await sendJoinWorkspaceRequest(data.workspaceSlug, data.workspaceName);
+
+      if (!result.success) {
+        toast.error(result.error || "Failed to send join request");
+        return;
+      } 
+      
+      toast.success(`Your request to join "${result.data?.workspaceName}" has been sent to the workspace owner.`);
+      
+    } catch (error) {
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <form 
       onSubmit={(e) => {
         e.preventDefault();
-        form.handleSubmit();
+        form.handleSubmit(onSubmit)(e);
       }} 
       className="w-full max-w-md relative z-10"
     >
@@ -96,98 +98,69 @@ export function JoinWorkspaceForm() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <FieldGroup>
-            <form.Field name="workspaceName">
-              {(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel
-                      htmlFor={field.name}
-                      className="text-foreground dark:text-foreground"
-                    >
-                      Workspace Name
-                    </FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      type="text"
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => {
-                        field.handleChange(e.target.value);
-
-                        // Auto-generate slug based on the name
-                        const generatedSlug = convertToSlug(e.target.value);
-                        field.form.setFieldValue("workspaceSlug", generatedSlug);
-                      }}
-                      aria-invalid={isInvalid}
-                      placeholder="Workspace Name"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
-            </form.Field>
-
-            <form.Field name="workspaceSlug">
-              {(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel
-                      htmlFor={field.name}
-                      className="text-foreground dark:text-foreground"
-                    >
-                      Workspace Slug
-                    </FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      type="text"
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder="Workspace Slug"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
-            </form.Field>
-          </FieldGroup>
-
-          <Button
-            variant={"default"}
-            className="w-full"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <>
-                <Loader className="animate-spin mr-2" />
-                Sending Request...
-              </>
-            ) : (
-              <>
-                <LogIn className="mr-2" />
-                Join Workspace
-              </>
+          <FormField
+            control={form.control}
+            name="workspaceName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Workspace Name</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="Workspace Name"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      // Auto-generate slug based on the name
+                      const generatedSlug = convertToSlug(e.target.value);
+                      form.setValue("workspaceSlug", generatedSlug, { shouldValidate: true });
+                    }}
+                    aria-invalid={!!form.formState.errors.workspaceName}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </Button>
+          />
+
+          <FormField
+            control={form.control}
+            name="workspaceSlug"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Workspace Slug</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="Workspace Slug"
+                    onChange={(e) => field.onChange(e)}
+                    aria-invalid={!!form.formState.errors.workspaceSlug}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </CardContent>
-        <CardFooter className="text-center text-sm text-muted-foreground flex flex-col gap-2">
-          If you want to create a new workspace instead,{" "}
-          <Link href={routeConfig.workspace.new} className="text-secondary-foreground hover:underline">
-            Create Workspace
-          </Link>
-        </CardFooter>
+
+        <Button
+          variant="default"
+          className="w-full"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <>
+              <Loader className="animate-spin mr-2" />
+              Sending Request...
+            </>
+          ) : (
+            <>
+              <LogIn className="mr-2" />
+              Join Workspace
+            </>
+          )}
+        </Button>
       </Card>
     </form>
   );
