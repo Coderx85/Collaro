@@ -3,7 +3,7 @@ import { config } from "@/lib/config";
 
 const PROD_MIGRATION_PATH = "./src/db/drizzle/migrations";
 
-const DEV_MIGRATION_PATH = "./src/db/supabase/migrations";
+const DEV_MIGRATION_PATH = "./src/db/dev-migrations";
 
 const isDev = config.environment === "development";
 

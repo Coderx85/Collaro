@@ -1,6 +1,6 @@
 import { TWorkspaceDTO } from "@/types/workspace.types";
 import { IParticipantDTO, IParticipantStore, IWorkspaceMeetingDTO, MemoryWorkspaceMeetingStore, ParticipantStore, TeamMeetingDTO, TMeetingId } from "@collaro/meeting";
-import { IMemberDTO, IMemberStore, IWorkspaceMemberManager, MemberStore, WorkspaceMemberManager } from "@collaro/member";
+import { IMemberDTO, IMemberStore, IWorkspaceMemberManager, MemberStore } from "@collaro/member";
 import { ID } from "@collaro/utils/generate";
 import { Input } from "@collaro/utils/omit";
 import { IWorkspaceDTO } from "@collaro/workspace/interface";

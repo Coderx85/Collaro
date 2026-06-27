@@ -5,7 +5,6 @@ import {
   timestamp,
   varchar,
   pgEnum,
-  char,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm/sql";
 import * as t from "drizzle-orm/pg-core";

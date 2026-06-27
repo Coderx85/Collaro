@@ -1,4 +1,3 @@
-import { reset } from "drizzle-seed";
 import { db } from "@/db/client";
 import {
   type CreateUserType,
@@ -6,7 +5,7 @@ import {
 } from "@/db/schema/type";
 import { auth } from "@/lib/auth/auth-server";
 import { sql } from "drizzle-orm";
-import { authSchema, schema } from ".";
+import { schema, authSchema } from ".";
 import { TUserId, TWorkspaceId } from "@/types";
 import { TInviteMemberRole, workspaceMemberManager } from "@/modules/member";
 
@@ -135,22 +134,22 @@ const workspaces: (SeedWorkspace & { creatorUserName: string })[] = [
 ];
 
 const workspaceMembers: WorkspaceAssignment[] = [
-  // Additional members with different roles
-  { workspaceSlug: workspaces[0].slug, userName: "member", role: "member" },
-  { workspaceSlug: "avengers-workspace", userName: "testuser", role: "admin" },
-  { workspaceSlug: "new-avenger-workspace", userName: "guest", role: "member" },
+  // Additional members with different roles - matching actual usernames in the database
+  { workspaceSlug: "avengers", userName: "steve_rogers", role: "admin" },
+  { workspaceSlug: "illuminati", userName: "wonder_woman", role: "member" },
 ];
 
 // Custom reset function to truncate tables using raw SQL
 // This works with both local pg Pool and Neon HTTP connections
 async function resetTables() {
-  await reset(db, {
-    auth: authSchema,
-    main: schema,
-  }); // Use drizzle-seed reset for basic reset
-
   await db.execute(sql`TRUNCATE TABLE "members" CASCADE`);
   await db.execute(sql`TRUNCATE TABLE "workspaces" CASCADE`);
+  await db.execute(sql`TRUNCATE TABLE "meeting_participants" CASCADE`);
+  await db.execute(sql`TRUNCATE TABLE "workspace_meetings" CASCADE`);
+  await db.execute(sql`TRUNCATE TABLE "private_meetings" CASCADE`);
+  await db.execute(sql`TRUNCATE TABLE "join_requests" CASCADE`);
+  await db.execute(sql`TRUNCATE TABLE "invitation" CASCADE`);
+  await db.execute(sql`TRUNCATE TABLE "notifications" CASCADE`);
   await db.execute(sql`TRUNCATE TABLE "session" CASCADE`);
   await db.execute(sql`TRUNCATE TABLE "account" CASCADE`);
   await db.execute(sql`TRUNCATE TABLE "verification" CASCADE`);

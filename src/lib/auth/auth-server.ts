@@ -5,7 +5,7 @@ import { schema } from "@/db";
 import { db } from "@/db/client";
 import { nextCookies } from "better-auth/next-js";
 import { config } from "../config";
-import { organization, username } from "better-auth/plugins";
+import { organization } from "better-auth/plugins";
 import { TUserId } from "@/types";
 import { meetingPlugin } from "./meeting-plugin";
 // import { ac, roles } from "./permission";
@@ -39,12 +39,9 @@ export const auth = betterAuth({
     },
   },
   plugins: [
-    // workspacePlugin(),
     nextCookies(),
     meetingPlugin(),
     organization({
-      // ac,
-      // roles,
       allowUserToCreateOrganization: true,
       creatorRole: "owner",
       schema: {
@@ -85,14 +82,6 @@ export const auth = betterAuth({
         },
       },
     }),
-    username({
-      minUsernameLength: 4,
-      maxUsernameLength: 20,
-      displayUsernameValidator(displayUsername) {
-        const usernameRegex = /^[a-zA-Z0-9_]+$/;
-        return usernameRegex.test(displayUsername);
-      },
-    }),
   ],
   user: {
     additionalFields: {
@@ -123,7 +112,7 @@ export const auth = betterAuth({
                   id: user.id,
                   name: user.name,
                   email: user.email,
-                  userName: user?.username,
+                  userName: user?.userName,
                   createdAt: user.createdAt,
                 },
               };

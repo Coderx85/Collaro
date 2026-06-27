@@ -1,5 +1,6 @@
 import { ID } from "@collaro/utils/generate";
-import { IMemberDTO, IMemberStore, IWorkspaceMemberManager, JoinWorkspaceParams, MemberStore } from "../member";
+import { MemberStore } from "../member/member-store";
+import type { IMemberDTO, IMemberStore, IWorkspaceMemberManager, JoinWorkspaceParams } from "../member";
 import { IRequestMember, IWorkspaceDTO, IWorkspaceStore, MemoryWorkspaceStore, RequestMember } from "@collaro/workspace";
 import { IUser, User } from "@collaro/user";
 import { MemberSorting } from "@collaro/sorting/interface";

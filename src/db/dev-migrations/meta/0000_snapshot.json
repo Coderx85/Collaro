@@ -1,6 +1,6 @@
 {
-  "id": "466a1f47-f76e-44bf-ad2d-5756658d012e",
-  "prevId": "69b8dfd2-665e-4e74-8b5a-ae347e6430a8",
+  "id": "f64811e0-6b11-4802-9e3a-a4cbe33dceca",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -392,6 +392,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'member'"
         },
         "member_id": {
           "name": "member_id",
@@ -1043,7 +1050,8 @@
           "name": "title",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'Untitled Meeting'"
         },
         "description": {
           "name": "description",

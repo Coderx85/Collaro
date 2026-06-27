@@ -27,7 +27,7 @@ const MeetingPage = async ({
     notFound();
   }
 
-  const meeting = meetingRes.data as MeetingWithWorkspace;
+  const meeting = meetingRes.data as unknown as MeetingWithWorkspace;
   const workspaceSlug = meeting.workspace?.slug || "";
 
   const participantsRes = await getMeetingParticipants(id as any);

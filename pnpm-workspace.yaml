@@ -1,0 +1,12 @@
+allowBuilds:
+  esbuild: true
+  inngest-cli: true
+  protobufjs: true
+  sharp: true
+onlyBuiltDependencies:
+  - esbuild
+  - inngest-cli
+  - protobufjs
+  - sharp
+  - next
+  - '@next/swc-linux-x64-gnu'

@@ -1,5 +1,5 @@
 // Import meeting status enum
-import { TMeetingId } from "@/types";
+import { TMeetingId } from "@/types/id.types";
 import { session, account, verification } from "./auth-schema";
 // Import table schemas
 import {

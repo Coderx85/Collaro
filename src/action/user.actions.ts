@@ -75,10 +75,13 @@ export async function signUpAction({
       body: {
         name,
         email,
-        userName,
         password,
+        userName
       },
       headers: await headers(),
+    }).catch((error) => {
+      console.error("Sign up error:", error);
+      throw error;
     });
 
     if (!result || !result.user) {

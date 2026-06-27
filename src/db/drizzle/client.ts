@@ -1,9 +1,9 @@
-import { drizzle } from "drizzle-orm/neon-http";
-import { neon } from "@neondatabase/serverless";
+import { config } from "@/lib/config";
+import { Pool } from "pg";
+import { drizzle } from "drizzle-orm/node-postgres";
 import * as Basicschema from "../schema/schema";
 import * as AuthSchema from "../schema/auth-schema";
 import * as rel from "../schema/relation";
-import { config } from "@/lib/config";
 
 const schema = {
   ...Basicschema,
@@ -11,4 +11,11 @@ const schema = {
   ...rel,
 };
 
-export const Proddb = drizzle(neon(config.database), { schema: schema });
+const pool = new Pool({
+  connectionString: config.database,
+  max: parseInt(process.env.DB_POOL_MAX || "10"),
+  idleTimeoutMillis: parseInt(process.env.DB_IDLE_TIMEOUT || "30000"),
+  connectionTimeoutMillis: parseInt(process.env.DB_CONNECT_TIMEOUT || "5000"),
+});
+
+export const Proddb = drizzle({ client: pool, schema });
