@@ -82,6 +82,7 @@ export function UpdateUserForm({user}: {user: IUserDTO}) {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2">
+          <Form {...form}>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -203,6 +204,7 @@ export function UpdateUserForm({user}: {user: IUserDTO}) {
               </Button>
             </div>
           </form>
+          </Form>
         </CardContent>
       </Card>
     </div>

@@ -22,6 +22,7 @@ import { routeConfig } from "@/lib/routeConfig";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { toast } from "sonner";
 import {
+  Form,
   FormControl,
   FormField,
   FormItem,
@@ -71,13 +72,14 @@ export function JoinWorkspaceForm() {
   };
 
   return (
-    <form 
-      onSubmit={(e) => {
-        e.preventDefault();
-        form.handleSubmit(onSubmit)(e);
-      }} 
-      className="w-full max-w-md relative z-10"
-    >
+    <Form {...form}>
+      <form 
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit(onSubmit)(e);
+        }} 
+        className="w-full max-w-md relative z-10"
+      >
       <Card className="relative backdrop-blur-xl bg-card/80 shadow-lg overflow-hidden">
         <Link href={routeConfig.workspace.base} className="flex items-center gap-1 text-primary">
           <Button
@@ -162,6 +164,7 @@ export function JoinWorkspaceForm() {
           )}
         </Button>
       </Card>
-    </form>
+      </form>
+    </Form>
   );
 }

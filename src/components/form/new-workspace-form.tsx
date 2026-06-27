@@ -6,13 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createWorkspace } from "@/action";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { IconLink, IconLoader2, IconBriefcase } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
@@ -80,13 +73,14 @@ export function NewWorkspaceForm() {
   };
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        form.handleSubmit(onSubmit)(e);
-      }}
-      className="w-full max-w-md relative z-10"
-    >
+    <Form {...form}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit(onSubmit)(e);
+        }}
+        className="w-full max-w-md relative z-10"
+      >
       <Card className="relative backdrop-blur-xl bg-card/80 shadow-lg overflow-hidden">
         <Link href={routeConfig.workspace.base}>
           <Button
@@ -181,6 +175,7 @@ export function NewWorkspaceForm() {
           )}
         </Button>
       </Card>
-    </form>
+      </form>
+    </Form>
   );
 }

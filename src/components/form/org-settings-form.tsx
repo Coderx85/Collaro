@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Form,
   FormControl,
   FormField,
   FormItem,
@@ -122,12 +123,13 @@ export function OrgSettingsForm({
   };
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        orgForm.handleSubmit(onSubmit)(e);
-      }}
-    >
+    <Form {...orgForm}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          orgForm.handleSubmit(onSubmit)(e);
+        }}
+      >
       <div className="flex flex-1 gap-6 py-3">
         <FormField
           control={orgForm.control}
@@ -203,6 +205,7 @@ export function OrgSettingsForm({
           )}
         </Button>
       </div>
-    </form>
+      </form>
+    </Form>
   );
 }
