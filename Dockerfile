@@ -7,13 +7,12 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 WORKDIR /app
-ENV NODE_ENV=production
 ENV NPM_CONFIG_REGISTRY=https://registry.npmjs.org/
 RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 
 FROM base AS deps
 ENV HUSKY=0
-ENV SKIP_HUSKY=1
+ENV NODE_ENV=development
 
 # Copy package files only to cache deps layer
 COPY package.json pnpm-lock.yaml .npmrc* ./
@@ -25,6 +24,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 # Ensure standalone output is generated
 ENV NEXT_PRIVATE_STANDALONE=true
+ENV NODE_ENV=production
 ARG NEXT_PUBLIC_APP_URL
 ARG DATABASE_URL
 ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
