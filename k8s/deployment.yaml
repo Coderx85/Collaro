@@ -5,6 +5,7 @@ metadata:
   namespace: collaro
   labels:
     app: collaro
+    environment: production
 spec:
   replicas: 2
   strategy:
@@ -19,6 +20,7 @@ spec:
     metadata:
       labels:
         app: collaro
+        environment: production
     spec:
       serviceAccountName: collaro
       securityContext:
@@ -28,7 +30,7 @@ spec:
       containers:
         - name: collaro
           image: coderx85/collaro:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
               protocol: TCP

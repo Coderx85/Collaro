@@ -3,6 +3,9 @@ kind: NetworkPolicy
 metadata:
   name: collaro
   namespace: collaro
+  labels:
+    app: collaro
+    environment: production
 spec:
   podSelector:
     matchLabels:

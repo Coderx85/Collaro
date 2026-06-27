@@ -3,5 +3,5 @@ kind: Namespace
 metadata:
   name: collaro
   labels:
-    name: collaro
+    app: collaro
     environment: production

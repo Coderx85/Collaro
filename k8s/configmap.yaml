@@ -3,6 +3,9 @@ kind: ConfigMap
 metadata:
   name: collaro-config
   namespace: collaro
+  labels:
+    app: collaro
+    environment: production
 data:
   NODE_ENV: "production"
   NEXT_PUBLIC_APP_URL: "https://collaro.app"

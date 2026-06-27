@@ -5,6 +5,7 @@ metadata:
   namespace: collaro
   labels:
     app: collaro
+    environment: production
 spec:
   type: ClusterIP
   ports:

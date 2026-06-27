@@ -3,6 +3,9 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: collaro
   namespace: collaro
+  labels:
+    app: collaro
+    environment: production
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
