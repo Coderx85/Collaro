@@ -21,6 +21,7 @@ spec:
       labels:
         app: collaro
         environment: production
+        collaro-obs: "true"
     spec:
       serviceAccountName: collaro
       securityContext:
@@ -29,8 +30,8 @@ spec:
         fsGroup: 1001
       containers:
         - name: collaro
-          image: coderx85/collaro:latest
-          imagePullPolicy: IfNotPresent
+          image: coderx85/collaro:local
+          imagePullPolicy: Never
           ports:
             - containerPort: 3000
               protocol: TCP

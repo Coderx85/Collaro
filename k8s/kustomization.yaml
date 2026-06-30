@@ -19,4 +19,4 @@ resources:
 
 images:
   - name: coderx85/collaro
-    newTag: latest
+    newTag: local

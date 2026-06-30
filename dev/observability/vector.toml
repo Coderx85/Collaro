@@ -8,7 +8,7 @@ address = "0.0.0.0:8686"
 # Source: Docker container logs
 [sources.docker_logs]
 type = "docker_logs"
-include_containers = ["postgres", "loki", "grafana"]
+include_containers = ["collaro", "postgres", "loki", "grafana"]
 
 # Transform: Parse and enrich logs
 [transforms.parse_logs]
@@ -21,17 +21,33 @@ source = '''
 # Extract container name as a label
 .labels.container = .container_name
 
-# Try to parse JSON logs
+# Map pino numeric levels to strings
+pino_level_to_str = {10: "trace", 20: "debug", 30: "info", 40: "warn", 50: "error", 60: "fatal"}
+
+# Try to parse JSON logs (pino outputs structured JSON)
 parsed, err = parse_json(.message)
 if err == null {
   .parsed = parsed
-  .labels.level = parsed.level ?? "info"
+
+  # Handle pino level format (numeric or string)
+  if exists(parsed.level) && is_integer(parsed.level) {
+    .labels.level = pino_level_to_str[parsed.level] ?? "info"
+  } else if exists(parsed.level) {
+    .labels.level = parsed.level
+  } else {
+    .labels.level = "info"
+  }
+
+  # Extract pino msg as the log message
+  if exists(parsed.msg) {
+    .message = parsed.msg
+  }
 } else {
   .labels.level = "info"
 }
 
-# Add service label
-.labels.service = "docker"
+# Set service label based on container name
+.labels.service = .container_name ?? "unknown"
 .labels.source = "vector"
 '''
 

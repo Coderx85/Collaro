@@ -24,6 +24,7 @@ const ProfileCard = ({ slug }: ProfileCardProps) => {
   useEffect(() => {
     const fetchMember = async () => {
       const result = await getCurrentMemberRole(slug);
+      
       if (!result.success) {
         toast.error(result.error || "Failed to fetch member role");
         return;

@@ -2,16 +2,16 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "img.clerk.com",
-        pathname: "/**",
-      },
-    ],
-  },
   reactCompiler: true,
+  logging: {
+    incomingRequests: true,
+    browserToTerminal: true,
+    fetches: {
+      fullUrl: true,
+    },
+    serverFunctions: true,
+  },
+  serverExternalPackages: ["pino"],
   turbopack: {
     root: process.cwd(),
   }

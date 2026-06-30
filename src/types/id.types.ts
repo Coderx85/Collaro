@@ -18,4 +18,4 @@ export type TNotificationId = BRAND<"NotificationId">;
 
 export type TRequestId = BRAND<"RequestId">;
 
-export type TWorkspaceSlug = BRAND<"WorkspaceSlug">;
+export type TWorkspaceSlug = string;
