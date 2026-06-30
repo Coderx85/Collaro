@@ -51,54 +51,7 @@ export default function RegisterPage() {
     userName: "",
   };
 
-  const form = useForm({
-    defaultValues,
-    validators: {
-      onSubmit: registerSchema,
-    },
-    onSubmit: async ({ value }) => {
-      setIsSubmitting(true);
-      try {
-        if (!value) {
-          toast.error("Please fill all the fields");
-          return;
-        }
-        const result = registerSchema.safeParse(value);
-        if (!result.success) {
-          const errorMsg =
-            result.error.issues?.[0]?.message || "Validation failed";
-          toast.error(errorMsg);
-          console.error("Validation errors:", result.error.issues);
-          return;
-        }
-
-        const signUpResult = await signUpAction({
-          email: value.email,
-          password: value.password,
-          name: value.name,
-          userName: value.userName,
-          confirmPassword: value.confirmPassword,
-        });
-
-        if (!signUpResult.success && signUpResult.error) {
-          const errorMsg = signUpResult.error || "Failed to create account";
-          toast.error(errorMsg);
-          console.error("Sign up error:", errorMsg);
-          return;
-        }
-
-        toast.success("Account created successfully!", {
-          description: "Welcome to Collaro. Redirecting to your workspace...",
-        });
-        router.push("/workspace");
-      } catch (error) {
-        toast.error("An unexpected error occurred. Please try again.");
-        console.error("Registration error:", error);
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-  });
+  const form = useForm({ defaultValues });
 
   const handleNext = () => {
     // Validate step 1 fields before proceeding
@@ -156,12 +109,47 @@ export default function RegisterPage() {
 
         <CardContent className="space-y-6">
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (currentStep === 2) {
-                void form.handleSubmit();
-              } else {
-                handleNext();
+            onSubmit={async (e) => {
+              try {
+                e.preventDefault();
+                if (currentStep !== 2) {
+                  handleNext();
+                  return;
+                }
+
+                const name = form.getFieldValue("name");
+                const email = form.getFieldValue("email");
+                const userName = form.getFieldValue("userName");
+                const password = form.getFieldValue("password");
+                const confirmPassword = form.getFieldValue("confirmPassword");
+
+                const values = { name, email, userName, password, confirmPassword };
+                console.log("[register] values:", values);
+
+                setIsSubmitting(true);
+                const parsed = registerSchema.safeParse(values);
+                if (!parsed.success) {
+                  const msg = parsed.error.issues?.[0]?.message || "Validation failed";
+                  toast.error(msg);
+                  return;
+                }
+
+                console.log("[register] calling signUpAction");
+                const signUpResult = await signUpAction(values);
+                console.log("[register] result:", signUpResult);
+
+                if (!signUpResult.success) {
+                  toast.error(signUpResult.error || "Failed to create account");
+                  return;
+                }
+
+                toast.success("Account created successfully!");
+                router.push("/workspace");
+              } catch (error) {
+                console.error("[register] UNCAUGHT:", error);
+                toast.error("An unexpected error occurred. Please try again.");
+              } finally {
+                setIsSubmitting(false);
               }
             }}
           >

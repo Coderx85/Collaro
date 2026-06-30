@@ -1,23 +1,15 @@
-import { createNotificationSchema } from "@/db/schema/type";
-import { schema } from "@/db";
+import { IMemberDTO } from "./member.types";
+import { TNotificationId } from "./id.types";
+import { IUserDTO } from "./user.types";
+import { IWorkspaceDTO } from "./workspace.types";
 
-import z from "zod";
-
-type NotificationType = (typeof schema.pgNotificationType.enumValues)[number];
-
-export interface INotification extends z.infer<typeof createNotificationSchema> {
+export interface INotificationDTO {
+  id: TNotificationId;
+  userId: IUserDTO["id"];
+  workspaceId: IWorkspaceDTO["id"];
+  memberID?: IMemberDTO["id"];
+  type: string;
+  message: string;
+  read: boolean;
   createdAt: Date;
-  id: string;
-  type: NotificationType;
 }
-
-const n: INotification = {
-  createdAt: new Date(),
-  id: "123",
-  type: "general",
-  userId: "user123",
-  message: "You have a new message!",
-  workspaceId: "workspace123",
-  readAt: null,
-  read: false,
-};

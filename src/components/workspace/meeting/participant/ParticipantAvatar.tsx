@@ -1,6 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { IconUser } from "@tabler/icons-react";
-import { User } from "lucide-react";
 
 interface ParticipantAvatarProps {
   name: string;

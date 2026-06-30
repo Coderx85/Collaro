@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +12,10 @@ import ReactDatePicker from "react-datepicker";
 import { type Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { CalendarExport } from "../../CalendarExport";
 import { Label } from "../../ui/label";
+import { createMeetingAction } from "@/action";
+import { toast } from "sonner";
+import { TWorkspaceSlug } from "@/types";
+import { StreamClient } from "@/modules/stream/class";
 
 const initialValues = {
   dateTime: new Date(),
@@ -20,11 +23,14 @@ const initialValues = {
   link: "",
 };
 
-const MeetingTypeList = ({ workspaceSlug }: { workspaceSlug: string }) => {
+type MeetingTypeListProps = {
+  workspaceSlug: TWorkspaceSlug;
+}
+
+const MeetingTypeList = ({ workspaceSlug }: MeetingTypeListProps) => {
   const router = useRouter();
   const client = useStreamVideoClient();
   const { data: session, isPending } = useSession();
-  const { toast } = useToast();
 
   const [meetingState, setMeetingState] = useState<
     "isScheduleMeeting" | "isJoiningMeeting" | "isInstantMeeting" | undefined
@@ -32,74 +38,51 @@ const MeetingTypeList = ({ workspaceSlug }: { workspaceSlug: string }) => {
   const [values, setValues] = useState(initialValues);
   const [callDetail, setCallDetail] = useState<Call>();
 
-  // Grab workspaceId
-  const pathname = usePathname();
-  const workspaceId = pathname.split("/")[2];
-
-  // async function createMeetingDB(meetingId: string) {
-  //   const res = await fetch(`/api/meeting/new`, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       data: {
-  //         meetingId,
-  //       },
-  //     }),
-  //   });
-
-  //   const data = await res.json();
-
-  //   if (!data || data.error) {
-  //     return toast({ title: "Failed to create meeting" });
-  //   }
-
-  //   return toast({ title: "Meeting Created" });
-  // }
-
   if (isPending || !client || !session?.user) return <Loader />;
-
-  // Create Meeting function
+  
   const createMeeting = async () => {
     if (!client || !session?.user) return;
+    if (!values.dateTime) {
+      toast.error("Please select a date and time for the meeting");
+      return;
+    }
+    const streamClient = StreamClient.getInstance();
+    const startsAt =
+      values.dateTime.toISOString() || new Date(Date.now()).toISOString();
+    const description = values.description || "Instant Meeting";
 
-    try {
-      if (!values.dateTime) {
-        toast({ title: "Please select a date and time" });
+    try {     
+      const res = await createMeetingAction({
+        title: description,
+        description,
+        startTime: new Date(startsAt),
+        workspaceSlug,
+      });
+        
+      if(!res.success) {
+        console.error("Failed to create meeting:", res.error);
+        toast.error("Failed to create meeting");
         return;
       }
-      const id = crypto.randomUUID();
-      const call = client.call("default", id);
-      if (!call) throw new Error("Failed to create meeting");
-      const startsAt =
-        values.dateTime.toISOString() || new Date(Date.now()).toISOString();
-      const description = values.description || "Instant Meeting";
-      await call.getOrCreate({
-        ring: true,
-        video: true,
-        data: {
-          starts_at: startsAt,
-          custom: {
-            description,
-          },
-        },
-      });
 
-      setCallDetail(call);
+      const createdAt = new Date(res.data.createdAt);
+      
+      const call = await streamClient.createTeamMeeting({ ...res.data, createdAt });
+      if(!call) {
+        toast.error("Failed to create meeting in the video service");
+        return;
+      }
+      setCallDetail(call);      
 
-      // createMeetingDB(call.id);
-
-      toast({
-        title: "Meeting Created",
-      });
+      console.log("Meeting created successfully", res.data);
+      toast.success("Meeting created successfully");
 
       if (!values.description) {
         router.push(`/meeting/${call.id}`);
       }
     } catch (error) {
-      console.error(error);
-      toast({ title: "Failed to create Meeting" });
+      console.error("Error creating meeting:", error);
+      toast.error("Failed to create meeting");
     }
   };
 
@@ -121,6 +104,7 @@ const MeetingTypeList = ({ workspaceSlug }: { workspaceSlug: string }) => {
         variant="orange"
         handleClick={() => setMeetingState("isJoiningMeeting")}
       />
+      
       <HomeCard
         img="/icons/schedule.svg"
         title="Schedule Meeting"
@@ -128,12 +112,13 @@ const MeetingTypeList = ({ workspaceSlug }: { workspaceSlug: string }) => {
         variant="purple"
         handleClick={() => setMeetingState("isScheduleMeeting")}
       />
+
       <HomeCard
         img="/icons/recordings.svg"
         title="View Recordings"
         description="Meeting Recordings"
         variant="yellow"
-        handleClick={() => router.push(`/workspace/${workspaceId}/recordings`)}
+        handleClick={() => router.push(`/workspace/${workspaceSlug}/recordings`)}
       />
 
       {!callDetail ? (
@@ -175,7 +160,7 @@ const MeetingTypeList = ({ workspaceSlug }: { workspaceSlug: string }) => {
           title="Meeting Created"
           handleClick={() => {
             navigator.clipboard.writeText(meetingLink);
-            toast({ title: "Link Copied" });
+            toast.success("Link copied to clipboard");
           }}
           image={"/icons/checked.svg"}
           buttonIcon="/icons/copy.svg"
@@ -189,26 +174,26 @@ const MeetingTypeList = ({ workspaceSlug }: { workspaceSlug: string }) => {
             <div className="flex gap-2 flex-wrap justify-center w-full">
               <div className="w-full max-w-md rounded-lg border p-4 text-sky-2 shadow-sm">
                 <div className="flex items-center justify-center mb-3 w-full">
-                  <CalendarExport
-                    meetingId={callDetail?.id || ""}
-                    meetingTitle={values.description || "Collaro Meeting"}
-                    startTime={values.dateTime}
-                    endTime={
-                      new Date(values.dateTime.getTime() + 60 * 60 * 1000)
-                    }
-                    description={
-                      values.description || "Meeting scheduled via Collaro"
-                    }
-                    location="Online Meeting"
-                    meetingLink={meetingLink}
-                    workspaceId={workspaceId}
-                    hostedBy={session?.user?.name || "Collaro User"}
-                    hostEmail={session?.user?.email || "user@collaro.com"}
-                    attendees={[]}
-                    variant="outline"
-                    size="sm"
-                    className="bg-transparent border border-slate-700 w-full text-sky-2 hover:bg-slate-800/40 hover:border-sky-400"
-                  />
+                    <CalendarExport
+                      meetingId={callDetail?.id || ""}
+                      meetingTitle={values.description || "Collaro Meeting"}
+                      startTime={values.dateTime}
+                      endTime={
+                        new Date(values.dateTime.getTime() + 60 * 60 * 1000)
+                      }
+                      description={
+                        values.description || "Meeting scheduled via Collaro"
+                      }
+                      location="Online Meeting"
+                      meetingLink={meetingLink}
+                      workspaceId={String(workspaceSlug)}
+                      hostedBy={session?.user?.name || "Collaro User"}
+                      hostEmail={session?.user?.email || "user@collaro.com"}
+                      attendees={[]}
+                      variant="outline"
+                      size="sm"
+                      className="bg-transparent border border-slate-700 w-full text-sky-2 hover:bg-slate-800/40 hover:border-sky-400"
+                    />
                 </div>
                 <p className="text-xs text-slate-400 text-center wrap-break-word">
                   Link:{" "}

@@ -9,7 +9,6 @@ import {
 } from "@stream-io/video-react-sdk";
 import { useSession } from "@/lib/auth";
 import { motion } from "motion/react";
-import { checkWorkspaceMeetingAcces } from "@/action";
 import { usePathname } from "next/navigation";
 import { useWorkspaceStore } from "@/store/workspace";
 import Alert from "@/components/Alert";

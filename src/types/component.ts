@@ -1,5 +1,5 @@
 import type { IconType } from "react-icons/lib";
-import type { TUserRole } from "./action";
+import type { TUserRole } from "@/types";
 import { ComponentType } from "react";
 
 export interface CalendarExportProps {
@@ -34,6 +34,8 @@ export interface MeetingCardProps {
   endTime?: Date;
   description?: string;
   location?: string;
+  // For previous meetings - link to detail page
+  viewDetailsLink?: string;
 }
 
 export interface MeetingDetailsProps {

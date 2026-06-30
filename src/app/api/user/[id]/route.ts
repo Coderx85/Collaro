@@ -2,10 +2,11 @@ import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db/client";
 import { membersTable, usersTable } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
+import { TUserId } from "@/types";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: TUserId }> },
 ) {
   const { id } = await params;
 

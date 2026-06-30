@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import { createInvitation } from "@/action/invitation.actions";
 import { IconUser, IconUserPlus, IconUserStar } from "@tabler/icons-react";
+import { TWorkspaceId } from "@/types";
 
 interface InviteMemberDialogProps {
   workspaceId: string;
@@ -62,7 +63,7 @@ export function InviteMemberDialog({
 
     try {
       const result = await createInvitation({
-        workspaceId,
+        workspaceId: workspaceId as unknown as TWorkspaceId,
         workspaceSlug,
         email: email.trim(),
         role,

@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@collaro/*": ["./src/modules/*"]
     }
   },
   "include": [

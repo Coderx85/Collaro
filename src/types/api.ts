@@ -5,6 +5,8 @@ import type {
   UpdateMeetingSchema,
 } from "@/db/schema/type";
 import z from "zod";
+import { TUserId } from "./id.types";
+import { Prettify } from "better-auth/types";
 
 export type APIResponse<T> = APISuccessResponse<T> | APIErrorResponse;
 
@@ -18,7 +20,7 @@ type APIErrorResponse = {
   error: string;
 };
 
-export type UserResponse = Omit<CreateUserType, "password">;
+export type UserResponse = Omit<CreateUserType, "password"> & { id: TUserId};
 
 export type TUser = UserResponse;
 
@@ -46,7 +48,3 @@ export type MeetingResponse = SelectMeetingType;
 export type UpdateMeetingType = z.infer<typeof UpdateMeetingSchema>;
 
 export type TWorkspaceUser = SelectMemberType;
-
-export type TWorkspaceMember = TUser & TWorkspaceUser;
-
-export type TWorkspaceMembersTableRow = TWorkspaceMember[];

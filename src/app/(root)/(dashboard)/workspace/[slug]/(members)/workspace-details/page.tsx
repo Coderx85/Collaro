@@ -9,46 +9,36 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { getCurrentUser } from "@/lib/dal";
-import { getMemberByIdAndSlug } from "@/action/member";
+import { getCurrentMemberRole } from "@/action/member";
 import { InviteMemberDialog } from "@/components/workspace/members/InviteMemberDialog";
-import { TOrganizationMember } from "@/types";
 import MembersTable from "@/components/workspace/meeting/charts/members-table";
+import { getFullWorkspaceDetail } from "@/action";
+import { checkWorkspaceAccess } from "@/lib/workspace-auth";
+import { redirect } from "next/navigation";
+import { TWorkspaceSlug } from "@/types";
 
 export default async function OrgDetailsPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: TWorkspaceSlug }>;
 }) {
   const { slug } = await params;
+  const stringSlug = String(slug);
+  await checkWorkspaceAccess(stringSlug);
 
-  const user = await getCurrentUser();
-  if (!user) {
-    throw new Error("User not authenticated");
+  const role = await getCurrentMemberRole(slug);
+  const res = await getFullWorkspaceDetail(stringSlug);
+
+  if (!role.success) {
+    redirect(`/workspace/${slug}`);
   }
 
-  const activeOrg = await auth.api.getFullOrganization({
-    query: {
-      organizationSlug: slug,
-    },
-    headers: await headers(),
-  });
-
-  if (!activeOrg) {
-    throw new Error("Organization not found");
+  if (!res.success) {
+    redirect(`/workspace/${slug}`);
   }
 
-  const orgMember = await getMemberByIdAndSlug(slug, user.id);
-
-  if (!orgMember || !orgMember.success || !orgMember?.data) {
-    throw new Error("Organization member not found");
-  }
-
-  const role = orgMember.data as TOrganizationMember;
-
-  const workspace = { ...activeOrg, member: orgMember };
+  const activeOrg = res.data;
+  const currentRole = role.data ?? "member";
 
   return (
     <div className="container space-y-8">
@@ -73,7 +63,7 @@ export default async function OrgDetailsPage({
               <Avatar className="h-16 w-16">
                 <AvatarImage
                   src={
-                    activeOrg?.logo ||
+                    activeOrg?.logoUrl ||
                     `https://gravatar.com/avatar/${activeOrg?.id}`
                   }
                   alt={activeOrg?.name || "Workspace"}
@@ -92,15 +82,15 @@ export default async function OrgDetailsPage({
               </div>
             </div>
             <div className="flex items-center gap-3">
-              {orgMember?.data?.role === "owner" && (
+              {currentRole === "owner" && (
                 <InviteMemberDialog
-                  workspaceId={activeOrg.id}
-                  workspaceSlug={slug}
+                  workspaceId={String(activeOrg.id)}
+                  workspaceSlug={stringSlug}
                 />
               )}
               <Badge className="text-sm">
                 <Shield className="h-3 w-3 mr-1" />
-                {orgMember?.data?.role}
+                {currentRole.toUpperCase()}
               </Badge>
             </div>
           </div>
@@ -112,7 +102,7 @@ export default async function OrgDetailsPage({
               <div>
                 <p className="text-sm text-muted-foreground">Members</p>
                 <p className="text-2xl font-bold">
-                  {activeOrg?.members.length}
+                  {activeOrg.members.length}
                 </p>
               </div>
             </div>
@@ -121,7 +111,7 @@ export default async function OrgDetailsPage({
               <div>
                 <p className="text-sm text-muted-foreground">Your Role</p>
                 <p className="text-2xl font-bold capitalize">
-                  {orgMember?.data?.role}
+                  {currentRole}
                 </p>
               </div>
             </div>
@@ -136,7 +126,7 @@ export default async function OrgDetailsPage({
         </CardContent>
       </Card>
 
-      <MembersTable workspaceSlug={slug} />
+      <MembersTable members={activeOrg.members} />
     </div>
   );
 }

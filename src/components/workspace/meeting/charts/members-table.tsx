@@ -11,55 +11,27 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { TUser, TWorkspaceMembersTableRow, TWorkspaceUser } from "@/types";
+import { IMemberDTO } from "@/types";
 import Loader from "@/components/Loader";
 
 type Props = {
-  workspaceSlug: string;
+  members: IMemberDTO[]
 };
 
-const MembersTable = ({ workspaceSlug }: Props) => {
-  const [data, setData] = useState<TWorkspaceMembersTableRow>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
+const MembersTable = ({ members }: Props) => {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
 
-  useEffect(() => {
-    let mounted = true;
+  const data: IMemberDTO[] = useMemo(() => {
+    return members.map((member) => ({
+      ...member,
+      })
+    )
+  }, [members]);
 
-    async function fetchMembers() {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await fetch(`/api/workspace/${workspaceSlug}/members`);
-        console.log("Fetch members response: \n", res);
-        const json = await res.json();
-        if (!json || !json.success) {
-          setError(json?.error || "Failed to load members");
-          setData([]);
-        } else {
-          setData(json.data || []);
-        }
-      } catch (err) {
-        setError(String(err));
-        setData([]);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    }
-
-    fetchMembers();
-
-    return () => {
-      mounted = false;
-    };
-  }, [workspaceSlug]);
-
-  const columns = useMemo<ColumnDef<TWorkspaceMembersTableRow[number]>[]>(
+  const columns = useMemo<ColumnDef<IMemberDTO>[]>(
     () => [
       {
         accessorKey: "id",
@@ -72,25 +44,20 @@ const MembersTable = ({ workspaceSlug }: Props) => {
         cell: (info) => info.getValue<string>(),
       },
       {
-        accessorKey: "username",
-        header: "Username",
-        cell: (info) => info.getValue<string>(),
-      },
-      {
-        accessorKey: "email",
-        header: "Email",
-        cell: (info) => info.getValue<string>(),
-      },
-      {
         accessorKey: "role",
         header: "Role",
         cell: (info) => info.getValue<string>(),
       },
       {
-        accessorKey: "emailVerified",
-        header: "Email Verified",
-        cell: (info) => (info.getValue<boolean>() ? "Yes" : "No"),
+        accessorKey: "joinedAt",
+        header: "Joined At",
+        cell: (info) => new Date(info.getValue<string>()).toLocaleString(),
       },
+      {
+        accessorKey: "updatedAt",
+        header: "Updated At",
+        cell: (info) => new Date(info.getValue<string>()).toLocaleString(),
+      }
     ],
     []
   );
@@ -111,11 +78,6 @@ const MembersTable = ({ workspaceSlug }: Props) => {
 
   return (
     <div className="p-2">
-      {loading ? (
-        <Loader />
-      ) : error ? (
-        <div className="text-sm text-red-500">{error}</div>
-      ) : (
         <>
           <table className="w-full table-auto border border-accent-foreground text-sm">
             <thead>
@@ -230,7 +192,6 @@ const MembersTable = ({ workspaceSlug }: Props) => {
             </div>
           </div>
         </>
-      )}
     </div>
   );
 };

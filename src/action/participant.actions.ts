@@ -1,11 +1,14 @@
 "use server";
 
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth-server";
 import { db } from "@/db/client";
 import { membersTable, usersTable } from "@/db/schema/schema";
 import { eq, and } from "drizzle-orm";
-import type { APIResponse, TUserRole } from "@/types";
+import type { APIResponse, TUserId, TUserRole, TWorkspaceId } from "@/types";
+import { IWorkspaceDTO } from "@/modules/workspace";
+import { tryCatchAction } from "@/lib/try-catch-wrapper";
+import { IParticipantDTO, participantStore } from "@/modules/meeting";
 
 export type ParticipantRole = TUserRole;
 
@@ -24,20 +27,22 @@ type RoleResponse = APIResponse<ParticipantRoleResponse>;
  * Used for displaying role badges in video calls
  */
 export const getParticipantRole = async (
-  userId: string,
-  workspaceId: string,
+  userId: TUserId,
+  slug: IWorkspaceDTO["slug"],
 ): Promise<RoleResponse> => {
   try {
     // First try using Better Auth (faster)
     const workspace = await auth.api.getFullOrganization({
       query: {
-        organizationId: workspaceId,
+        organizationSlug: slug,
       },
       headers: await headers(),
     });
 
     if (workspace) {
-      const member = workspace.members?.find((m) => m.userId === userId);
+      const member = workspace.members?.find(
+        (m) => m.userId === String(userId),
+      );
 
       if (member) {
         return {
@@ -67,7 +72,10 @@ export const getParticipantRole = async (
       .where(
         and(
           eq(membersTable.userId, userId),
-          eq(membersTable.workspaceId, workspaceId),
+          eq(
+            membersTable.workspaceId,
+            workspace?.id as unknown as TWorkspaceId,
+          ),
         ),
       )
       .limit(1);
@@ -84,7 +92,7 @@ export const getParticipantRole = async (
       success: true,
       data: {
         role: data.role as ParticipantRole,
-        userId: data.userId,
+        userId: String(data.userId),
         userName: data.userName,
         name: data.name,
         email: data.email,
@@ -103,8 +111,8 @@ export const getParticipantRole = async (
  * Get multiple participant roles at once (batch operation)
  */
 export const getParticipantRoles = async (
-  userIds: string[],
-  workspaceId: string,
+  userIds: TUserId[],
+  workspaceId: TWorkspaceId,
 ): Promise<APIResponse<ParticipantRoleResponse[]>> => {
   try {
     const results = await db
@@ -129,7 +137,7 @@ export const getParticipantRoles = async (
       success: true,
       data: results.map((r) => ({
         role: r.role as ParticipantRole,
-        userId: r.userId,
+        userId: String(r.userId),
         userName: r.userName,
         name: r.name,
         email: r.email,

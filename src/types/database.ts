@@ -1,4 +1,4 @@
-import { TUserRole } from "./action";
+import { TUserRole } from "@/types";
 
 export interface Workspace {
   id: string;

@@ -1,35 +1,66 @@
 "use server";
 
-import { db } from "@/db/client";
-import { workspacesTable, membersTable, usersTable } from "@/db/schema/schema";
-import type { APIResponse, UserResponse } from "@/types";
+import type { APIResponse, IMemberDTO, IUserDTO, IWorkspaceDTO, TFullUserWorkspaceDetail, TUserId, TWorkspaceId, UserResponse } from "@/types";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
-import { eq } from "drizzle-orm";
+import { auth, Session } from "@/lib/auth/auth-server";
 import { redirect } from "next/navigation";
 import { config } from "@/lib/config";
 import type { RegisterFormValues } from "@/types";
+import { revalidatePath } from "next/cache";
+import { tryCatchAction } from "@/lib/try-catch-wrapper";
+import { User as UserManager } from "@/modules/user";
+import { workspaceMemberManager } from "@/modules/manager/workspace-manager";
+import { getAllWorkspaces } from "./workspace";
+
+type TSession = Session["session"];
+
+interface GetCurrentUserResponse extends TSession {
+  user: {
+    id: TUserId;
+    name: string;
+    email: string;
+    userName: string;
+    emailVerified: boolean;
+    createdAt: Date;
+    updatedAt: Date | null;
+  }
+}
+
+interface IUpdateUserInput {
+  email?: string;
+  name?: string;
+  userName?: string;
+}
+
+const userService = new UserManager();
 
 // Helper to get current authenticated user
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<GetCurrentUserResponse> {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
+  if (!session) {
+    throw new Error("No active session found");
+  }
+
   if (!session?.user) {
     redirect(config.SIGN_IN);
   }
-  const dbUser = await db.query.usersTable.findFirst({
-    where: eq(usersTable.id, session.user.id),
-  });
 
-  if (!dbUser) {
-    redirect(config.SIGN_IN);
-  }
+  const userId = session.user.id as unknown as TUserId;
 
   return {
-    ...session,
-    user: dbUser,
+    ...session.session,
+    user: {
+      id: userId,
+      name: session.user.name,
+      email: session.user.email,
+      userName: session.user.userName || "",
+      emailVerified: session.user.emailVerified,
+      createdAt: new Date(session.user.createdAt),
+      updatedAt: session.user.updatedAt ? new Date(session.user.updatedAt) : null,
+    },
   };
 }
 
@@ -42,28 +73,29 @@ export async function signUpAction({
   try {
     const result = await auth.api.signUpEmail({
       body: {
+        name,
         email,
         password,
-        name,
-        userName,
+        userName
       },
       headers: await headers(),
+    }).catch((error) => {
+      console.error("Sign up error:", error);
+      throw error;
     });
 
     if (!result || !result.user) {
       return { error: "Sign up failed", success: false };
     }
 
-    return { data: { user: result.user as UserResponse }, success: true };
+    return { data: { user: result.user as unknown as UserResponse }, success: true };
   } catch (error: unknown) {
     return { error: `Sign up failed: ${error}`, success: false };
   }
 }
 
-export async function loginAction(email: string, password: string) {
+export async function loginAction(email: string, password: string): Promise<APIResponse<{message: string}>> {
   try {
-    // Use the server-side API for authentication
-    // Note: Do NOT hash the password - better-auth handles password hashing internally
     const result = await auth.api.signInEmail({
       body: {
         email,
@@ -76,103 +108,127 @@ export async function loginAction(email: string, password: string) {
       return { error: "Invalid email or password", success: false };
     }
 
-    // Use the session token from the login result for subsequent API calls
-    // since the cookie isn't available in the original request headers yet
-    const sessionToken = result.token;
-    const authHeaders = {
-      cookie: `better-auth.session_token=${sessionToken}`,
-      origin: config.betterAuthUrl,
-    };
-
-    // Check workspaces
-    const data = await auth.api.listOrganizations({
-      headers: authHeaders,
-    });
-
-    if (data.length < 0) {
-      return {
-        data: { user: result.user, organizationExists: false },
-        success: true,
-      };
-    }
-
     return {
-      data: {
-        user: result.user,
-        organizationExists: true,
-      },
+      data: { message: "Login successful" },
       success: true,
     };
   } catch (error: unknown) {
-    let message = "An unknown error occurred";
+    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+    
+    return { error: errorMessage, success: false };
+  }
+}
 
-    if (error && typeof error === "object") {
-      const errObj = error as Record<string, unknown>;
-      if (errObj.status === "UNAUTHORIZED") {
-        message = "Invalid email or password";
-      } else if (
-        typeof errObj.message === "string" &&
-        errObj.message.length > 0
-      ) {
-        message = errObj.message;
-      } else if (typeof errObj.status === "string") {
-        message = `Authentication failed: ${errObj.status}`;
+export async function logoutAction(): Promise<APIResponse<{ message: string }>> {
+  return tryCatchAction({
+    ctx: async () => {
+      await auth.api.signOut({
+        headers: await headers(),
+      });
+      revalidatePath("/"); // Revalidate homepage or any other path as needed
+      return { message: "Logout successful" };
+    },
+    errorMessage: "Logout failed",
+  })
+}
+
+export async function updateUserAction(data: IUpdateUserInput): Promise<APIResponse<{ user: IUserDTO }>> {
+  return tryCatchAction({
+    ctx: async () => {
+
+      const currentUser = await getCurrentUser();
+      if (!currentUser?.user?.id) {
+        throw new Error("User not authenticated");
       }
-    } else if (error instanceof Error && error.message) {
-      message = error.message;
+
+      const updatedUser = await userService.updateUser(currentUser.user.id, {
+        ...data,
+      });
+      
+      if (!updatedUser) {
+        throw new Error("Failed to update user");
+      }
+
+      return { user: updatedUser,  };
+    }
+  });
+}
+
+type TOrganizationRole = "owner" | "admin" | "member";
+export async function leaveOrganizationAction(
+  organizationId: TWorkspaceId,
+): Promise<APIResponse<{ left: true }>> {
+  try {
+    const requestHeaders = await headers();
+    const session = await auth.api.getSession({ headers: requestHeaders });
+
+    if (!session?.user) {
+      return { success: false, error: "User not authenticated" };
     }
 
-    return { error: message, success: false };
-  }
-}
+    await auth.api.leaveOrganization({
+      headers: requestHeaders,
+      body: {
+        organizationId: String(organizationId),
+      }
+    })
 
-export async function getUserWorkspaceId() {
-  const authUser = await getCurrentUser();
+    revalidatePath("/user/settings");
 
-  // Get user's first workspace membership
-  const [membership] = await db
-    .select()
-    .from(membersTable)
-    .where(eq(membersTable.userId, authUser.user.id))
-    .limit(1)
-    .execute();
-
-  if (!membership?.workspaceId) {
-    return { error: "Workspace ID is null", success: false };
-  }
-
-  return {
-    data: {
-      workspaceId: membership.workspaceId,
-    },
-    success: true,
-  };
-}
-
-export async function getUser(): Promise<APIResponse<UserResponse>> {
-  try {
-    const authUser = await getCurrentUser();
-
-    // Get user from the better-auth user table
-    const [user] = await db
-      .select()
-      .from(usersTable)
-      .where(eq(usersTable.id, authUser.user.id))
-      .execute();
-
-    if (!user) return { error: "User does not exist", success: false };
-
-    return { data: user as UserResponse, success: true };
+    return {
+      success: true,
+      data: {
+        left: true,
+      },
+    };
   } catch (error: unknown) {
-    return { error: `Failed to get user:: \n ${error}`, success: false };
+    return {
+      success: false,
+      error: `Failed to leave organization: ${error instanceof Error ? error.message : String(error)}`,
+    };
   }
 }
 
-export async function getAllUsers(): Promise<APIResponse<UserResponse[]>> {
-  try {
-    const data = await db.select().from(usersTable).execute();
-    return { data: data as UserResponse[], success: true };
-  } catch (error: unknown) {
-    return { error: `Failed to get all users:: \n ${error}`, success: false };
-  }
+export async function getUserWorkspaces(): Promise<APIResponse<TFullUserWorkspaceDetail[]>> {
+  return tryCatchAction({
+    ctx: async () => {
+
+      const result: TFullUserWorkspaceDetail[] = [];
+
+      const {user} = await getCurrentUser();
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
+      const workspaces = await workspaceMemberManager.listUserWorkspaces(user.id);
+      if (!workspaces) {
+        throw new Error("Failed to fetch user workspaces");
+      }
+
+      for (const workspace of workspaces) {
+        const memberDetail = await workspaceMemberManager.getMemberDetail({
+          userId: user.id,
+          workspaceId: workspace.id,
+        });
+
+        if (!memberDetail) {
+          throw new Error(`Failed to fetch member details for workspace ID: ${workspace.id}`);
+        }
+
+        result.push({
+          id: workspace.id,
+          name: workspace.name,
+          slug: workspace.slug,
+          logoUrl: workspace.logoUrl,
+          ownerId: workspace.ownerId,
+          description: workspace.description,
+          createdAt: workspace.createdAt,
+          updatedAt: workspace.updatedAt,
+          userDetail: memberDetail,
+        })
+      }
+
+      return result;
+    }
+  })
 }

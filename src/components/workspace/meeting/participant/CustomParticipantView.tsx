@@ -18,6 +18,8 @@ import {
 } from "@tabler/icons-react";
 import { useWorkspaceStore } from "@/store/workspace";
 import { useSession } from "@/lib/auth";
+import { TUserId } from "@/types";
+import { IParticipantDTO } from "@/modules/meeting";
 
 /**
  * Custom VideoPlaceholder - shown when participant's video is off
@@ -36,7 +38,7 @@ export const CustomVideoPlaceholder = ({ style }: VideoPlaceholderProps) => {
     >
       <ParticipantAvatar
         name={session.user.name}
-        imageUrl={session.user.image || session.user.name}
+        imageUrl={`https://multiavatar.com/${session.user.name}`}
         size="lg"
       />
       {/* <Avatar name={name} imageSrc={`https://multiavatar.com/${name}`} /> */}
@@ -59,6 +61,8 @@ export const CustomParticipantViewUI = () => {
     participant,
     workspaceSlug || ""
   );
+
+  console.log("ParticipantViewUI - participant:", participant);
 
   const handlePinToggle = () => {
     setIsPinned((prev) => !prev);
@@ -148,7 +152,8 @@ export const CustomParticipantViewUISpotlight = () => {
 export const CustomParticipantViewUIBar = () => {
   const { participant } = useParticipantViewContext();
   const { workspaceSlug } = useWorkspaceStore();
-
+  console.log("CustomParticipantViewUIBar - participant:", participant);
+  
   const { role, name } = useParticipantRole(participant, workspaceSlug || "");
 
   const isSpeaking = participant.isSpeaking || false;

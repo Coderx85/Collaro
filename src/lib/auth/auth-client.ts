@@ -4,7 +4,7 @@ import {
   inferOrgAdditionalFields,
   organizationClient,
 } from "better-auth/client/plugins";
-import type { auth } from "./index";
+import type { auth } from "..//auth/auth-server";
 import { config } from "../config";
 
 export const authClient = createAuthClient({
@@ -12,12 +12,12 @@ export const authClient = createAuthClient({
   plugins: [
     inferAdditionalFields<typeof auth>(),
     organizationClient({
-      // ac,
-      // roles,
       schema: inferOrgAdditionalFields<typeof auth>(),
-    }),
+    })
   ],
 });
+
+export * from "@/hooks/use-get-current-user";
 
 // Export individual methods for convenience
 export const {
@@ -139,77 +139,6 @@ export function canRoleInviteMembers(
     permissions: { invitation: ["create"] },
     role,
   });
-}
-
-class Permission {
-  /**
-   * Synchronous permission check - client-side only
-   * Use this for quick checks based on role without server calls
-   */
-  static checkPermissionSync(
-    role: "owner" | "admin" | "member",
-    permissions: Record<string, string[]>,
-  ): boolean {
-    return authClient.organization.checkRolePermission({
-      permissions,
-      role,
-    });
-  }
-
-  private static canRoleCreateOrganization(
-    role: "owner" | "admin" | "member" | undefined,
-  ): boolean {
-    if (!role) return false;
-    return Permission.checkPermissionSync(role, { organization: ["create"] });
-  }
-
-  private static canRoleDeleteOrganization(
-    role: "owner" | "admin" | "member" | undefined,
-  ): boolean {
-    if (!role) return false;
-    return Permission.checkPermissionSync(role, { organization: ["delete"] });
-  }
-
-  private static canRoleViewOrganization(
-    role: "owner" | "admin" | "member" | undefined,
-  ): boolean {
-    if (!role) return false;
-    return Permission.checkPermissionSync(role, { organization: ["view"] });
-  }
-
-  private static canRoleUpdateOrganization(
-    role: "owner" | "admin" | "member" | undefined,
-  ): boolean {
-    if (!role) return false;
-    return Permission.checkPermissionSync(role, { organization: ["update"] });
-  }
-
-  private static canRoleManageMembers(
-    role: "owner" | "admin" | "member" | undefined,
-  ): boolean {
-    if (!role) return false;
-    return Permission.checkPermissionSync(role, {
-      member: ["create", "update", "delete"],
-    });
-  }
-
-  private static canRoleInviteMembers(
-    role: "owner" | "admin" | "member" | undefined,
-  ): boolean {
-    if (!role) return false;
-    return Permission.checkPermissionSync(role, { invitation: ["create"] });
-  }
-
-  public static get Role() {
-    return {
-      canCreateOrganization: this.canRoleCreateOrganization,
-      canDeleteOrganization: this.canRoleDeleteOrganization,
-      canViewOrganization: this.canRoleViewOrganization,
-      canUpdateOrganization: this.canRoleUpdateOrganization,
-      canManageMembers: this.canRoleManageMembers,
-      canInviteMembers: this.canRoleInviteMembers,
-    };
-  }
 }
 
 /**

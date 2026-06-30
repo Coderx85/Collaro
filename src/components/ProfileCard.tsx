@@ -1,25 +1,41 @@
 "use client";
-import Image from "next/image";
+
 import { authClient, useSession } from "@/lib/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useEffect, useState } from "react";
+import { TUserRole, TWorkspaceSlug } from "@/types";
+import { getCurrentMemberRole } from "@/action/member";
+import { toast } from "sonner";
 
 type org = {
   data?: any;
   error?: string;
 };
 
-const ProfileCard = () => {
+type ProfileCardProps = {
+  slug: TWorkspaceSlug;
+}
+
+const ProfileCard = ({ slug }: ProfileCardProps) => {
   const { data: session } = useSession();
   const [org, setOrg] = useState<org>({});
-  const [memberRole, setMemberRole] = useState<{ role?: string }>({});
+  const [memberRole, setMemberRole] = useState<{ role: TUserRole } | undefined>(undefined);
 
   useEffect(() => {
     const fetchMember = async () => {
-      const result = await authClient.organization.getActiveMemberRole();
-      if (result.data) {
-        setMemberRole({ role: result.data.role });
+      const result = await getCurrentMemberRole(slug);
+      
+      if (!result.success) {
+        toast.error(result.error || "Failed to fetch member role");
+        return;
+      };
+
+      if (!result.data) {
+        toast.error("Member role not found");
+        return;
       }
+
+      setMemberRole({ role: result.data });
     };
     fetchMember();
   }, []);

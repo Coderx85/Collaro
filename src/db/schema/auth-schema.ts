@@ -26,7 +26,7 @@ export const session = pgTable("session", {
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
 
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
 });
@@ -38,7 +38,7 @@ export const account = pgTable("account", {
     .$defaultFn(() => randomUUID()),
   accountId: text("account_id"),
   providerId: text("provider_id").notNull(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
   accessToken: text("access_token"),

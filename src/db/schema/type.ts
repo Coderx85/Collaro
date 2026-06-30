@@ -1,4 +1,5 @@
 // Import meeting status enum
+import { TMeetingId } from "@/types/id.types";
 import { session, account, verification } from "./auth-schema";
 // Import table schemas
 import {
@@ -12,7 +13,7 @@ import {
   pgMeetingStatus,
   pgJoinRequestStatus,
   notificationsTable,
-  joinRequestsTable,
+  workspaceRequestTable,
 } from "./schema";
 
 // Drizzle-Zod schema creators
@@ -69,6 +70,18 @@ export const CreateUserSchema = createInsertSchema(usersTable, {
     path: ["confirmPassword"],
   });
 
+export const UpdateUserSchema = createUpdateSchema(usersTable, {
+  userName: z.string().min(6, "User Name must be at least 6 characters").optional(),
+  name: z.string().min(6, "Name must be at least 6 characters").optional(),
+  email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email must be valid").optional(),
+}).omit({
+  password: true,
+  createdAt: true,
+  updatedAt: true,
+  emailVerified: true,
+  id: true,
+});
+
 export const CreateWorkspaceSchema = createInsertSchema(workspacesTable);
 
 export const UpdateWorkspaceSchema = createUpdateSchema(workspacesTable, {
@@ -108,7 +121,7 @@ export const UpdateMeetingSchema = createUpdateSchema(workspaceMeetingTable, {
 });
 
 export const SelectJoinRequestSchema =
-  createSelectSchema(joinRequestsTable).strict();
+  createSelectSchema(workspaceRequestTable).strict();
 export type SelectJoinRequestType = z.infer<typeof SelectJoinRequestSchema>;
 
 export const SelectNotificationSchema = createSelectSchema(notificationsTable);
@@ -129,3 +142,5 @@ export const createMemberSchema = createInsertSchema(membersTable, {
 }).omit({
   updatedAt: true,
 });
+
+export const createParticipantSchema = createInsertSchema(meetingParticipantsTable);

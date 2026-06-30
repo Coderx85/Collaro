@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth-server";
 import { db } from "@/db/client";
 import { membersTable, workspacesTable } from "@/db/schema/schema";
 import { usersTable } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
+import { TUserId } from "@/types";
 
 export async function GET() {
   try {
@@ -16,7 +17,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = session.user.id as unknown as TUserId;
 
     // Fetch user data from better-auth user table
     const [userData] = await db
@@ -72,7 +73,6 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       data: {
-        clerkId: userId, // Legacy field name, now stores better-auth user id
         userId: userData.id,
         name: userData.name,
         userName: userData.userName,

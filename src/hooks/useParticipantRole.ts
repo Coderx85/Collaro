@@ -4,18 +4,11 @@ import {
   type ParticipantRole,
 } from "@/action/participant.actions";
 import type { StreamVideoParticipant } from "@stream-io/video-react-sdk";
-import { TWorkspaceMember, TWorkspaceUser } from "@/types";
+import { IMemberDTO, TUserId } from "@/types";
 
-interface ParticipantRoleData {
-  role: ParticipantRole;
-  userName: string;
-  name: string;
-  email: string;
-  isLoading: boolean;
-}
 type Data = Pick<
-  TWorkspaceMember,
-  "role" | "userName" | "name" | "email" | "userId"
+  IMemberDTO,
+  "role" | "name" | "userId"
 > & {
   isLoading: boolean;
 };
@@ -30,32 +23,34 @@ export const useParticipantRole = (
   participant: StreamVideoParticipant,
   workspaceSlug: string,
 ): Data => {
+  const userId = participant.userId as unknown as TUserId;
   const [roleData, setRoleData] = useState<Data>({
     role: "member",
-    userName: participant.name || participant.userId,
     name: participant.name || participant.userId,
-    userId: participant.userId,
-    email: "",
+    userId: userId,
     isLoading: true,
   });
 
   useEffect(() => {
     const fetchRole = async () => {
-      // Step 1: Check if role is already in custom data (fastest)
       try {
-        const fetchRole = await getParticipantRole(
-          participant.userId,
-          workspaceSlug,
-        );
+        const res = await getParticipantRole(userId, workspaceSlug);
+        if (!res.success || !res.data) {
+          throw new Error("Role not found");
+        }
+        setRoleData({
+          role: res.data.role as ParticipantRole,
+          name: participant.name || participant.userId,
+          userId: userId,
+          isLoading: false,
+        });
       } catch (error) {
         console.error("Error fetching participant role:", error);
         setRoleData({
           role: "member",
-          userName: participant.name || participant.userId,
           name: participant.name || participant.userId,
-          email: "",
           isLoading: false,
-          userId: participant.userId,
+          userId: userId,
         });
       }
     };

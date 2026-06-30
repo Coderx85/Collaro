@@ -1,8 +1,11 @@
 "use server";
 
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth/auth-config";
-import type { APIResponse, TOrganizationMember } from "@/types";
+import { auth } from "@/lib/auth/auth-server";
+import type { APIResponse, TOrganizationMember, TUserId, TWorkspaceSlug } from "@/types";
+import { IMemberDTO, workspaceMemberManager } from "@/modules/member";
+import tryCatch from "@/lib/try-catch-wrapper";
+import { getCurrentUser } from "../user.actions";
 
 type MemberResponse = APIResponse<TOrganizationMember>;
 
@@ -34,18 +37,36 @@ export const getMemberByIdAndSlug = async (
     };
   }
 
-  const validRoles = ["owner", "admin", "member"] as const;
-  const role = validRoles.includes(member.role as any) ? (member.role as "owner" | "admin" | "member") : "member";
-
   return {
     success: true,
     data: {
       id: member.id,
       userId: member.userId,
       workspaceId: workspace.id,
-      role,
+      role: member.role,
       createdAt: new Date(member.createdAt),
       updatedAt: new Date(member.createdAt),
     },
   };
 };
+
+export const getCurrentMemberRole = async (slug: TWorkspaceSlug): Promise<APIResponse<IMemberDTO["role"] | null>> => {
+  const session = await getCurrentUser();
+  const authId = session?.user?.id as unknown as TUserId;
+
+  try {
+    const role = await workspaceMemberManager.getMemberRole(slug, authId);
+
+    return {
+      success: true,
+      data: role,
+    };
+
+  }
+  catch (error) {
+    return {
+      success: false,
+      error: "Failed to fetch member role",
+    };
+  }
+}

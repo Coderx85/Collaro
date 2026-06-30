@@ -16,7 +16,7 @@ import { Loader2 } from "lucide-react";
 
 const MAX_CARDS = 6;
 
-const CallList = ({ type, selectedDate: externalSelectedDate }: { type: "ended" | "upcoming" | "recordings"; selectedDate?: string }) => {
+const CallList = ({ type, selectedDate: externalSelectedDate, workspaceSlug }: { type: "ended" | "upcoming" | "recordings"; selectedDate?: string; workspaceSlug?: string }) => {
   const router = useRouter();
   const { endedCalls, upcomingCalls, callRecordings, isLoading } =
     useGetCalls();
@@ -252,6 +252,7 @@ const CallList = ({ type, selectedDate: externalSelectedDate }: { type: "ended" 
                       ? () => router.push(`${(meeting as CallRecording).url}`)
                       : () => router.push(`/meeting/${(meeting as Call).id}`)
                   }
+                  viewDetailsLink={type === "ended" && workspaceSlug ? `/workspace/${workspaceSlug}/meeting/${(meeting as Call).id}` : undefined}
                 />
               ))
             ) : (

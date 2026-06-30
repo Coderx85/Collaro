@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import type { MeetingCardProps } from "@/types";
 import { CalendarExport } from "../../CalendarExport";
 import { toast } from "sonner";
+import { IconInfoCircle } from "@tabler/icons-react";
 
 const MeetingCard = ({
   icon,
@@ -21,22 +23,12 @@ const MeetingCard = ({
   endTime,
   description,
   location,
+  viewDetailsLink,
 }: MeetingCardProps) => {
   const IconDisplay = icon;
 
   const MAX_TITLE_LENGTH = 40;
 
-  /**
-   * Truncate text to a specified maximum length and add ellipsis if it exceeds that length.
-   * 
-   * @param text The text to be truncated.
-   * @param maxLength The maximum length of the text before truncation occurs.
-   * @returns The truncated text with an ellipsis if it exceeds the maximum length. 
-   * 
-   * @example 
-   * truncateText("This is a long meeting title that needs to be truncated", 20);
-   * // Returns: "This is a long meeti..."
-   */
   const truncateText = (text: string, maxLength: number) => {
     if (text.length > maxLength) {
       return text.slice(0, maxLength) + "...";
@@ -58,45 +50,56 @@ const MeetingCard = ({
         </div>
       </article>
       <article className={cn("flex justify-center relative")}>
-        {!isPreviousMeeting && (
+        {isPreviousMeeting && viewDetailsLink ? (
           <div className="flex gap-2 flex-wrap">
-            <Button onClick={handleClick} className="rounded bg-blue px-6 transition-transform duration-150 transform active:scale-95 hover:scale-105">
-              {buttonIcon1 && (
-                <Image src={buttonIcon1} alt="feature" width={20} height={20} />
-                )
-              }
-              &nbsp; {buttonText}
-            </Button>
-            <Button
-              onClick={() => {
-                navigator.clipboard.writeText(link);
-                toast.success("Link Copied");
-              }}
-              className="bg-dark-4 px-6 transition-transform duration-150 transform active:scale-95 hover:scale-105"
-            >
-              <Image
-                src="/icons/copy.svg"
-                alt="feature"
-                width={20}
-                height={20}
-              />
-              &nbsp; Copy Link
-            </Button>
-            {meetingId && startTime && (
-              <CalendarExport
-                meetingId={meetingId}
-                meetingTitle={title}
-                startTime={startTime}
-                endTime={endTime}
-                description={description}
-                location={location}
-                meetingLink={link}
-                variant="outline"
-                size="default"
-                className="bg-dark-4 border-dark-3 hover:bg-dark-3 hover:shadow-lg transition-shadow duration-200"
-              />
-            )}
+            <Link href={viewDetailsLink}>
+              <Button className="rounded bg-blue px-6 transition-transform duration-150 transform active:scale-95 hover:scale-105">
+                <IconInfoCircle className="size-4 mr-1.5" />
+                View Details
+              </Button>
+            </Link>
           </div>
+        ) : (
+          !isPreviousMeeting && (
+            <div className="flex gap-2 flex-wrap">
+              <Button onClick={handleClick} className="rounded bg-blue px-6 transition-transform duration-150 transform active:scale-95 hover:scale-105">
+                {buttonIcon1 && (
+                  <Image src={buttonIcon1} alt="feature" width={20} height={20} />
+                  )
+                }
+                &nbsp; {buttonText}
+              </Button>
+              <Button
+                onClick={() => {
+                  navigator.clipboard.writeText(link);
+                  toast.success("Link Copied");
+                }}
+                className="bg-dark-4 px-6 transition-transform duration-150 transform active:scale-95 hover:scale-105"
+              >
+                <Image
+                  src="/icons/copy.svg"
+                  alt="feature"
+                  width={20}
+                  height={20}
+                />
+                &nbsp; Copy Link
+              </Button>
+              {meetingId && startTime && (
+                <CalendarExport
+                  meetingId={meetingId}
+                  meetingTitle={title}
+                  startTime={startTime}
+                  endTime={endTime}
+                  description={description}
+                  location={location}
+                  meetingLink={link}
+                  variant="outline"
+                  size="default"
+                  className="bg-dark-4 border-dark-3 hover:bg-dark-3 hover:shadow-lg transition-shadow duration-200"
+                />
+              )}
+            </div>
+          )
         )}
       </article>
     </section>

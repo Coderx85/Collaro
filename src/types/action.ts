@@ -1,5 +1,6 @@
 import { SelectCallSchema } from "@/db/schema/type";
 import z from "zod";
+import { TUserRole } from "./member.types";
 
 export type clientCall = {
   id: string;
@@ -20,14 +21,6 @@ export interface Response<T> {
   status: number;
 }
 
-export type TUserRole = TAdminRole | TMemberRole | TInviteMemberRole;
-
-export type TAdminRole = "owner" | "admin";
-
-export type TMemberRole = "member";
-
-export type TInviteMemberRole = "admin" | "member";
-
 export interface TOrganizationMember {
   id: string;
   userId: string;
@@ -35,16 +28,6 @@ export interface TOrganizationMember {
   role: TUserRole;
   createdAt: Date;
   updatedAt: Date;
-}
-
-export interface PendingRequest {
-  id: string;
-  userId: string;
-  userName: string;
-  userEmail: string;
-  userFullName: string;
-  status: string;
-  requestedAt: Date;
 }
 
 export type Call = z.infer<typeof SelectCallSchema>;

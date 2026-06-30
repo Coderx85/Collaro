@@ -1,9 +1,11 @@
+import { workspaceMemberManager } from "@/modules/member";
 import { db } from "../db/client";
 import { workspacesTable } from "../db/schema/schema";
-import { auth } from "./auth";
+import { auth } from "./auth/auth-server";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
+import { TWorkspaceId } from "@/modules/workspace";
 
 export async function checkWorkspaceAccess(slug: string) {
   const session = await auth.api.getSession({
@@ -14,6 +16,7 @@ export async function checkWorkspaceAccess(slug: string) {
     redirect("/auth/login");
   }
 
+  // Check if workspace exists
   const workspace = await db.query.workspacesTable.findFirst({
     where: eq(workspacesTable.slug, slug),
   });
@@ -26,7 +29,7 @@ export async function checkWorkspaceAccess(slug: string) {
     headers: await headers(),
   });
 
-  const hasAccess = organizations?.find((org) => org.id === workspace.id);
+  const hasAccess = organizations?.find((org) => org.id as unknown as TWorkspaceId === workspace.id);
 
   if (!hasAccess) {
     redirect("/forbidden");

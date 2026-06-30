@@ -31,8 +31,9 @@ const PersonalRoom = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const user = session?.user;
+  if (!user) return null;
   const client = useStreamVideoClient();
-  const meetingId = user?.id;
+  const meetingId = user.id;
 
   const { call } = useGetCallById(meetingId!);
 
@@ -62,7 +63,7 @@ const PersonalRoom = () => {
       <div className="flex w-full flex-col gap-8 xl:max-w-[900px]">
         <Table
           title="Topic"
-          description={`${user?.userName || user?.name}'s Meeting Room`}
+          description={`${user.userName || user.name}'s Meeting Room`}
         />
         <Table title="Meeting ID" description={meetingId || ""} />
         <Table title="Invite Link" description={meetingLink} />

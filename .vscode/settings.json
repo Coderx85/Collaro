@@ -1,0 +1,6 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "biomejs.biome",
+  "snyk.advanced.organization": "f62f6e42-b8ce-4f68-9e2e-cfbe4fce2490",
+  "snyk.advanced.autoSelectOrganization": true
+}
