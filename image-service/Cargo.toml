@@ -3,6 +3,18 @@ name = "image-service"
 version = "0.1.0"
 edition = "2024"
 
+[lints.clippy]
+all = { level = "deny", priority = -1 }
+pedantic = { level = "deny", priority = -1 }
+# Individual overrides take precedence (priority 0 > -1)
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+missing_safety_doc = "allow"
+must_use_candidate = "allow"
+cast_possible_truncation = "allow"
+cast_sign_loss = "allow"
+doc_markdown = "allow"
+
 [dependencies]
 axum = { version = "0.8", features = ["multipart"] }
 tokio = { version = "1", features = ["full"] }
@@ -18,9 +30,9 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 config = "0.15"
 uuid = { version = "1", features = ["v4"] }
-mime_guess = "2"
 anyhow = "1"
 async-trait = "0.1"
 bytes = "1"
 tokio-stream = { version = "0.1", features = ["sync"] }
 futures = "0.3"
+kamadak-exif = "0.6"
