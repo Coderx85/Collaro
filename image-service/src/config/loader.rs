@@ -32,6 +32,9 @@ pub fn load() -> Result<AppConfig, ConfigError> {
             "S3_PROVIDER" | "s3_provider" | "S3__PROVIDER" | "s3__provider" => {
                 env_overrides.insert("s3.provider".to_string(), value);
             }
+            "API_KEY" | "api_key" | "API__KEY" | "api__key" => {
+                env_overrides.insert("server.api_key".to_string(), value);
+            }
             _ => {}
         }
     }

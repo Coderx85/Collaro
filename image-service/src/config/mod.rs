@@ -26,6 +26,8 @@ pub struct S3Config {
 pub struct ServerConfig {
     pub host: String,
     pub port: u16,
+    #[serde(default)]
+    pub api_key: String,
 }
 
 #[derive(Debug, Clone, Deserialize)]
