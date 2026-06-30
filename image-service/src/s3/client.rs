@@ -6,15 +6,27 @@ use bytes::Bytes;
 
 use crate::config::S3Config;
 
+/// Abstraction over S3-compatible object storage.
+///
+/// Two implementations exist:
+/// - [`MinioClient`] — force path-style, for local dev / self-hosted MinIO.
+/// - [`R2Client`] — virtual-hosted style, for Cloudflare R2.
+///
+/// A [`MockS3Client`](super::mock::MockS3Client) is available for unit tests.
 #[async_trait]
 pub trait S3Client: Send + Sync {
+    /// Store an object; returns the public URL.
     async fn put_object(
         &self,
         key: &str,
         body: Bytes,
         content_type: &str,
     ) -> Result<String, anyhow::Error>;
+    /// Retrieve an object and its content type.
     async fn get_object(&self, key: &str) -> Result<(Bytes, String), anyhow::Error>;
+    /// Delete an object. Idempotent — succeeds even if the key does not exist.
+    async fn delete_object(&self, key: &str) -> Result<(), anyhow::Error>;
+    /// Verify connectivity by checking the bucket exists.
     async fn health_check(&self) -> Result<(), anyhow::Error>;
 }
 
@@ -78,6 +90,16 @@ impl S3Client for MinioClient {
             .to_string();
         let data = resp.body.collect().await?.into_bytes();
         Ok((data, content_type))
+    }
+
+    async fn delete_object(&self, key: &str) -> Result<(), anyhow::Error> {
+        self.client
+            .delete_object()
+            .bucket(&self.bucket)
+            .key(key)
+            .send()
+            .await?;
+        Ok(())
     }
 
     async fn health_check(&self) -> Result<(), anyhow::Error> {
@@ -145,6 +167,16 @@ impl S3Client for R2Client {
             .to_string();
         let data = resp.body.collect().await?.into_bytes();
         Ok((data, content_type))
+    }
+
+    async fn delete_object(&self, key: &str) -> Result<(), anyhow::Error> {
+        self.client
+            .delete_object()
+            .bucket(&self.bucket)
+            .key(key)
+            .send()
+            .await?;
+        Ok(())
     }
 
     async fn health_check(&self) -> Result<(), anyhow::Error> {
