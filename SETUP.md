@@ -22,9 +22,26 @@ This project contains three services:
 
 ---
 
-## Quick Start (Full Stack with Docker)
+## Quick Start
 
-This brings up **everything** — PostgreSQL, MinIO, image-service, and the Next.js app — in one command:
+### Option A: Dev script (recommended for local development)
+
+Starts PostgreSQL, MinIO, image-service (with `cargo run`), and Next.js (with Turbopack) — all at once:
+
+```bash
+./dev.sh
+```
+
+Flags:
+- `./dev.sh --build` — rebuild image-service before starting
+- `./dev.sh --release` — run image-service in release mode
+- `./dev.sh --help` — show usage
+
+Press **Ctrl+C** to stop everything cleanly (kills background processes and runs `docker compose down`).
+
+### Option B: Full stack inside Docker
+
+This brings up **everything** — PostgreSQL, MinIO, image-service, and the Next.js app — all in containers:
 
 ```bash
 docker compose up --build
