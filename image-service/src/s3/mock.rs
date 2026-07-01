@@ -47,8 +47,6 @@ impl S3Client for MockS3Client {
             .ok_or_else(|| anyhow::anyhow!("key not found: {key}"))
     }
 
-    /// S3 DeleteObject is idempotent — removing a non-existent key
-    /// returns success (204 No Content). The mock matches this behavior.
     async fn delete_object(&self, key: &str) -> Result<(), anyhow::Error> {
         self.store
             .lock()

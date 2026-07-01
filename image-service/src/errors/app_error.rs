@@ -5,18 +5,9 @@ use serde_json::json;
 
 use crate::pipeline::error::PipelineError;
 
-/// Application-level error that converts into an HTTP response.
-///
-/// Maps to status codes:
-/// - [`BadRequest`](AppError::BadRequest) → 400
-/// - [`NotFound`](AppError::NotFound) → 404
-/// - [`Internal`](AppError::Internal) → 500 (error is logged server-side, not leaked)
 pub enum AppError {
-    /// Invalid request (bad file, missing field, etc.).
     BadRequest(String),
-    /// Requested image or resource does not exist.
     NotFound(String),
-    /// Unrecoverable server error (logged server-side, generic message returned).
     Internal(anyhow::Error),
 }
 
